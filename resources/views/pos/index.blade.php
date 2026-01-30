@@ -3,7 +3,6 @@
 @section('title', 'ModernGrosir - POS')
 
 @section('pageContent')
-@section('pageContent')
 <div id="pos-wrapper" class="w-100 h-100 bg-body" style="overflow-y: auto;">
     <div class="row">
         <!-- LEFT PANEL: Product Grid -->
@@ -127,7 +126,11 @@
     let currentPage = 1;
     let isLoading = false;
     let lastPage = 1;
-    let displayedProducts = []; // To store current page products for cart logic
+    let displayedProducts = []; 
+
+    function getSwalTarget() {
+        return document.fullscreenElement ? '#pos-wrapper' : 'body';
+    }
 
     $(document).ready(function() {
         fetchProducts();
@@ -179,7 +182,12 @@
             const currentQty = cartItem ? cartItem.qty : 0;
 
             if (currentQty + 1 > currentStock) {
-                Swal.fire('Out of Stock', `Only ${currentStock} item(s) available in this warehouse.`, 'warning');
+                Swal.fire({
+                    title: 'Out of Stock',
+                    text: `Only ${currentStock} item(s) available in this warehouse.`,
+                    icon: 'warning',
+                    target: getSwalTarget()
+                });
                 return;
             }
 
@@ -212,7 +220,12 @@
         }
 
         if (item.qty + 1 > maxStock) {
-            Swal.fire('Stock Limit', 'Cannot add more quantity.', 'warning');
+            Swal.fire({
+                title: 'Stock Limit',
+                text: 'Cannot add more quantity.',
+                icon: 'warning',
+                target: getSwalTarget()
+            });
             return; 
         }
         
@@ -248,7 +261,8 @@
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Pay!',
-                confirmButtonColor: '#5d87ff'
+                confirmButtonColor: '#5d87ff',
+                target: getSwalTarget()
             }).then((result) => {
                 if (result.isConfirmed) {
                     processCheckout(total, customerId);
@@ -460,7 +474,8 @@
                     icon: 'success',
                     title: 'Transaction Successful!',
                     text: `Code: ${response.transaction_code}`,
-                    confirmButtonText: 'New Transaction'
+                    confirmButtonText: 'New Transaction',
+                    target: getSwalTarget()
                 }).then(() => {
                     location.reload();
                 });
@@ -469,7 +484,12 @@
                 $('#btn-checkout').html('<i class="ti ti-cash me-2"></i> Process Payment').prop('disabled', false);
                 let msg = 'Transaction failed.';
                 if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                Swal.fire('Error', msg, 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: msg,
+                    target: getSwalTarget()
+                });
             }
         });
     }
@@ -490,7 +510,12 @@
         });
 
         if (invalid) {
-            Swal.fire('Warehouse Changed', 'Some items in your cart are not available in this warehouse. Please review your cart.', 'warning');
+            Swal.fire({
+                title: 'Warehouse Changed',
+                text: 'Some items in your cart are not available in this warehouse. Please review your cart.',
+                icon: 'warning',
+                target: getSwalTarget()
+            });
             renderCart(); // Will need complex logic to visually mark OOS items. 
                           // Current renderCart allows them but they will fail checkout.
         }
