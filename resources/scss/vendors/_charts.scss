@@ -1,0 +1,174 @@
+//
+// Apex Chart
+//
+
+body {
+  .apexcharts-tooltip {
+    border-radius: 16px;
+  }
+
+  .apexcharts-tooltip-marker {
+    border-radius: 4px;
+    width: 12px;
+    height: 4px;
+  }
+
+  .apexcharts-tooltip.apexcharts-theme-dark {
+    background: rgba(17, 28, 45, 0.8);
+
+    .apexcharts-tooltip-title {
+      border-bottom: 0;
+      background: rgba(17, 28, 45, 0.7);
+    }
+  }
+
+  .apexcharts-tooltip-series-group {
+    padding: 0 14px;
+  }
+
+  .apexcharts-tooltip-title {
+    padding: 10px 14px;
+  }
+}
+
+/* -------------------------------------
+   * Bar container
+   * ------------------------------------- */
+
+.css-bar {
+  position: relative;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 50%;
+  background-color: transparent;
+  margin-bottom: 20px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  width: 80px;
+  height: 80px;
+  font-size: 18px;
+
+  &:after {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: light;
+    color: var(--bs-body-color);
+    content: attr(data-label);
+    background-color: var(--bs-gray-100);
+    z-index: 1;
+    width: 70px;
+    height: 70px;
+    margin-left: 5px;
+    margin-top: 5px;
+    line-height: 70px;
+  }
+
+  > img {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: light;
+    color: var(--bs-body-color);
+    z-index: 2;
+    width: 70px;
+    height: 70px;
+    margin-left: 5px;
+    margin-top: 5px;
+    line-height: 70px;
+  }
+
+  > i {
+    width: 70px;
+    height: 70px;
+    background: var(--bs-body-bg);
+    line-height: 70px;
+    position: absolute;
+    border-radius: 100%;
+    text-align: center;
+    margin-left: 5px;
+    margin-top: 5px;
+    left: 0px;
+    right: 0px;
+    z-index: 2;
+    font-size: 27px;
+    color: var(--bs-body-color);
+  }
+}
+
+.css-bar-success.css-bar-20 {
+  background-image: linear-gradient(
+      90deg,
+      var(--bs-gray-100) 50%,
+      transparent 50%,
+      transparent
+    ),
+    linear-gradient(
+      162deg,
+      $success 50%,
+      var(--bs-gray-100) 50%,
+      var(--bs-gray-100)
+    );
+}
+
+.css-bar-primary.css-bar-20 {
+  background-image: linear-gradient(
+      90deg,
+      var(--bs-gray-100) 50%,
+      transparent 50%,
+      transparent
+    ),
+    linear-gradient(
+      162deg,
+      var(--bs-primary) 50%,
+      var(--bs-gray-100) 50%,
+      var(--bs-gray-100)
+    );
+}
+
+.css-bar-danger.css-bar-20 {
+  background-image: linear-gradient(
+      90deg,
+      var(--bs-gray-100) 50%,
+      transparent 50%,
+      transparent
+    ),
+    linear-gradient(
+      162deg,
+      $danger 50%,
+      var(--bs-gray-100) 50%,
+      var(--bs-gray-100)
+    );
+}
+
+.css-bar-warning.css-bar-40 {
+  background-image: linear-gradient(
+      90deg,
+      var(--bs-gray-100) 50%,
+      transparent 50%,
+      transparent
+    ),
+    linear-gradient(
+      234deg,
+      $warning 50%,
+      var(--bs-gray-100) 50%,
+      var(--bs-gray-100)
+    );
+}
+
+.css-bar-info.css-bar-60 {
+  background-image: linear-gradient(
+      306deg,
+      $info 50%,
+      transparent 50%,
+      transparent
+    ),
+    linear-gradient(270deg, $info 50%, var(--bs-gray-100) 50%, var(--bs-gray-100));
+}

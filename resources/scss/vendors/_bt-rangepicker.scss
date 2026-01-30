@@ -1,0 +1,190 @@
+body {
+  .daterangepicker {
+    font-family: $font-family-sans-serif;
+    border: 1px solid var(--bs-border-color);
+  }
+
+  .daterangepicker {
+    td.active {
+      background-color: var(--bs-primary);
+
+      &:hover {
+        background-color: var(--bs-primary);
+      }
+    }
+
+    td.in-range {
+      background-color: var(--bs-primary-bg-subtle);
+      color: var(--bs-primary);
+    }
+
+    .drp-buttons {
+      .btn {
+        margin-left: 12px;
+        font-weight: 400;
+        border-radius: var(--bs-border-radius);
+      }
+
+      border-top: 1px solid var(--bs-border-color);
+    }
+
+    .calendar-table {
+      .next {
+        span {
+          border: solid var(--bs-body-color);
+          border-width: 0 2px 2px 0;
+        }
+      }
+
+      .prev {
+        span {
+          border: solid var(--bs-body-color);
+          border-width: 0 2px 2px 0;
+        }
+      }
+    }
+  }
+
+ 
+
+  .dtp {
+    > .dtp-content {
+      max-height: 530px;
+
+      > .dtp-date-view {
+        > header.dtp-header {
+          background: var(--bs-primary) !important;
+        }
+      }
+    }
+
+    div.dtp-date {
+      background: var(--bs-primary) !important;
+    }
+
+    div.dtp-time {
+      background: var(--bs-primary) !important;
+    }
+
+    table.dtp-picker-days {
+      tr {
+        > td {
+          > a.selected {
+            background: var(--bs-primary) !important;
+          }
+        }
+
+        > th {
+          color: var(--bs-body-color) !important;
+        }
+      }
+    }
+
+    .dtp-actual-meridien {
+      a.selected {
+        background: var(--bs-primary) !important;
+      }
+    }
+
+    .p10 {
+      > a {
+        color: var(--bs-primary) !important;
+      }
+    }
+
+    a.dtp-meridien-am {
+      color: var(--bs-body-color) !important;
+      background: var(--bs-body-bg) !important;
+    }
+
+    a.dtp-meridien-pm {
+      color: var(--bs-body-color) !important;
+      background: var(--bs-body-bg) !important;
+    }
+  }
+
+  .picker__select--month {
+    height: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 20px;
+    background: transparent;
+  }
+
+  .picker__select--year {
+    height: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 20px;
+    background: transparent;
+  }
+
+  .picker__day--highlighted {
+    &:hover {
+      background: var(--bs-primary);
+      color: $white;
+    }
+
+    border-color: var(--bs-primary);
+  }
+
+  .picker--focused {
+    .picker__day--highlighted {
+      background: var(--bs-primary);
+      color: $white;
+    }
+  }
+
+  .picker__day--today {
+    &:before {
+      border-top: 0.5em solid var(--bs-primary-bg-subtle);
+    }
+  }
+
+  .picker__button--today {
+    &:before {
+      border-top: 0.66em solid var(--bs-primary);
+    }
+
+    font-weight: 400;
+    font-size: 16px;
+  }
+
+  .picker__button--clear {
+    &:before {
+      border-top: 3px solid var(--bs-danger);
+    }
+
+    font-weight: 400;
+    font-size: 16px;
+  }
+
+  .picker__day {
+    font-weight: 400;
+    font-size: 16px;
+    border-radius: var(--bs-border-radius);
+  }
+
+  .picker__button--close {
+    font-weight: 400;
+    font-size: 16px;
+  }
+
+  .picker__month {
+    font-size: 18px;
+  }
+
+  .picker__year {
+    font-size: 18px;
+  }
+
+  .picker__nav--prev {
+    &:before {
+      border-right: 0.75em solid var(--bs-body-color);
+    }
+  }
+
+  .picker__nav--next {
+    &:before {
+      border-left: 0.75em solid var(--bs-body-color);
+    }
+  }
+}

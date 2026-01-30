@@ -1,0 +1,15 @@
+// editor
+
+body {
+  .ql-container.ql-snow,
+  .ql-toolbar.ql-snow {
+    border: 1px solid var(--bs-border-color);
+  }
+
+  .ql-container.ql-snow {
+    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+  }
+  .ql-toolbar.ql-snow {
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0 ;
+  }
+}

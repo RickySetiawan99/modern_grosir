@@ -1,0 +1,19 @@
+.form-check-input.secondary:checked {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+}
+
+.form-check-input.danger:checked {
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
+}
+
+.form-check-input.warning:checked {
+    background-color: var(--bs-warning);
+    border-color: var(--bs-warning);
+}
+
+.form-check-input.success:checked {
+    background-color: var(--bs-success);
+    border-color: var(--bs-success);
+}

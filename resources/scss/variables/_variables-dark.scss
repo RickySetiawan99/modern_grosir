@@ -1,0 +1,48 @@
+//
+// using scss variables
+//
+$border-color-dark: #333f55 !default;
+$body-color-dark: #7c8fac !default;
+$body-bg-dark: #202936 !default;
+$link-color-dark: #7c8fac !default;
+$body-secondary-color-dark: rgba($body-color-dark, 1) !default;
+
+$primary-bg-subtle-dark: #253662 !default;
+$secondary-bg-subtle-dark: #1c455d !default;
+$success-bg-subtle-dark: #1b3c48 !default;
+$info-bg-subtle-dark: #223662 !default;
+$warning-bg-subtle-dark: #4d3a2a !default;
+$danger-bg-subtle-dark: #4b313d !default;
+$light-bg-subtle-dark: #465670 !default;
+$dark-bg-subtle-dark: #333f55 !default;
+
+$link-hover-color-dark: $primary !default;
+
+$dropdown-dark-link-hover-bg: $primary-bg-subtle-dark !default;
+
+//
+// using css variables
+//
+[data-bs-theme="dark"] {
+  --bs-heading-color: #eaeff4 !important;
+
+  .card {
+    --bs-card-title-color: #eaeff4;
+    --bs-card-subtitle-color: #7c8fac;
+    --bs-card-box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 2px 0px,
+      rgba(145, 158, 171, 0.02) 0px 12px 24px -4px;
+  }
+
+  .dropdown-menu {
+    --bs-dropdown-box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 2px 0px,
+      rgba(145, 158, 171, 0.02) 0px 12px 24px -4px;
+  }
+
+  .table {
+    --bs-table-border-color: #333f55;
+    --bs-table-bg: #202936;
+  }
+
+  @import "../layouts/dark";
+
+}

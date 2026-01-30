@@ -1,0 +1,25 @@
+<svg width="220" height="50" viewBox="0 0 220 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ICON: ModernGrosir Signature Style (Identical to Step 579) -->
+  <g transform="translate(6, 6)">
+    <!-- Main Warehouse Shape -->
+    <!-- Left Contour (Outline) -->
+    <path d="M2 18L18 8V40H2V18Z" stroke="#2A3547" stroke-width="3.5" stroke-linejoin="round"/>
+    
+    <!-- Right Section (Solid Blue) -->
+    <path d="M18 8L36 18V40H18V8Z" fill="#5D87FF"/>
+    <path d="M18 8L36 18V40H18" stroke="#2A3547" stroke-width="3.5" stroke-linejoin="round"/>
+    
+    <!-- The 3 White Boxes (Iconic detail) -->
+    <!-- Top Box -->
+    <rect x="23.5" y="24" width="7" height="7" fill="white" fill-opacity="0.9"/>
+    <!-- Bottom Left Box -->
+    <rect x="20.5" y="32" width="6.5" height="6.5" fill="white" fill-opacity="0.9"/>
+    <!-- Bottom Right Box -->
+    <rect x="28" y="32" width="6.5" height="6.5" fill="white" fill-opacity="0.7"/>
+  </g>
+
+  <!-- Text Section -->
+  <text x="50" y="36" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.8px;">
+    <tspan fill="#2A3547">Modern</tspan><tspan fill="#5D87FF">Grosir</tspan>
+  </text>
+</svg>

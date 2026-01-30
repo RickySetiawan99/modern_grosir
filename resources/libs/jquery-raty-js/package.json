@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "jquery": "^3.2.1"
+  },
+  "description": "jQuery Raty - A Star Rating Plugin",
+  "devDependencies": {
+    "jasmine-core": "^2.8.0",
+    "karma": "^1.7.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-opera-launcher": "^1.0.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-safari-launcher": "^1.0.0"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "spec"
+  },
+  "main": "lib/jquery.raty.js",
+  "name": "jquery-raty-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wbotelhos/raty"
+  },
+  "scripts": {
+    "test": "node_modules/karma/bin/karma start karma.conf.js"
+  },
+  "version": "2.8.0"
+}

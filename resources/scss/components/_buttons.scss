@@ -1,0 +1,75 @@
+.btn {
+  &.bg-primary-subtle {
+    &:hover {
+      background-color: var(--bs-primary) !important;
+      color: var(--bs-white) !important;
+    }
+  }
+
+  &.bg-secondary-subtle {
+    &:hover {
+      background-color: var(--bs-secondary) !important;
+      color: var(--bs-white) !important;
+    }
+  }
+
+  &.bg-warning-subtle {
+    &:hover {
+      background-color: var(--bs-warning) !important;
+      color: var(--bs-white) !important;
+    }
+  }
+
+  &.bg-danger-subtle {
+    &:hover {
+      background-color: var(--bs-danger) !important;
+      color: var(--bs-white) !important;
+    }
+  }
+
+  &.bg-success-subtle {
+    &:hover {
+      background-color: var(--bs-success) !important;
+      color: var(--bs-white) !important;
+    }
+  }
+  &.bg-info-subtle {
+    &:hover {
+      background-color: var(--bs-info) !important;
+      color: var(--bs-white) !important;
+    }
+  }
+}
+
+.btn-default {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+}
+
+.button-group .btn {
+  margin-bottom: 12px;
+  margin-right: 12px;
+}
+
+.btn .text-active {
+  display: none;
+}
+
+.btn.active .text {
+  display: none;
+}
+
+.btn.active .text-active {
+  display: inline-block;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}

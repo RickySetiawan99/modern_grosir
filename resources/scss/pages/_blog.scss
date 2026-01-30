@@ -1,0 +1,32 @@
+// ----------------------------------------------
+// Blogs Style
+// ----------------------------------------------
+
+.growl-notification-example {
+    cursor: default;
+    display: none;
+  }
+  
+  .blog-img-one {
+    background-image: url(../images/blog/blog-img9.jpg);
+  }
+  
+  .blog-img-two {
+    background-image: url(../images/blog/blog-img10.jpg);
+  }
+
+.blog {
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 400px;
+
+    &::before {
+        content: "";
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-color: rgba(33, 33, 33, 0.6);
+    }
+}
