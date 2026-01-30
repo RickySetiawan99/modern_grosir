@@ -3,8 +3,8 @@
     <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
   </div>
   <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-    <img src="{{ URL::asset('build/images/profile/user-1.jpg')}}" class="rounded-circle" width="80" height="80"
-      alt="modernize-img" />
+    <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : URL::asset('build/images/profile/user-1.jpg')}}" class="rounded-circle" width="80" height="80"
+      alt="modernize-img" style="object-fit: cover;" />
     <div class="ms-3">
       <h5 class="mb-1 fs-3">{{ Auth::user()->name }}</h5>
       <span class="mb-1 d-block text-capitalize">{{ Auth::user()->roles->pluck('name')->first() ?? 'User' }}</span>
@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="message-body">
-    <a href="javascript:void(0)" class="py-8 px-7 mt-8 d-flex align-items-center">
+    <a href="{{ route('profile.settings') }}" class="py-8 px-7 mt-8 d-flex align-items-center">
       <span class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
         <img src="{{ URL::asset('build/images/svgs/icon-account.svg') }}" alt="modernize-img" width="24" height="24" />
       </span>

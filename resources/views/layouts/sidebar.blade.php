@@ -171,6 +171,18 @@
         
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">SETTINGS</span>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/account-settings*') ? 'active' : '' }}" href="{{ route('profile.settings') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-user-circle"></i>
+            </span>
+            <span class="hide-menu">Account Setting</span>
+          </a>
+        </li>
+        <li class="nav-small-cap">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">OTHERS</span>
         </li>
         <li class="sidebar-item">

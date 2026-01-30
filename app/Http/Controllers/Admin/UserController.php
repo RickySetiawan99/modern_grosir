@@ -33,6 +33,16 @@ class UserController extends Controller
 
         return DataTables::of($users)
             ->addIndexColumn()
+            ->addColumn('name', function ($user) {
+                $avatar = $user->avatar ? asset($user->avatar) : asset('build/images/profile/user-1.jpg');
+                return '
+                    <div class="d-flex align-items-center">
+                        <img src="' . $avatar . '" class="rounded-circle" width="35" height="35" alt="user" style="object-fit: cover;" />
+                        <div class="ms-3">
+                            <h6 class="fs-4 fw-semibold mb-0">' . $user->name . '</h6>
+                        </div>
+                    </div>';
+            })
             ->addColumn('roles', function ($user) {
                 return $user->roles->pluck('name')->map(function($role) {
                     $badgeClass = $role === 'admin' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary';
@@ -70,7 +80,7 @@ class UserController extends Controller
                         </ul>
                     </div>';
             })
-            ->rawColumns(['roles', 'action'])
+            ->rawColumns(['name', 'roles', 'action'])
             ->make(true);
     }
 

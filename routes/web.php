@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ResellerController as AdminResellerController;
 use App\Http\Controllers\Admin\PriceController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -33,6 +34,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // ModernGrosir Core Routes
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Account Settings
+    Route::get('/account-settings', [ProfileController::class, 'settings'])->name('profile.settings');
+    Route::post('/account-settings', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/account-settings/reset-avatar', [ProfileController::class, 'resetAvatar'])->name('profile.reset-avatar');
+    Route::post('/account-settings/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index')->middleware('role:admin|cashier');
     Route::get('/inventory/data', [InventoryController::class, 'data'])->name('inventory.data')->middleware('role:admin|cashier');

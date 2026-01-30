@@ -1,9 +1,9 @@
 var userSettings = {
-  Layout: "vertical", // vertical | horizontal
-  SidebarType: "full", // full | mini-sidebar
-  BoxedLayout: true, // true | false
-  Direction: "ltr", // ltr | rtl
-  Theme: "light", // light | dark
-  ColorTheme: "Blue_Theme", // Blue_Theme | Aqua_Theme | Purple_Theme | Green_Theme | Cyan_Theme | Orange_Theme
-  cardBorder: false, // true | false
+  Layout: localStorage.getItem('layout') || "vertical", // vertical | horizontal
+  SidebarType: localStorage.getItem('sidebarType') || "full", // full | mini-sidebar
+  BoxedLayout: localStorage.getItem('boxedLayout') === 'true' || localStorage.getItem('boxedLayout') === null, // true | false
+  Direction: localStorage.getItem('direction') || "ltr", // ltr | rtl
+  Theme: localStorage.getItem('theme') || "light", // light | dark
+  ColorTheme: localStorage.getItem('color-theme') || "Blue_Theme",
+  cardBorder: localStorage.getItem('cardBorder') === 'true', // true | false
 };

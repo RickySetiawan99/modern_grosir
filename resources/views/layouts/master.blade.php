@@ -1,6 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-bs-theme="@yield('theme', 'light')" data-color-theme="Blue_Theme" data-layout="vertical">
+<html lang="en" dir="ltr" data-color-theme="Blue_Theme" data-layout="vertical">
 <head>
+    <script>
+        const getSetting = (key, fallback) => localStorage.getItem(key) || fallback;
+        const html = document.documentElement;
+        
+        html.setAttribute('data-bs-theme', getSetting('theme', 'light'));
+        html.setAttribute('data-color-theme', getSetting('color-theme', 'Blue_Theme'));
+        html.setAttribute('data-layout', getSetting('layout', 'vertical'));
+        html.setAttribute('data-boxed-layout', getSetting('boxedLayout', 'true'));
+        html.setAttribute('data-sidebar-type', getSetting('sidebarType', 'full'));
+        html.setAttribute('dir', getSetting('direction', 'ltr'));
+    </script>
     @include('layouts.head')
     <title>@yield('title', 'ModernGrosir Admin')</title>
     @yield('css')
@@ -22,7 +33,7 @@
             width: 100%;
             height: 100%;
             z-index: 99999;
-            background: #fff;
+            background: var(--bs-body-bg);
             display: flex;
             align-items: center;
             justify-content: center;

@@ -16,3 +16,57 @@
 <script src="{{ URL::asset('build/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/datatable/custom_datatable.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        // --- Persistence Logic ---
+        
+        // Function to update localStorage and attributes
+        function saveSetting(key, value, attr = null) {
+            localStorage.setItem(key, value);
+            if (attr) document.documentElement.setAttribute(attr, value);
+        }
+
+        // 1. Theme (Light/Dark)
+        $(document).on('click', '.dark-layout', function() { saveSetting('theme', 'dark', 'data-bs-theme'); });
+        $(document).on('click', '.light-layout', function() { saveSetting('theme', 'light', 'data-bs-theme'); });
+
+        // 2. Color Theme
+        window.handleColorTheme = (function(originalHandler) {
+            return function(color) {
+                saveSetting('color-theme', color, 'data-color-theme');
+                if (typeof originalHandler === 'function') originalHandler(color);
+            };
+        })(window.handleColorTheme);
+
+        // 3. Layout Type (Vertical/Horizontal)
+        $(document).on('change', 'input[name="page-layout"]', function() {
+            const val = $(this).attr('id') === 'horizontal-layout' ? 'horizontal' : 'vertical';
+            saveSetting('layout', val, 'data-layout');
+        });
+
+        // 4. Direction (LTR/RTL)
+        $(document).on('change', 'input[name="direction-l"]', function() {
+            const val = $(this).attr('id') === 'rtl-layout' ? 'rtl' : 'ltr';
+            saveSetting('direction', val, 'dir');
+        });
+
+        // 5. Container Option (Boxed/Full)
+        $(document).on('change', 'input[name="layout"]', function() {
+            const val = $(this).attr('id') === 'boxed-layout' ? 'true' : 'false';
+            saveSetting('boxedLayout', val, 'data-boxed-layout');
+        });
+
+        // 6. Sidebar Type (Full/Mini)
+        $(document).on('change', 'input[name="sidebar-type"]', function() {
+            const val = $(this).attr('id') === 'mini-sidebar' ? 'mini-sidebar' : 'full';
+            saveSetting('sidebarType', val, 'data-sidebar-type');
+        });
+
+        // 7. Card Border (Border/Shadow)
+        $(document).on('change', 'input[name="card-layout"]', function() {
+            const val = $(this).attr('id') === 'card-with-border' ? 'true' : 'false';
+            saveSetting('cardBorder', val, 'data-card-border');
+        });
+    });
+</script>
