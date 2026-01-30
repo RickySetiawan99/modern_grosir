@@ -1,66 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ModernGrosir 🚀
+**Modern Wholesale & POS Management System**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Laravel 11, dirancang untuk memudahkan distributor dalam mengelola inventaris, reseller, dan transaksi Point of Sales (POS) dengan sistem harga bertingkat (Tiered Pricing).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fitur Utama (Implemented)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 📊 Dashboard Canggih
+- **Role-Based Analysis**: Tampilan dashboard yang menyesuaikan dengan role aktif (Admin/Cashier/Reseller).
+- **Statistik Real-time**: Memantau omzet, jumlah produk, dan aktivitas reseller secara instan.
+- **Grafik Interaktif**: Visualisasi tren penjualan bulanan menggunakan ApexCharts yang mendukung mode gelap/terang.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🛒 Point of Sales (POS)
+- **Multi-Warehouse Support**: Memilih gudang sumber stok saat transaksi.
+- **Dynamic Pricing**: Otomatis menyesuaikan harga berdasarkan **Tier Reseller** yang dipilih.
+- **Responsive Layout**: POS yang nyaman digunakan di tablet maupun desktop.
 
-## Learning Laravel
+### 📦 Manajemen Inventaris & Master Data
+- **Manajemen Produk**: Sistem stok yang terintegrasi dengan berbagai gudang.
+- **Tiered Pricing**: Pengaturan harga khusus untuk tiap level reseller (misal: Silver, Gold, Platinum).
+- **Kategori & Satuan**: Pengorganisasian produk yang fleksibel.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🔐 Keamanan & Akses
+- **Role Permissions**: Pembatasan akses fitur yang ketat (Admin vs Kasir vs Reseller).
+- **Personalized Profile**: Pengaturan akun dengan pilihan avatar default yang modern.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 🎨 UI/UX Premium
+- **Persistent Settings**: Semua pilihan tema (Dark/Light), warna, dan layout sidebar tersimpan secara permanen di browser.
+- **Zero-Flash Theme**: Sistem pemuatan tema yang cerdas untuk mencegah efek "blink" saat refresh halaman.
+- **Timezone Jakarta**: Pencatatan waktu yang akurat (WIB).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🛠️ Stack Teknologi
+- **Framework**: [Laravel 11](https://laravel.com)
+- **Frontend Template**: [Modernize Bootstrap Admin](https://wrappixel.com)
+- **Database**: MySQL / MariaDB
+- **Icons**: Tabler Icons & Lucid Icons
+- **Charts**: ApexCharts
+- **State Management**: LocalStorage (for UI preferences)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🚀 Instalasi Cepat
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. **Clone repositori**
+   ```bash
+   git clone https://github.com/user/moderngrosir-app.git
+   cd moderngrosir-app
+   ```
 
-## Contributing
+2. **Install dependensi**
+   ```bash
+   composer install
+   npm install
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Konfigurasi Environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## Code of Conduct
+4. **Migrasi & Seeding**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Jalankan Aplikasi**
+   ```bash
+   php artisan serve
+   npm run dev
+   ```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📝 Progress Fitur (Roadmap)
+- [x] Autentikasi & Multi-role Support
+- [x] Dashboard Statis -> Dinamis
+- [x] Integrasi POS Foundation
+- [x] Persistence Theme Settings
+- [x] Timezone & Indonesian Localization
+- [ ] Katalog Produk khusus Reseller
+- [ ] Laporan Laba/Rugi Mingguan
+- [ ] Sistem Notifikasi Stok Menipis
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+*Dikembangkan dengan ❤️ untuk ModernGrosir Management.*
