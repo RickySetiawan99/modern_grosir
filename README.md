@@ -34,7 +34,7 @@ ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Larave
 ---
 
 ## 🛠️ Stack Teknologi
-- **Framework**: [Laravel 11](https://laravel.com)
+- **Framework**: [Laravel 12](https://laravel.com)
 - **Frontend Template**: [Modernize Bootstrap Admin](https://wrappixel.com)
 - **Database**: MySQL / MariaDB
 - **Icons**: Tabler Icons & Lucid Icons
