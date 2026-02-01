@@ -20,7 +20,7 @@
   </div>
 </div>
 
-<form action="{{ route('master.products.update', $product->id) }}" method="POST">
+<form action="{{ route('master.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
   @csrf
   @method('PUT')
   <div class="row">
@@ -55,6 +55,25 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
+          </div>
+          <div class="mb-3">
+            <label for="image" class="form-label">Product Image</label>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                @if($product->image)
+                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded-1" width="80" height="80" style="object-fit: cover;">
+                @else
+                    <div class="bg-light rounded-1 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="ti ti-photo text-muted fs-7"></i>
+                    </div>
+                @endif
+                <div class="flex-grow-1">
+                    <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
+                    <small class="text-muted">Max size: 2MB. Leave blank to keep current image.</small>
+                </div>
+            </div>
+            @error('image')
+              <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
           </div>
           <div class="mb-3">
             <label for="description" class="form-label">Description</label>

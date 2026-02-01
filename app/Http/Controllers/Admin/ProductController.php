@@ -33,8 +33,10 @@ class ProductController extends Controller
                         </div>';
             })
             ->editColumn('name', function ($product) {
+                $imageUrl = $product->image ? asset($product->image) : asset('build/images/products/product-1.jpg');
                 return '
                     <div class="d-flex align-items-center">
+                        <img src="' . $imageUrl . '" class="rounded-1 me-3" width="40" height="40" style="object-fit: cover;">
                         <div class="ms-0">
                             <h6 class="fw-semibold mb-0 fs-2">' . $product->name . '</h6>
                             <span class="text-muted" style="font-size: 0.7rem;">' . $product->sku . '</span>
@@ -96,9 +98,18 @@ class ProductController extends Controller
             'purchase_price' => 'required|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        Product::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads/products'), $imageName);
+            $data['image'] = 'uploads/products/' . $imageName;
+        }
+
+        Product::create($data);
 
         return redirect()->route('master.products.index')->with('success', 'Product created successfully.');
     }
@@ -120,15 +131,34 @@ class ProductController extends Controller
             'purchase_price' => 'required|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $product->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
+            }
+
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads/products'), $imageName);
+            $data['image'] = 'uploads/products/' . $imageName;
+        }
+
+        $product->update($data);
 
         return redirect()->route('master.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
+        // Delete image file if exists
+        if ($product->image && file_exists(public_path($product->image))) {
+            unlink(public_path($product->image));
+        }
+
         $product->delete();
         
         if (request()->ajax() || request()->wantsJson()) {

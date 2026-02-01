@@ -307,6 +307,7 @@
                 id: product.id,
                 name: product.name,
                 base_price: product.retail_price,
+                image: product.image,
                 qty: 1,
                 product_obj: product
             });
@@ -348,10 +349,12 @@
                     const stock = parseInt(p.current_stock || 0); // Force integer
                     const stockClass = stock > 0 ? 'text-success' : 'text-danger';
                     const disableClass = stock <= 0 ? 'opacity-50 pointer-events-none' : 'cursor-pointer product-card';
+                    const imageUrl = p.image ? `/${p.image}` : '/build/images/products/product-1.jpg';
 
                     html += `
                     <div class="col-md-4 col-sm-6">
                         <div class="card h-100 hover-img shadow-sm ${disableClass}" data-id="${p.id}">
+                            <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}" style="height: 140px; object-fit: cover;">
                             <div class="card-body p-3">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                      <span class="badge bg-light text-dark fw-semibold fs-2">${p.category.name}</span>
@@ -421,18 +424,23 @@
             const itemTotal = price * item.qty;
             subtotal += itemTotal; // Actually this is Total
             
+            const imageUrl = item.image ? `/${item.image}` : '/build/images/products/product-1.jpg';
+
             html += `
             <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
-                <div class="d-flex flex-column" style="width: 50%;">
-                    <h6 class="fw-semibold mb-1 text-truncate">${item.name}</h6>
-                    <span class="text-muted fs-2">Rp ${new Intl.NumberFormat('id-ID').format(price)} x ${item.qty}</span>
+                <div class="d-flex align-items-center" style="width: 60%;">
+                    <img src="${imageUrl}" class="rounded-1 me-2" width="40" height="40" style="object-fit: cover;">
+                    <div class="d-flex flex-column text-truncate">
+                        <h6 class="fw-semibold mb-1 text-truncate fs-2">${item.name}</h6>
+                        <span class="text-muted fs-2">Rp ${new Intl.NumberFormat('id-ID').format(price)} x ${item.qty}</span>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-sm btn-light text-primary btn-minus p-1 px-2" data-id="${item.id}"><i class="ti ti-minus"></i></button>
-                    <span class="fw-semibold">${item.qty}</span>
-                    <button class="btn btn-sm btn-light text-primary btn-plus p-1 px-2" data-id="${item.id}"><i class="ti ti-plus"></i></button>
+                <div class="d-flex align-items-center gap-1">
+                    <button class="btn btn-sm btn-light text-primary btn-minus p-1 px-2" data-id="${item.id}"><i class="ti ti-minus fs-2"></i></button>
+                    <span class="fw-semibold fs-2 mx-1">${item.qty}</span>
+                    <button class="btn btn-sm btn-light text-primary btn-plus p-1 px-2" data-id="${item.id}"><i class="ti ti-plus fs-2"></i></button>
                 </div>
-                <div class="fw-bold text-dark fs-3">
+                <div class="fw-bold text-dark fs-2 ms-auto">
                     Rp ${new Intl.NumberFormat('id-ID').format(itemTotal)}
                 </div>
             </div>`;

@@ -3,13 +3,13 @@
     <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
   </div>
   <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-    <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : URL::asset('build/images/profile/user-1.jpg')}}" class="rounded-circle" width="80" height="80"
+    <img src="{{ Auth::user()?->avatar ? asset(Auth::user()->avatar) : URL::asset('build/images/profile/user-1.jpg')}}" class="rounded-circle" width="80" height="80"
       alt="modernize-img" style="object-fit: cover;" />
     <div class="ms-3">
-      <h5 class="mb-1 fs-3">{{ Auth::user()->name }}</h5>
-      <span class="mb-1 d-block text-capitalize">{{ Auth::user()->roles->pluck('name')->first() ?? 'User' }}</span>
+      <h5 class="mb-1 fs-3">{{ Auth::user()?->name ?? 'Guest' }}</h5>
+      <span class="mb-1 d-block text-capitalize">{{ Auth::user()?->roles->pluck('name')->first() ?? 'User' }}</span>
       <p class="mb-0 d-flex align-items-center gap-2">
-        <i class="ti ti-mail fs-4"></i> {{ Auth::user()->email }}
+        <i class="ti ti-mail fs-4"></i> {{ Auth::user()?->email ?? 'no-email' }}
       </p>
     </div>
   </div>

@@ -20,7 +20,7 @@
   </div>
 </div>
 
-<form action="{{ route('master.products.store') }}" method="POST">
+<form action="{{ route('master.products.store') }}" method="POST" enctype="multipart/form-data">
   @csrf
   <div class="row">
     <div class="col-md-8">
@@ -54,6 +54,14 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
+          </div>
+          <div class="mb-3">
+            <label for="image" class="form-label">Product Image</label>
+            <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
+            <small class="text-muted">Max size: 2MB. Recommended: Square ratio.</small>
+            @error('image')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
           <div class="mb-3">
             <label for="description" class="form-label">Description</label>

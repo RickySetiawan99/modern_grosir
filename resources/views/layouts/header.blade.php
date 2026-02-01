@@ -154,7 +154,7 @@
           <a class="nav-link pe-0" href="javascript:void(0)" id="drop1" aria-expanded="false">
             <div class="d-flex align-items-center">
               <div class="user-profile-img">
-                <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : URL::asset('build/images/profile/user-1.jpg') }}" class="rounded-circle" width="35" height="35"
+                <img src="{{ Auth::user()?->avatar ? asset(Auth::user()->avatar) : URL::asset('build/images/profile/user-1.jpg') }}" class="rounded-circle" width="35" height="35"
                   alt="modernize-img" style="object-fit: cover;" />
               </div>
             </div>

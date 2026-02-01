@@ -15,7 +15,8 @@ class Product extends Model
         'sku', 
         'purchase_price', 
         'retail_price', 
-        'description'
+        'description',
+        'image'
     ];
 
     public function unit()

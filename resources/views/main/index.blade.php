@@ -83,8 +83,8 @@
                         @forelse($topProducts as $tp)
                             <div class="d-flex align-items-center justify-content-between mb-7">
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-primary-subtle rounded me-6 p-6 d-flex align-items-center justify-content-center">
-                                        <i class="ti ti-package text-primary fs-6"></i>
+                                    <div class="me-6">
+                                        <img src="{{ $tp->product->image ? asset($tp->product->image) : asset('build/images/products/product-1.jpg') }}" alt="{{ $tp->product->name }}" class="rounded" width="45" height="45" style="object-fit: cover;">
                                     </div>
                                     <div>
                                         <h6 class="mb-1 fs-4 fw-semibold">{{ Str::limit($tp->product->name, 20) }}</h6>
@@ -138,8 +138,8 @@
                                         @unless(auth()->user()->hasRole('reseller'))
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="{{ $tx->customer->avatar ? asset($tx->customer->avatar) : asset('build/images/profile/user-1.jpg') }}" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">
-                                                <p class="mb-0 fs-3">{{ $tx->customer->name }}</p>
+                                                <img src="{{ ($tx->customer?->avatar) ? asset($tx->customer->avatar) : asset('build/images/profile/user-1.jpg') }}" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">
+                                                <p class="mb-0 fs-3">{{ $tx->customer->name ?? 'Guest' }}</p>
                                             </div>
                                         </td>
                                         @endunless
