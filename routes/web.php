@@ -95,6 +95,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('users/data', [UserController::class, 'data'])->name('users.data');
         Route::resource('users', UserController::class);
     });
+
+    // Reseller Routes
+    Route::middleware(['role:reseller'])->prefix('reseller')->group(function () {
+        Route::get('/catalog', [App\Http\Controllers\Reseller\CatalogController::class, 'index'])->name('reseller.catalog.index');
+        Route::get('/catalog/products', [App\Http\Controllers\Reseller\CatalogController::class, 'products'])->name('reseller.catalog.products');
+    });
 });
 
 // Standard Template Route (Catch-all) - Moved to bottom and protected

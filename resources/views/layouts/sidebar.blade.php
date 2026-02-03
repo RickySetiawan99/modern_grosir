@@ -30,6 +30,17 @@
           </a>
         </li>
 
+        @role('reseller')
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/reseller/catalog*') ? 'active' : '' }}" href="{{ route('reseller.catalog.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-box"></i>
+            </span>
+            <span class="hide-menu">Product Catalog</span>
+          </a>
+        </li>
+        @endrole
+
         @role('admin')
         <!-- Master Data Submenu -->
         <li class="sidebar-item">
