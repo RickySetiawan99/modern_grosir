@@ -39,6 +39,14 @@
             <span class="hide-menu">Product Catalog</span>
           </a>
         </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/reseller/orders*') ? 'active' : '' }}" href="{{ route('reseller.orders.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-file-invoice"></i>
+            </span>
+            <span class="hide-menu">My Orders</span>
+          </a>
+        </li>
         @endrole
 
         @role('admin')

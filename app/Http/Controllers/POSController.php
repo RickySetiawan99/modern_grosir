@@ -10,6 +10,7 @@ use App\Models\Warehouse;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\StockLevel;
+use App\Models\DraftOrder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,103 +75,144 @@ class POSController extends Controller
     public function checkout(Request $request)
     {
         $request->validate([
-            'warehouse_id' => 'required|exists:warehouses,id',
             'cart' => 'required|array|min:1',
             'cart.*.id' => 'required|exists:products,id',
             'cart.*.qty' => 'required|integer|min:1',
-            'customer_id' => 'nullable|exists:users,id', // Reseller ID
-            'total_amount' => 'required|numeric|min:0', // Validated on server again
+            'cart.*.warehouse_id' => 'nullable|exists:warehouses,id', // Item-level warehouse
+            'warehouse_id' => 'required|exists:warehouses,id', // Default warehouse
+            'customer_id' => 'nullable|exists:users,id',
+            'total_amount' => 'required|numeric|min:0',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $warehouseId = $request->warehouse_id;
-            $cart = $request->cart;
+            $globalWarehouseId = $request->warehouse_id;
             $customerId = $request->customer_id;
-            
-            // Generate Transaction Code (TRX-YYYYMMDD-XXXX)
-            $date = date('Ymd');
-            $count = Transaction::whereDate('created_at', today())->count() + 1;
-            $code = 'TRX-' . $date . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+            $cart = $request->cart;
 
-            // Create Transaction Header (Pending validation)
-            $transaction = Transaction::create([
-                'user_id' => Auth::id(), // Cashier
-                'customer_id' => $customerId,
-                'warehouse_id' => $warehouseId,
-                'transaction_code' => $code,
-                'total_amount' => 0, // Will calculate below
-                'status' => 'completed', // Direct complete for POS
-            ]);
-
-            $grandTotal = 0;
-
+            // Group items by warehouse
+            $groupedCart = [];
             foreach ($cart as $item) {
-                $product = Product::with('tierPrices')->find($item['id']);
-                
-                // 1. Validate Stock
-                $stock = StockLevel::where('product_id', $product->id)
-                    ->where('warehouse_id', $warehouseId)
-                    ->lockForUpdate() // Prevent race condition
-                    ->first();
-
-                if (!$stock || $stock->quantity < $item['qty']) {
-                    throw new \Exception("Stock insufficient for product: " . $product->name);
+                // Use item's warehouse_id if present, otherwise global
+                $whId = $item['warehouse_id'] ?? $globalWarehouseId;
+                if (!isset($groupedCart[$whId])) {
+                    $groupedCart[$whId] = [];
                 }
+                $groupedCart[$whId][] = $item;
+            }
 
-                // 2. Determine Price (Retail vs Reseller)
-                $price = $product->retail_price;
-                
-                // Logic: If customer is selected, check for Tier Pricing
-                if ($customerId) {
-                    $customer = User::with('reseller.tier')->find($customerId);
-                    if ($customer && $customer->reseller) {
-                        $tier = $customer->reseller->tier;
-                        
-                        // Check for specific product override
-                        $override = $product->tierPrices->where('reseller_tier_id', $tier->id)->first();
-                        
-                        if ($override) {
-                            $price = $override->price;
-                        } else {
-                            // Apply general tier discount
-                            $discount = $price * ($tier->discount_percentage / 100);
-                            $price -= $discount;
-                        }
+            $createdTransactions = [];
+
+            foreach ($groupedCart as $whId => $items) {
+                // Determine Transaction Code
+                $code = null;
+
+                // Check if this transaction corresponds to a Draft Order
+                if ($request->has('draft_order_ids')) {
+                    $draftOrders = DraftOrder::whereIn('id', $request->draft_order_ids)->get();
+                    $matchingDraft = $draftOrders->where('warehouse_id', $whId)->first();
+                    
+                    if ($matchingDraft && $matchingDraft->order_code) {
+                        $code = $matchingDraft->order_code;
                     }
                 }
 
-                $subtotal = $price * $item['qty'];
-                $grandTotal += $subtotal;
+                if (!$code) {
+                    // Generate new TRX code with SHARED sequence
+                    $date = date('Ymd');
+                    
+                    // Get max sequence from both tables to ensure continuity
+                    $lastDraft = DraftOrder::whereDate('created_at', today())->orderBy('id', 'desc')->first();
+                    $lastTrx = Transaction::whereDate('created_at', today())->orderBy('id', 'desc')->first();
 
-                // 3. Create Detail
-                TransactionDetail::create([
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $product->id,
-                    'quantity' => $item['qty'],
-                    'unit_price' => $price,
-                    'subtotal' => $subtotal,
+                    // Parse sequence from codes (assuming format PREFIX-YYYYMMDD-XXXX)
+                    $draftSeq = ($lastDraft && $lastDraft->order_code) ? intval(substr($lastDraft->order_code, -4)) : 0;
+                    $trxSeq = ($lastTrx && $lastTrx->transaction_code) ? intval(substr($lastTrx->transaction_code, -4)) : 0;
+                    
+                    $nextSeq = max($draftSeq, $trxSeq) + 1;
+                    $code = 'TRX-' . $date . '-' . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
+                }
+
+                $transaction = Transaction::create([
+                    'user_id' => Auth::id(),
+                    'customer_id' => $customerId,
+                    'warehouse_id' => $whId,
+                    'transaction_code' => $code,
+                    'total_amount' => 0, // Calculate
+                    'status' => 'completed',
                 ]);
 
-                // 4. Deduct Stock
-                $stock->decrement('quantity', $item['qty']);
+                $grandTotal = 0;
+
+                foreach ($items as $item) {
+                    $product = Product::with('tierPrices')->find($item['id']);
+                    
+                    // 1. Validate Stock
+                    $stock = StockLevel::where('product_id', $product->id)
+                        ->where('warehouse_id', $whId)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$stock || $stock->quantity < $item['qty']) {
+                        throw new \Exception("Stock insufficient for " . $product->name . " at warehouse #" . $whId);
+                    }
+
+                    // 2. Determine Price
+                    $price = $product->retail_price;
+                    if ($customerId) {
+                        $customer = User::with('reseller.tier')->find($customerId);
+                        if ($customer && $customer->reseller) {
+                            $tier = $customer->reseller->tier;
+                            $override = $product->tierPrices->where('reseller_tier_id', $tier->id)->first();
+                            
+                            if ($override) {
+                                $price = $override->price;
+                            } else {
+                                $discount = $price * ($tier->discount_percentage / 100);
+                                $price -= $discount;
+                            }
+                        }
+                    }
+
+                    $subtotal = $price * $item['qty'];
+                    $grandTotal += $subtotal;
+
+                    // 3. Create Detail
+                    TransactionDetail::create([
+                        'transaction_id' => $transaction->id,
+                        'product_id' => $product->id,
+                        'quantity' => $item['qty'],
+                        'unit_price' => $price,
+                        'subtotal' => $subtotal
+                    ]);
+
+                    // 4. Reduce Stock
+                    $stock->decrement('quantity', $item['qty']);
+                }
+
+                $transaction->update(['total_amount' => $grandTotal]);
+                $createdTransactions[] = [
+                    'id' => $transaction->id,
+                    'code' => $code
+                ];
+            }
+            
+            // If items came from Draft Orders, we should probably mark them completed?
+            if ($request->has('draft_order_ids')) {
+                DraftOrder::whereIn('id', $request->draft_order_ids)->update(['status' => 'completed']);
             }
 
-            // Update Header Total
-            $transaction->update(['total_amount' => $grandTotal]);
-
             DB::commit();
-
             return response()->json([
                 'success' => true, 
-                'message' => 'Transaction success!', 
-                'transaction_code' => $code
+                'message' => 'Transaction successful', 
+                'transactions' => $createdTransactions
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

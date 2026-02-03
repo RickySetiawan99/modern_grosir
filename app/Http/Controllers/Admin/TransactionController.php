@@ -55,4 +55,11 @@ class TransactionController extends Controller
         $transaction = Transaction::with(['details.product', 'user', 'customer', 'warehouse'])->findOrFail($id);
         return view('admin.transactions.show', compact('transaction'));
     }
+
+    public function receipt($id)
+    {
+        // For Invoice Partial
+        $transaction = Transaction::with(['details.product', 'user', 'customer.reseller.tier', 'warehouse'])->findOrFail($id);
+        return view('partials.invoice', ['data' => $transaction]);
+    }
 }

@@ -81,9 +81,14 @@
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
         </form>
-    </div>
+        
     <div class="dark-transparent sidebartoggler"></div>
     @include('layouts.scripts')
+    
+    @role('reseller')
+        @include('partials.reseller-cart')
+    @endrole
+    
     @yield('scripts')
 </body>
 </html>

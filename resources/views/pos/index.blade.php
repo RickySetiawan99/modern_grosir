@@ -59,7 +59,12 @@
                 <div class="card-header bg-primary text-white p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="text-white mb-0"><i class="ti ti-shopping-cart me-2"></i>Current Order</h5>
-                        <span class="badge bg-white text-primary" id="cart-count">0 items</span>
+                        <div>
+                            <button class="btn btn-sm btn-light text-primary me-2" id="btn-load-drafts" style="display: none;">
+                                <i class="ti ti-download me-1"></i> Load Drafts
+                            </button>
+                            <span class="badge bg-white text-primary" id="cart-count">0 items</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -115,6 +120,58 @@
         </div>
     </div>
 </div>
+
+<!-- Draft Orders Modal -->
+<div class="modal fade" id="draftOrdersModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Load Pending Orders</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="check-all-drafts">
+                                </th>
+                                <th>Order ID</th>
+                                <th>Warehouse</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="draft-list-container">
+                            <!-- Drafts loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-process-drafts">Load Selected</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="modal fade" id="invoiceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body p-0" id="invoice-modal-content">
+                <!-- Ajax content loads here -->
+            </div>
+            <div class="modal-footer d-none">
+                <!-- Buttons are inside the partial, but we can have a fallback close here if needed -->
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -126,14 +183,36 @@
     let currentPage = 1;
     let isLoading = false;
     let lastPage = 1;
-    let displayedProducts = []; 
+    let displayedProducts = [];
+    let currentResellerId = null;
+    let loadedDraftIds = []; 
 
     function getSwalTarget() {
         return document.fullscreenElement ? '#pos-wrapper' : 'body';
     }
 
     $(document).ready(function() {
+        $('#invoiceModal').on('hidden.bs.modal', function () {
+            location.reload();
+        });
+
         fetchProducts();
+
+        // Load Drafts Button
+        $('#btn-load-drafts').click(function() {
+            if (!currentResellerId) return;
+            fetchDraftOrders();
+        });
+
+        // Process Selected Drafts
+        $('#btn-process-drafts').click(function() {
+            loadSelectedDrafts();
+        });
+
+        // Check All Drafts
+        $('#check-all-drafts').change(function() {
+            $('.draft-checkbox').prop('checked', $(this).is(':checked'));
+        });
 
         // Warehouse Change
         $('#warehouse-select').on('change', function() {
@@ -165,6 +244,12 @@
         
         // Customer Change
         $('#customer-select').on('change', function() {
+            currentResellerId = $(this).val();
+            if (currentResellerId) {
+                $('#btn-load-drafts').show();
+            } else {
+                $('#btn-load-drafts').hide();
+            }
             renderCart(); // Re-calculate prices based on customer tier
         });
 
@@ -236,17 +321,19 @@
     // Cart Actions: Minus
     $(document).on('click', '.btn-minus', function() {
         const id = $(this).data('id');
-        const item = cart.find(c => c.id === id);
+        const warehouseId = $(this).data('warehouse-id'); // Get warehouse ID from button
+        const item = cart.find(c => c.id === id && c.warehouse_id === warehouseId);
         if (item.qty > 1) {
             item.qty--;
         } else {
-            cart = cart.filter(c => c.id !== id);
+            cart = cart.filter(c => !(c.id === id && c.warehouse_id === warehouseId)); // Filter by both ID and warehouse
         }
         renderCart();
     });
 
     $('#btn-clear').click(function() {
         cart = [];
+        loadedDraftIds = [];
         renderCart();
     });
     
@@ -414,10 +501,9 @@
         cart.forEach(item => {
             let price = item.base_price;
             
-            // Simple Reseller Discount Visualization (Not perfect mirror of backend but good enough for UI)
-            // Ideally we pass the full Tier ID to JS.
-            if (isReseller) {
-                 // Try to calculate approximate. Backend is safer.
+            // Simple Reseller Discount Visualization
+            // Only apply if NOT a draft item (draft items already have net/discounted price)
+            if (isReseller && !item.is_draft_item) {
                  price = price * (1 - (tierDiscountStart / 100));
             }
             
@@ -470,23 +556,29 @@
             data: {
                 _token: '{{ csrf_token() }}',
                 cart: cart,
-                warehouse_id: selectedWarehouse,
+                warehouse_id: selectedWarehouse, // Global fallback
                 customer_id: customerId,
-                total_amount: totalAmount // Just for verification
+                total_amount: totalAmount,
+                draft_order_ids: loadedDraftIds 
             },
             beforeSend: function() {
                 $('#btn-checkout').html('<i class="ti ti-loader animate-spin me-2"></i> Processing...').prop('disabled', true);
             },
             success: function(response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Transaction Successful!',
-                    text: `Code: ${response.transaction_code}`,
-                    confirmButtonText: 'New Transaction',
-                    target: getSwalTarget()
-                }).then(() => {
-                    location.reload();
-                });
+                // Success
+                cart = [];
+                renderCart();
+                $('#customer-select').val('').trigger('change');
+                $('#btn-checkout').html('<i class="ti ti-cash me-2"></i> Process Payment').prop('disabled', false);
+                
+                // Show Invoice(s)
+                if (response.transactions && response.transactions.length > 0) {
+                     // Show the first invoice for now
+                     const trx = response.transactions[0];
+                     showInvoice(trx.id);
+                } else {
+                     Swal.fire('Success', 'Transaction completed', 'success').then(() => location.reload());
+                }
             },
             error: function(xhr) {
                 $('#btn-checkout').html('<i class="ti ti-cash me-2"></i> Process Payment').prop('disabled', false);
@@ -502,9 +594,123 @@
         });
     }
 
+    function showInvoice(trxId) {
+        // Create modal if not exists (or use static one)
+        // I will use static one defined in blade
+        $('#invoice-modal-content').html('<div class="text-center py-5"><i class="ti ti-loader fs-6 animate-spin"></i> Loading Invoice...</div>');
+        $('#invoiceModal').modal('show');
+
+        // Fetch partial
+        $.ajax({
+            url: `/admin/transactions/${trxId}/receipt`,
+            success: function(html) {
+                $('#invoice-modal-content').html(html);
+            },
+            error: function() {
+                $('#invoice-modal-content').html('<div class="alert alert-danger">Failed to load invoice.</div>');
+            }
+        });
+    }
+
+    /* --- Draft Order Logic --- */
+    function fetchDraftOrders() {
+        $.ajax({
+            url: `{{ route('admin.draft-orders.index') }}?reseller_id=${currentResellerId}`,
+            success: function(drafts) {
+                let html = '';
+                if (drafts.length === 0) {
+                    html = '<tr><td colspan="6" class="text-center">No pending orders found</td></tr>';
+                } else {
+                    drafts.forEach(d => {
+                        html += `
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input draft-checkbox" value="${d.id}" data-draft='${JSON.stringify(d)}'></td>
+                                <td>#${d.id}</td>
+                                <td>${d.warehouse ? d.warehouse.name : 'N/A'}</td>
+                                <td>${d.items.length} items</td>
+                                <td>Rp ${new Intl.NumberFormat('id-ID').format(d.total_amount)}</td>
+                                <td>${new Date(d.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                $('#draft-list-container').html(html);
+                $('#draftOrdersModal').modal('show');
+            }
+        });
+    }
+
+    function loadSelectedDrafts() {
+        const selectedCheckboxes = $('.draft-checkbox:checked');
+        if (selectedCheckboxes.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Selection',
+                text: 'Please select at least one draft order to load.',
+                target: getSwalTarget()
+            });
+            return;
+        }
+
+        let newItemsCount = 0;
+        
+        selectedCheckboxes.each(function() {
+            // jQuery automatically parses JSON in data attribute, so no need for JSON.parse if it's already an object
+            const rawDraft = $(this).data('draft');
+            const draft = typeof rawDraft === 'string' ? JSON.parse(rawDraft) : rawDraft;
+            
+            loadedDraftIds.push(draft.id);
+            
+            draft.items.forEach(item => {
+                // Add to cart with warehouse context
+                // Note: item.product might not be fully populated like in product grid, but checkout only needs ID
+                // We need name and price for display.
+                
+                // Check existing: match ID AND Warehouse
+                const existingItem = cart.find(c => c.id === item.product_id && c.warehouse_id == draft.warehouse_id);
+                
+                if (existingItem) {
+                    existingItem.qty += item.quantity;
+                } else {
+                    // We need product details for display. Draft item has product relation.
+                    // Assuming controller sends product relation.
+                    // DraftOrderController::index currently includes 'items'. 
+                    // Does 'items' include 'product'? Yes, but we need to check backend controller.
+                    // Backend: `DraftOrder::with(['reseller', 'items', 'warehouse'])`. Items needs 'product'.
+                    // I updated backend to just `items`. 
+                    // Wait, I need to update Admin/DraftOrderController to include `items.product`.
+                    
+                    const productName = item.product ? item.product.name : 'Product #' + item.product_id;
+                    const productImg = item.product ? item.product.image : null;
+                    
+                    cart.push({
+                        id: item.product_id,
+                        name: productName, 
+                        base_price: parseFloat(item.unit_price),
+                        image: productImg,
+                        qty: item.quantity,
+                        warehouse_id: draft.warehouse_id,
+                        warehouse_name: draft.warehouse ? draft.warehouse.name : 'Unknown',
+                        is_draft_item: true // Flag to prevent double discount
+                    });
+                }
+                newItemsCount++;
+            });
+        });
+
+        $('#draftOrdersModal').modal('hide');
+        renderCart();
+        Swal.fire('Success', `${newItemsCount} items loaded from drafts`, 'success');
+    }
+
     function parseMoney(str) {
         return parseInt(str.replace(/[^0-9]/g, ''));
     }
+
+    /* --- Modified renderCart for Logic --- */
+    // Note: I need to update the actual renderCart function earlier in the file, 
+    // but I can't do it in this chunk.
+    // I will do a separate replace for renderCart.
 
     function validateCartStock() {
         // Logic to remove items that are now OOS in new warehouse

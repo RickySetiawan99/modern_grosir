@@ -65,6 +65,14 @@
         <!-- ------------------------------- -->
         <!-- start language Dropdown -->
         <!-- ------------------------------- -->
+        @role('reseller')
+        <li class="nav-item nav-icon-hover-bg rounded-circle">
+          <a class="nav-link position-relative" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#cartModal">
+            <i class="ti ti-shopping-cart"></i>
+            <span id="cart-badge-header" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+          </a>
+        </li>
+        @endrole
         <li class="nav-item nav-icon-hover-bg rounded-circle">
           <a class="nav-link moon dark-layout" href="javascript:void(0)">
             <i class="ti ti-moon moon"></i>
@@ -114,20 +122,6 @@
         </li>
         <!-- ------------------------------- -->
         <!-- end language Dropdown -->
-        <!-- ------------------------------- -->
-
-        <!-- ------------------------------- -->
-        <!-- start shopping cart Dropdown -->
-        <!-- ------------------------------- -->
-        <li class="nav-item nav-icon-hover-bg rounded-circle">
-          <a class="nav-link position-relative" href="javascript:void(0)" data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-            <i class="ti ti-basket"></i>
-            <span class="popup-badge rounded-pill bg-danger text-white fs-2">2</span>
-          </a>
-        </li>
-        <!-- ------------------------------- -->
-        <!-- end shopping cart Dropdown -->
         <!-- ------------------------------- -->
 
         <!-- ------------------------------- -->

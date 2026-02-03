@@ -53,6 +53,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/transactions', [App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('transactions.index')->middleware('role:admin|cashier');
     Route::get('/transactions/data', [App\Http\Controllers\Admin\TransactionController::class, 'data'])->name('transactions.data')->middleware('role:admin|cashier');
     Route::get('/transactions/{id}', [App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('transactions.show')->middleware('role:admin|cashier');
+    Route::get('/transactions/{id}/receipt', [App\Http\Controllers\Admin\TransactionController::class, 'receipt'])->name('transactions.receipt')->middleware('role:admin|cashier');
 
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [POSController::class, 'products'])->name('pos.products');
@@ -100,6 +101,20 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::middleware(['role:reseller'])->prefix('reseller')->group(function () {
         Route::get('/catalog', [App\Http\Controllers\Reseller\CatalogController::class, 'index'])->name('reseller.catalog.index');
         Route::get('/catalog/products', [App\Http\Controllers\Reseller\CatalogController::class, 'products'])->name('reseller.catalog.products');
+        
+        // Order Management
+        Route::get('/orders', [App\Http\Controllers\Reseller\OrderController::class, 'index'])->name('reseller.orders.index');
+        Route::post('/orders', [App\Http\Controllers\Reseller\OrderController::class, 'store'])->name('reseller.orders.store');
+        Route::get('/orders/{id}', [App\Http\Controllers\Reseller\OrderController::class, 'show'])->name('reseller.orders.show');
+        Route::post('/orders/{id}/cancel', [App\Http\Controllers\Reseller\OrderController::class, 'cancel'])->name('reseller.orders.cancel');
+    });
+
+    // Draft Orders (Admin/Cashier)
+    Route::middleware(['role:admin|cashier'])->prefix('admin')->group(function () {
+        Route::get('/draft-orders', [App\Http\Controllers\Admin\DraftOrderController::class, 'index'])->name('admin.draft-orders.index');
+        Route::get('/draft-orders/{id}', [App\Http\Controllers\Admin\DraftOrderController::class, 'show'])->name('admin.draft-orders.show');
+        Route::post('/draft-orders/{id}/load', [App\Http\Controllers\Admin\DraftOrderController::class, 'loadToPOS'])->name('admin.draft-orders.load');
+        Route::post('/draft-orders/{id}/complete', [App\Http\Controllers\Admin\DraftOrderController::class, 'complete'])->name('admin.draft-orders.complete');
     });
 });
 

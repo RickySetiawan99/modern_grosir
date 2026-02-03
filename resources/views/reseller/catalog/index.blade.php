@@ -68,6 +68,7 @@
         <div id="pagination-container"></div>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
@@ -75,6 +76,8 @@
     let currentPage = 1;
     let isLoading = false;
     let selectedWarehouse = 'all';
+    
+    // Cart is now handled globally in layouts/master via partials/reseller-cart
 
     $(document).ready(function() {
         fetchProducts();
@@ -103,6 +106,8 @@
                 fetchProducts();
             }
         });
+        
+        // Note: .btn-add-to-cart click handler is now in partials/reseller-cart.blade.php
     });
 
     function fetchProducts() {
@@ -166,6 +171,14 @@
                             </div>
 
                             ${stockInfo}
+                            
+                            <button class="btn btn-primary w-100 btn-add-to-cart mt-3" 
+                                data-id="${p.id}" 
+                                data-name="${p.name}" 
+                                data-price="${p.your_price}"
+                                data-image="${imageUrl}">
+                                <i class="ti ti-shopping-cart-plus me-1"></i> Add to Cart
+                            </button>
                         </div>
                     </div>
                 </div>`;
