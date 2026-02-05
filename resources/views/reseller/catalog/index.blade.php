@@ -3,6 +3,56 @@
 @section('title', 'Product Catalog')
 
 @section('pageContent')
+<style>
+    .reseller-product-card .card-img-top {
+        height: 140px;
+        object-fit: cover;
+    }
+
+    .reseller-product-card .badge-row {
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .reseller-product-card .badge-sku {
+        max-width: 96px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 575.98px) {
+        .reseller-product-card .badge-row {
+            justify-content: flex-start;
+        }
+
+        .reseller-product-card .card-body {
+            padding: 0.75rem;
+        }
+
+        .reseller-product-card .card-img-top {
+            height: 120px;
+        }
+
+        .reseller-product-card .badge {
+            font-size: 0.65rem;
+        }
+
+        .reseller-product-card .product-title {
+            font-size: 0.85rem;
+            min-height: 2.4rem;
+        }
+
+        .reseller-product-card .price-block h5 {
+            font-size: 1rem;
+        }
+
+        .reseller-product-card .btn {
+            padding: 0.4rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
 <div class="container-fluid">
     <div class="card bg-light-info shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">
@@ -151,17 +201,17 @@
                 const imageUrl = p.image ? `/${p.image}` : '/build/images/products/product-1.jpg';
 
                 html += `
-                <div class="col-md-4 col-lg-3 mb-4">
-                    <div class="card h-100 hover-img shadow-sm">
-                        <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}" style="height: 140px; object-fit: cover;">
+                <div class="col-6 col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 hover-img shadow-sm reseller-product-card">
+                        <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex justify-content-between align-items-start mb-2 badge-row">
                                 <span class="badge bg-light-primary text-primary fw-semibold">${p.category.name}</span>
-                                <span class="badge bg-light text-dark">${p.sku}</span>
+                                <span class="badge bg-light text-dark badge-sku" title="${p.sku}">${p.sku}</span>
                             </div>
-                            <h6 class="fw-semibold mb-3">${p.name}</h6>
+                            <h6 class="fw-semibold mb-3 product-title">${p.name}</h6>
                             
-                            <div class="mb-3">
+                            <div class="mb-3 price-block">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <span class="text-muted text-decoration-line-through fs-2">Rp ${p.formatted_base_price}</span>
                                     <span class="badge bg-success-subtle text-success">-${savingsPercent}%</span>

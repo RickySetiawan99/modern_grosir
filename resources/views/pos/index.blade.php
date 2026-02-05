@@ -3,6 +3,108 @@
 @section('title', 'ModernGrosir - POS')
 
 @section('pageContent')
+<style>
+    .pos-product-card .card-img-top {
+        height: 140px;
+        object-fit: cover;
+    }
+
+    .pos-product-card .badge-row {
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .pos-product-card .badge-sku {
+        max-width: 96px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 575.98px) {
+        .pos-product-card .card-body {
+            padding: 0.75rem;
+        }
+
+        .pos-product-card .card-img-top {
+            height: 120px;
+        }
+
+        .pos-product-card .badge {
+            font-size: 0.65rem;
+        }
+
+        .pos-product-card .product-title {
+            font-size: 0.85rem;
+            min-height: 2.4rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pos-product-card .price-row h5 {
+            font-size: 1rem;
+        }
+    }
+
+    .pos-cart-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 1040;
+    }
+
+    .pos-cart-fab {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 1050;
+        border-radius: 999px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 991.98px) {
+        .pos-cart-column {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1055;
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+            max-height: 80vh;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .pos-cart-column .card {
+            border-radius: 16px 16px 0 0;
+        }
+
+        body.pos-cart-open .pos-cart-column {
+            transform: translateY(0);
+        }
+
+        body.pos-cart-open .pos-cart-overlay {
+            display: block;
+        }
+
+        .pos-cart-fab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            bottom: 86px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .pos-cart-fab {
+            display: none;
+        }
+    }
+</style>
 <div id="pos-wrapper" class="w-100 h-100 bg-body" style="overflow-y: auto;">
     <div class="row">
         <!-- LEFT PANEL: Product Grid -->
@@ -54,12 +156,15 @@
         </div>
     
         <!-- RIGHT PANEL: Cart -->
-        <div class="col-lg-4">
+        <div class="col-lg-4 pos-cart-column">
             <div class="card h-100 d-flex flex-column">
                 <div class="card-header bg-primary text-white p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="text-white mb-0"><i class="ti ti-shopping-cart me-2"></i>Current Order</h5>
                         <div>
+                            <button class="btn btn-sm btn-light text-primary d-lg-none me-2" id="pos-cart-close">
+                                <i class="ti ti-x"></i>
+                            </button>
                             <button class="btn btn-sm btn-light text-primary me-2" id="btn-load-drafts" style="display: none;">
                                 <i class="ti ti-download me-1"></i> Load Drafts
                             </button>
@@ -120,6 +225,12 @@
         </div>
     </div>
 </div>
+
+<div class="pos-cart-overlay" id="pos-cart-overlay"></div>
+<button type="button" class="btn btn-primary pos-cart-fab" id="pos-cart-toggle">
+    <i class="ti ti-shopping-cart"></i>
+    <span id="pos-cart-fab-count">0</span>
+</button>
 
 <!-- Draft Orders Modal -->
 <div class="modal fade" id="draftOrdersModal" tabindex="-1">
@@ -191,7 +302,46 @@
         return document.fullscreenElement ? '#pos-wrapper' : 'body';
     }
 
+    const mobileToast = Swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true
+    });
+
+    function showMobileToast(message) {
+        if (window.innerWidth >= 768) return;
+        mobileToast.fire({
+            icon: 'success',
+            title: message,
+            target: getSwalTarget()
+        });
+    }
+
     $(document).ready(function() {
+        function openCartDrawer() {
+            $('body').addClass('pos-cart-open');
+        }
+
+        function closeCartDrawer() {
+            $('body').removeClass('pos-cart-open');
+        }
+
+        $('#pos-cart-toggle').on('click', function() {
+            openCartDrawer();
+        });
+
+        $('#pos-cart-close, #pos-cart-overlay').on('click', function() {
+            closeCartDrawer();
+        });
+
+        $(window).on('resize', function() {
+            if (window.innerWidth >= 992) {
+                closeCartDrawer();
+            }
+        });
+
         $('#invoiceModal').on('hidden.bs.modal', function () {
             location.reload();
         });
@@ -400,6 +550,7 @@
             });
         }
         renderCart();
+        showMobileToast('Ditambahkan ke cart');
     }
 
     function fetchProducts(append = false) {
@@ -439,16 +590,16 @@
                     const imageUrl = p.image ? `/${p.image}` : '/build/images/products/product-1.jpg';
 
                     html += `
-                    <div class="col-md-4 col-sm-6">
-                        <div class="card h-100 hover-img shadow-sm ${disableClass}" data-id="${p.id}">
-                            <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}" style="height: 140px; object-fit: cover;">
+                    <div class="col-6 col-sm-6 col-md-4">
+                        <div class="card h-100 hover-img shadow-sm pos-product-card ${disableClass}" data-id="${p.id}">
+                            <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}">
                             <div class="card-body p-3">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex justify-content-between align-items-start mb-2 badge-row">
                                      <span class="badge bg-light text-dark fw-semibold fs-2">${p.category.name}</span>
-                                     <span class="badge bg-light text-dark fs-2">${p.sku}</span>
+                                     <span class="badge bg-light text-dark fs-2 badge-sku" title="${p.sku}">${p.sku}</span>
                                 </div>
-                                <h6 class="fw-semibold fs-3 mb-1 text-truncate">${p.name}</h6>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                <h6 class="fw-semibold fs-3 mb-1 product-title">${p.name}</h6>
+                                <div class="d-flex justify-content-between align-items-center mt-3 price-row">
                                     <h5 class="fw-bold text-primary mb-0">Rp ${p.formatted_price}</h5>
                                     <span class="${stockClass} fs-2 fw-semibold">
                                         <i class="ti ti-box"></i> ${stock} ${p.unit.name}
@@ -545,6 +696,7 @@
         }
 
         $('#cart-count').text(`${cart.length} items`);
+        $('#pos-cart-fab-count').text(cart.length);
         $('#total-display').text(`Rp ${new Intl.NumberFormat('id-ID').format(subtotal)}`);
         $('#subtotal-display').text(`Rp ${new Intl.NumberFormat('id-ID').format(subtotal)}`); // Simplify for now
     }
