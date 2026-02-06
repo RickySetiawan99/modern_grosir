@@ -150,6 +150,16 @@
             <span class="hide-menu">Transactions</span>
           </a>
         </li>
+        @role('admin')
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/reports*') ? 'active' : '' }}" href="{{ route('reports.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-chart-bar"></i>
+            </span>
+            <span class="hide-menu">Analytics & Reports</span>
+          </a>
+        </li>
+        @endrole
         @endhasanyrole
 
         @role('admin')

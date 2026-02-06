@@ -24,7 +24,8 @@ class InventoryController extends Controller
      */
     public function data(Request $request)
     {
-        $stock = StockLevel::with(['product', 'warehouse', 'product.category', 'product.unit']);
+        $stock = StockLevel::with(['product', 'warehouse', 'product.category', 'product.unit'])
+            ->select('stock_levels.*');
 
         if ($request->warehouse_id) {
             $stock->where('warehouse_id', $request->warehouse_id);
@@ -52,7 +53,40 @@ class InventoryController extends Controller
             ->addColumn('category', function ($level) {
                 return $level->product->category->name ?? '-';
             })
-            ->rawColumns(['product.name', 'warehouse.name', 'quantity'])
+            ->addColumn('action', function ($level) {
+                return '
+                    <button type="button" class="btn btn-sm btn-light-primary text-primary fw-semibold btn-edit-stock" 
+                        data-id="' . $level->id . '" 
+                        data-product="' . htmlspecialchars($level->product->name) . '"
+                        data-warehouse="' . htmlspecialchars($level->warehouse->name) . '"
+                        data-qty="' . $level->quantity . '">
+                        <i class="ti ti-edit fs-4 me-1"></i> Edit
+                    </button>';
+            })
+            ->filterColumn('product.name', function($query, $keyword) {
+                $query->whereHas('product', function($q) use ($keyword) {
+                    $q->where('name', 'like', "%{$keyword}%")
+                      ->orWhere('sku', 'like', "%{$keyword}%");
+                });
+            })
+            ->rawColumns(['product.name', 'warehouse.name', 'quantity', 'action'])
             ->make(true);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:0'
+        ]);
+
+        $stock = StockLevel::findOrFail($id);
+        $stock->update([
+            'quantity' => $request->quantity
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock updated successfully'
+        ]);
     }
 }

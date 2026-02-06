@@ -7,6 +7,74 @@
 @endsection
 
 @section('pageContent')
+    <!-- Low Stock Notification -->
+    @if($lowStockCount > 0 && auth()->user()->hasRole('admin'))
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-danger-subtle shadow-none position-relative overflow-hidden mb-0">
+                <div class="card-body px-4 py-3">
+                    <div class="row align-items-center">
+                        <div class="col-9">
+                            <h4 class="fw-semibold mb-2 text-danger">
+                                <i class="ti ti-alert-triangle me-2"></i>Stok Menipis!
+                            </h4>
+                            <p class="mb-0 text-dark">Ada <strong>{{ $lowStockCount }} produk</strong> yang sudah mencapai atau di bawah batas stok aman. Segera lakukan pengadaan barang.</p>
+                        </div>
+                        <div class="col-3 text-end">
+                            <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#lowStockList" aria-expanded="false">
+                                Lihat Produk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="collapse mt-2" id="lowStockList">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle text-nowrap mb-0">
+                                <thead class="text-dark fs-4">
+                                    <tr>
+                                        <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Produk</h6></th>
+                                        <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Stok Saat Ini</h6></th>
+                                        <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Batas Aman</h6></th>
+                                        <th class="border-bottom-0 text-end"><h6 class="fw-semibold mb-0">Action</h6></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($lowStockProducts as $lp)
+                                    <tr>
+                                        <td class="border-bottom-0">
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ $lp->image ? asset($lp->image) : asset('build/images/products/product-1.jpg') }}" class="rounded" width="40" height="40" style="object-fit: cover;">
+                                                <div class="ms-3">
+                                                    <h6 class="fw-semibold mb-0">{{ $lp->name }}</h6>
+                                                    <span class="text-muted">{{ $lp->sku }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <span class="badge bg-danger-subtle text-danger fw-semibold">{{ $lp->total_stock }} {{ $lp->unit->short_name ?? '' }}</span>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <span class="fw-normal text-muted">{{ $lp->safety_stock }} {{ $lp->unit->short_name ?? '' }}</span>
+                                        </td>
+                                        <td class="border-bottom-0 text-end">
+                                            <a href="{{ route('master.products.edit', $lp->id) }}" class="btn btn-sm btn-outline-primary">Edit Stok</a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!--  Owl carousel -->
     <div class="owl-carousel counter-carousel owl-theme">
         @role('admin')
@@ -55,6 +123,19 @@
                 </div>
             </div>
         </div>
+        @role('admin')
+        <div class="item">
+            <div class="card border-0 zoom-in bg-success-subtle shadow-none">
+                <div class="card-body">
+                    <div class="text-center">
+                        <img src="{{ URL::asset('build/images/svgs/icon-speech-bubble.svg') }}" width="50" height="50" class="mb-3" alt="modernize-img" />
+                        <p class="fw-semibold fs-3 text-success mb-1">Gross Profit</p>
+                        <h5 class="fw-semibold text-success mb-0">Rp {{ number_format($totalProfit / 1000000, 1) }}M</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endrole
     </div>
 
     <div class="row">
@@ -64,9 +145,19 @@
                 <div class="card-body">
                     <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                         <div class="mb-3 mb-sm-0">
-                            <h4 class="card-title fw-semibold">Sales Overview</h4>
-                            <p class="card-subtitle mb-0">Monthly Revenue in {{ date('Y') }}</p>
+                            <h4 class="card-title fw-semibold">Performance Overview</h4>
+                            <p class="card-subtitle mb-0">Revenue vs Profit in {{ date('Y') }}</p>
                         </div>
+                        @role('admin')
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1" onclick="window.print()">
+                                <i class="ti ti-file-text fs-4"></i> Export PDF
+                            </button>
+                            <a href="{{ route('reports.excel') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-1" id="export-excel">
+                                <i class="ti ti-table fs-4"></i> Export Excel
+                            </a>
+                        </div>
+                        @endrole
                     </div>
                     <div id="sales-chart"></div>
                 </div>
@@ -201,10 +292,18 @@
 
         // Sales Chart
         var options = {
-            series: [{
-                name: "Monthly Sales",
-                data: @json($chartData),
-            }],
+            series: [
+                {
+                    name: "Revenue",
+                    data: @json($chartData),
+                },
+                @role('admin')
+                {
+                    name: "Gross Profit",
+                    data: @json($profitChartData),
+                }
+                @endrole
+            ],
             chart: {
                 fontFamily: "inherit",
                 type: "area",
@@ -247,7 +346,7 @@
             tooltip: {
                 theme: (document.documentElement.getAttribute('data-bs-theme') === 'dark' ? "dark" : "light"),
             },
-            colors: ["var(--bs-primary)"],
+            colors: ["var(--bs-primary)", "var(--bs-success)"],
             grid: {
                 show: true,
                 borderColor: "rgba(0,0,0,0.1)",

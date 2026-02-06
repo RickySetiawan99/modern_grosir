@@ -47,6 +47,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index')->middleware('role:admin|cashier');
     Route::get('/inventory/data', [InventoryController::class, 'data'])->name('inventory.data')->middleware('role:admin|cashier');
+    Route::post('/inventory/{id}', [InventoryController::class, 'update'])->name('inventory.update')->middleware('role:admin|cashier');
     
     Route::get('/pricing', [PriceController::class, 'index'])->name('pricing.index')->middleware('role:admin');
     Route::get('/pricing/data', [PriceController::class, 'data'])->name('pricing.data')->middleware('role:admin');
@@ -58,6 +59,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/transactions/data', [TransactionController::class, 'data'])->name('transactions.data')->middleware('role:admin|cashier');
     Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show')->middleware('role:admin|cashier');
     Route::get('/transactions/{id}/receipt', [TransactionController::class, 'receipt'])->name('transactions.receipt')->middleware('role:admin|cashier');
+
+    // Reports & Analytics (Admin Only)
+    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index')->middleware('role:admin');
+    Route::get('/reports/export-excel', [\App\Http\Controllers\ReportController::class, 'exportExcel'])->name('reports.excel')->middleware('role:admin');
+    Route::get('/reports/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.pdf')->middleware('role:admin');
 
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [POSController::class, 'products'])->name('pos.products');

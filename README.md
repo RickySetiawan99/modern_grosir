@@ -1,35 +1,44 @@
 # ModernGrosir 🚀
 **Modern Wholesale & POS Management System**
 
-ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Laravel 11, dirancang untuk memudahkan distributor dalam mengelola inventaris, reseller, dan transaksi Point of Sales (POS) dengan sistem harga bertingkat (Tiered Pricing).
+ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Laravel 12, dirancang untuk memudahkan distributor dalam mengelola inventaris, reseller, dan transaksi Point of Sales (POS) dengan sistem harga bertingkat (Tiered Pricing).
 
 ---
 
 ## ✨ Fitur Utama (Implemented)
 
-### 📊 Dashboard Canggih
-- **Role-Based Analysis**: Tampilan dashboard yang menyesuaikan dengan role aktif (Admin/Cashier/Reseller).
-- **Statistik Real-time**: Memantau omzet, jumlah produk, dan aktivitas reseller secara instan.
-- **Grafik Interaktif**: Visualisasi tren penjualan bulanan menggunakan ApexCharts yang mendukung mode gelap/terang.
+### 📈 Laporan Laba/Rugi & Analitik (Admin Only)
+- **Gross Profit Tracking**: Perhitungan laba kotor otomatis berdasarkan selisih harga jual dan harga modal (`purchase_price`).
+- **Performance Overview Chart**: Grafik multi-series yang membandingkan Omzet (Revenue) vs Laba Kotor (Profit) secara bulanan.
+- **Advanced Export**: Fitur ekspor laporan transaksi ke format **Excel (.xlsx)** dan **PDF** untuk dokumentasi offline.
+- **Date Range Filter**: Laporan yang dapat difilter berdasarkan rentang tanggal tertentu (mingguan/bulanan).
 
-### 🛒 Point of Sales (POS)
-- **Multi-Warehouse Support**: Memilih gudang sumber stok saat transaksi.
-- **Dynamic Pricing**: Otomatis menyesuaikan harga berdasarkan **Tier Reseller** yang dipilih.
-- **Responsive Layout**: POS yang nyaman digunakan di tablet maupun desktop.
-
-### 📦 Manajemen Inventaris & Master Data
-- **Manajemen Produk**: Sistem stok yang terintegrasi dengan berbagai gudang.
-- **Tiered Pricing**: Pengaturan harga khusus untuk tiap level reseller (misal: Silver, Gold, Platinum).
+### 🔔 Smart Inventory System
+- **Notifikasi Stok Menipis**: Peringatan visual otomatis di dashboard jika stok produk mencapai batas aman (`safety_stock`).
+- **Direct Stock Edition**: Management stok yang cepat melalui modal "Edit Stock" tanpa harus berpindah halaman.
+- **Global Stock Search**: Pencarian produk dalam inventaris berdasarkan Nama atau **SKU/Barcode**.
+- **Multi-Warehouse Support**: Sinkronisasi stok antar berbagai gudang (Store & Warehouse).
 - **Kategori & Satuan**: Pengorganisasian produk yang fleksibel.
 
+### 🛒 Point of Sales (POS) & Self-Service
+- **Retail POS**: Sistem kasir responsif untuk transaksi retail harian.
+- **Dynamic Pricing**: Otomatis menyesuaikan harga berdasarkan **Tier Reseller** yang dipilih.
+- **Reseller Catalog**: Halaman katalog khusus reseller dengan harga yang otomatis menyesuaikan **Reseller Tier** (Silver/Gold/Platinum).
+- **Self-Service Order**: Reseller dapat membuat pesanan mandiri yang otomatis masuk sebagai "Draft Order" untuk divalidasi Admin/Kasir.
+
+### 📊 Dashboard Canggih
+- **Role-Based Analysis**: Tampilan dashboard yang menyesuaikan dengan role aktif (Admin/Cashier/Reseller).
+- **Statistik Real-time**: Memantau omzet, profit, jumlah produk, dan aktivitas reseller secara instan.
+- **Grafik Interaktif**: Visualisasi tren penjualan menggunakan ApexCharts yang mendukung mode gelap/terang.
+
 ### 🔐 Keamanan & Akses
-- **Role Permissions**: Pembatasan akses fitur yang ketat (Admin vs Kasir vs Reseller).
-- **Personalized Profile**: Pengaturan akun dengan pilihan avatar default yang modern.
+- **Role Permissions**: Pembatasan akses fitur yang ketat menggunakan Spatie Permissions (Admin vs Kasir vs Reseller).
+- **Personalized Profile**: Pengaturan akun dengan fitur ganti password dan pilihan avatar default yang modern.
 
 ### 🎨 UI/UX Premium
-- **Persistent Settings**: Semua pilihan tema (Dark/Light), warna, dan layout sidebar tersimpan secara permanen di browser.
-- **Zero-Flash Theme**: Sistem pemuatan tema yang cerdas untuk mencegah efek "blink" saat refresh halaman.
-- **Timezone Jakarta**: Pencatatan waktu yang akurat (WIB).
+- **Persistent Settings**: Pilihan tema (Dark/Light), warna primary, dan layout sidebar tersimpan secara permanen di browser.
+- **Zero-Flash Theme**: Sistem pemuatan tema cerdas untuk mencegah efek "blink" saat refresh halaman.
+- **Timezone Jakarta**: Pencatatan waktu transaksi dan laporan yang akurat sesuai WIB (Asia/Jakarta).
 
 ---
 
@@ -37,8 +46,8 @@ ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Larave
 - **Framework**: [Laravel 12](https://laravel.com)
 - **Frontend Template**: [Modernize Bootstrap Admin](https://wrappixel.com)
 - **Database**: MySQL / MariaDB
-- **Icons**: Tabler Icons & Lucid Icons
 - **Charts**: ApexCharts
+- **Exports**: Maatwebsite/Excel & Barryvdh/Laravel-DomPDF
 - **State Management**: LocalStorage (for UI preferences)
 
 ---
@@ -82,9 +91,10 @@ ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Larave
 - [x] Integrasi POS Foundation
 - [x] Persistence Theme Settings
 - [x] Timezone & Indonesian Localization
-- [ ] Katalog Produk khusus Reseller
-- [ ] Laporan Laba/Rugi Mingguan
-- [ ] Sistem Notifikasi Stok Menipis
+- [x] Katalog Produk khusus Reseller
+- [x] Sistem Order Mandiri Reseller
+- [x] Laporan Laba/Rugi & Analitik
+- [x] Sistem Notifikasi Stok Menipis
 
 ---
 *Dikembangkan dengan ❤️ untuk ModernGrosir Management.*

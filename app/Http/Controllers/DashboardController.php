@@ -21,6 +21,25 @@ class DashboardController extends Controller
                 $q->where('customer_id', $user->id);
             });
         }
+
+        // Low Stock Logic
+        $lowStockProducts = [];
+        $lowStockCount = 0;
+        
+        if ($user->hasRole('admin')) {
+            $lowStockProducts = \App\Models\Product::with(['stockLevels', 'category', 'unit'])
+                ->where('safety_stock', '>', 0)
+                ->get()
+                ->filter(function($product) {
+                    $totalStock = $product->stockLevels->sum('quantity');
+                    return $totalStock < $product->safety_stock;
+                })->map(function($product) {
+                    $product->total_stock = $product->stockLevels->sum('quantity');
+                    return $product;
+                });
+            
+            $lowStockCount = $lowStockProducts->count();
+        }
         
         // Statistics
         $totalSales = (clone $transactionQuery)->sum('total_amount');
@@ -28,7 +47,16 @@ class DashboardController extends Controller
         $totalResellers = \App\Models\User::role('reseller')->count();
         $totalTransactions = (clone $transactionQuery)->count();
 
-        // Monthly Sales for the current year
+        // Profit Calculation (Admin Only)
+        $totalProfit = 0;
+        if ($user->hasRole('admin')) {
+            $totalProfit = (clone $detailQuery)
+                ->join('products', 'transaction_details.product_id', '=', 'products.id')
+                ->selectRaw('SUM(transaction_details.subtotal - (products.purchase_price * transaction_details.quantity)) as profit')
+                ->value('profit') ?? 0;
+        }
+
+        // Monthly Sales and Profit (Admin Only)
         $monthlySales = (clone $transactionQuery)
             ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
             ->whereYear('created_at', date('Y'))
@@ -38,10 +66,25 @@ class DashboardController extends Controller
             ->pluck('total', 'month')
             ->toArray();
 
+        $monthlyProfit = [];
+        if ($user->hasRole('admin')) {
+            $monthlyProfit = (clone $detailQuery)
+                ->join('products', 'transaction_details.product_id', '=', 'products.id')
+                ->selectRaw('MONTH(transaction_details.created_at) as month, SUM(transaction_details.subtotal - (products.purchase_price * transaction_details.quantity)) as profit')
+                ->whereYear('transaction_details.created_at', date('Y'))
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get()
+                ->pluck('profit', 'month')
+                ->toArray();
+        }
+
         // Fill in missing months with zero
         $chartData = [];
+        $profitChartData = [];
         for ($i = 1; $i <= 12; $i++) {
             $chartData[] = $monthlySales[$i] ?? 0;
+            $profitChartData[] = $monthlyProfit[$i] ?? 0;
         }
 
         $recentTransactions = (clone $transactionQuery)
@@ -65,7 +108,11 @@ class DashboardController extends Controller
             'totalTransactions',
             'chartData',
             'recentTransactions',
-            'topProducts'
+            'topProducts',
+            'lowStockCount',
+            'lowStockProducts',
+            'totalProfit',
+            'profitChartData'
         ));
     }
 }

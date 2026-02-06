@@ -97,6 +97,7 @@ class ProductController extends Controller
             'unit_id' => 'required|exists:units,id',
             'purchase_price' => 'required|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
+            'safety_stock' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -130,6 +131,7 @@ class ProductController extends Controller
             'unit_id' => 'required|exists:units,id',
             'purchase_price' => 'required|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
+            'safety_stock' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);

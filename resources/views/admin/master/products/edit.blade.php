@@ -122,6 +122,14 @@
               @enderror
             </div>
           </div>
+          <div class="mb-3">
+            <label for="safety_stock" class="form-label">Safety Stock (Stok Aman)</label>
+            <input type="number" class="form-control @error('safety_stock') is-invalid @enderror" id="safety_stock" name="safety_stock" value="{{ old('safety_stock', $product->safety_stock) }}" placeholder="e.g., 10">
+            <small class="text-muted">Indikator stok menipis akan muncul di dashboard jika stok berada di bawah angka ini.</small>
+            @error('safety_stock')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
           <div class="mt-4">
             <button type="submit" class="btn btn-primary w-100 mb-2">Update Product</button>
             <a href="{{ route('master.products.index') }}" class="btn btn-outline-secondary w-100">Cancel</a>
