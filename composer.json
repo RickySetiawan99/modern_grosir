@@ -6,7 +6,15 @@
         "laravel",
         "framework"
     ],
-    "license": "MIT",
+    "license": "Proprietary",
+    "authors": [
+        {
+            "name": "Ricky",
+            "email": "rickiricki201533@gmail.com",
+            "role": "Owner/Developer",
+            "homepage": "https://blueseyes.id"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",

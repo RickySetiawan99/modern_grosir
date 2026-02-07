@@ -97,4 +97,21 @@ ModernGrosir adalah platform manajemen grosir modern yang dibangun dengan Larave
 - [x] Sistem Notifikasi Stok Menipis
 
 ---
+
+## 🔒 License & Ownership
+
+**Proprietary Software** - Copyright © 2026 Ricky. All Rights Reserved.
+
+This project is protected by copyright laws. Unauthorized use, reproduction, or distribution without explicit permission from the owner is strictly prohibited.
+
+### ⚠️ Activation Required
+This application requires a valid **License Key** to run.
+Please contact the owner (Ricky) at **rickiricki201533@gmail.com** or visit **[blueseyes.id](https://blueseyes.id)** to obtain your `APP_LICENSE_KEY`.
+
+Add the key to your `.env` file:
+```env
+APP_LICENSE_KEY=your-secret-key-here
+```
+
+---
 *Dikembangkan dengan ❤️ untuk ModernGrosir Management.*

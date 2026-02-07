@@ -118,7 +118,7 @@
                 @if(!isset($hideButtons))
                 <div class="d-flex justify-content-end mt-4 gap-2 no-print">
                     @if($isTransaction)
-                        <a href="{{ route('transactions.index') }}" class="btn btn-outline-secondary">Back to List</a>
+                        <a href="{{ route('pos.index') }}" class="btn btn-outline-secondary">Back to List</a>
                     @else
                         <a href="{{ route('reseller.orders.index') }}" class="btn btn-outline-secondary">Back to List</a>
                     @endif

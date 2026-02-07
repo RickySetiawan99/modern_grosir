@@ -21,9 +21,7 @@ class UserController extends Controller
 
     public function data()
     {
-        $users = User::whereDoesntHave('roles', function ($q) {
-            $q->where('name', 'reseller');
-        })->with('roles');
+        $users = User::with('roles');
 
         return DataTables::of($users)
             ->addIndexColumn()
