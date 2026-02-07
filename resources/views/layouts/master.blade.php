@@ -25,28 +25,7 @@
         </div>
     </div>
     
-    <style>
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 99999;
-            background: var(--bs-body-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .pulse-animation {
-            animation: pulse-loader 2s infinite ease-in-out;
-        }
-        @keyframes pulse-loader {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-    </style>
+
     <div id="main-wrapper">
 
         <!-- Sidebar Start -->

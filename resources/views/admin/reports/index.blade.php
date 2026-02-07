@@ -35,11 +35,21 @@
         <form action="{{ route('reports.index') }}" method="GET" class="row align-items-end">
             <div class="col-md-4 mb-3">
                 <label class="form-label">Start Date</label>
-                <input type="date" name="start_date" class="form-control" value="{{ $startDate }}">
+                <div class="input-group">
+                    <input type="text" name="start_date" class="form-control datepicker-input" value="{{ $startDate }}" placeholder="YYYY-MM-DD">
+                    <span class="input-group-text">
+                        <i class="ti ti-calendar fs-5"></i>
+                    </span>
+                </div>
             </div>
             <div class="col-md-4 mb-3">
                 <label class="form-label">End Date</label>
-                <input type="date" name="end_date" class="form-control" value="{{ $endDate }}">
+                <div class="input-group">
+                    <input type="text" name="end_date" class="form-control datepicker-input" value="{{ $endDate }}" placeholder="YYYY-MM-DD">
+                    <span class="input-group-text">
+                        <i class="ti ti-calendar fs-5"></i>
+                    </span>
+                </div>
             </div>
             <div class="col-md-4 mb-3">
                 <button type="submit" class="btn btn-primary w-100">Filter Data</button>

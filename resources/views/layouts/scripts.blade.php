@@ -16,6 +16,21 @@
 <script src="{{ URL::asset('build/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/datatable/custom_datatable.js') }}"></script>
+<script src="{{ URL::asset('build/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+
+<script>
+    // Global Datepicker Initialization
+    $(document).ready(function() {
+        if ($.fn.datepicker) {
+            $('.datepicker-input').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true,
+                orientation: "bottom auto"
+            });
+        }
+    });
+</script>
 
 <script>
     $(document).ready(function() {

@@ -2,16 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\GeneralHelper;
+use App\Services\FileUploadService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
+    protected $fileService;
+
+    public function __construct(FileUploadService $fileService)
+    {
+        $this->fileService = $fileService;
+    }
+
     public function settings()
     {
         $user = Auth::user();
+
         return view('profile.settings', compact('user'));
     }
 
@@ -26,41 +36,41 @@ class ProfileController extends Controller
             'selected_avatar' => ['nullable', 'string'],
         ]);
 
-        $data = $request->only('name', 'email');
+        try {
+            $data = $request->only('name', 'email');
 
-        if ($request->hasFile('avatar')) {
-            // Delete old avatar if it's an uploaded one
-            if ($user->avatar && str_contains($user->avatar, 'uploads/') && file_exists(public_path($user->avatar))) {
-                unlink(public_path($user->avatar));
+            if ($request->hasFile('avatar')) {
+                $data['avatar'] = $this->fileService->upload($request->file('avatar'), 'uploads/avatars', $user->avatar);
+            } elseif ($request->filled('selected_avatar')) {
+                if ($user->avatar && str_contains($user->avatar, 'uploads/')) {
+                    $this->fileService->delete($user->avatar);
+                }
+                $data['avatar'] = $request->selected_avatar;
             }
 
-            $avatarName = time() . '.' . $request->avatar->extension();
-            $request->avatar->move(public_path('uploads/avatars'), $avatarName);
-            $data['avatar'] = 'uploads/avatars/' . $avatarName;
-        } elseif ($request->filled('selected_avatar')) {
-            // If they picked a default avatar, delete old upload if exists
-            if ($user->avatar && str_contains($user->avatar, 'uploads/') && file_exists(public_path($user->avatar))) {
-                unlink(public_path($user->avatar));
-            }
-            $data['avatar'] = $request->selected_avatar;
+            $user->update($data);
+
+            return back()->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to update profile: '.$e->getMessage());
         }
-
-        $user->update($data);
-
-        return back()->with('success', 'Profile updated successfully.');
     }
 
     public function resetAvatar()
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        if ($user->avatar && file_exists(public_path($user->avatar))) {
-            unlink(public_path($user->avatar));
+            if ($user->avatar && str_contains($user->avatar, 'uploads/')) {
+                $this->fileService->delete($user->avatar);
+            }
+
+            $user->update(['avatar' => null]);
+
+            return back()->with('success', 'Profile picture reset to default.');
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to reset avatar: '.$e->getMessage());
         }
-
-        $user->update(['avatar' => null]);
-
-        return back()->with('success', 'Profile picture reset to default.');
     }
 
     public function updatePassword(Request $request)
@@ -70,10 +80,14 @@ class ProfileController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
-        Auth::user()->update([
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            Auth::user()->update([
+                'password' => Hash::make($request->password),
+            ]);
 
-        return back()->with('success', 'Password updated successfully.');
+            return back()->with('success', 'Password updated successfully.');
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to update password: '.$e->getMessage());
+        }
     }
 }

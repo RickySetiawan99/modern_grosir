@@ -3,56 +3,7 @@
 @section('title', 'Product Catalog')
 
 @section('pageContent')
-<style>
-    .reseller-product-card .card-img-top {
-        height: 140px;
-        object-fit: cover;
-    }
 
-    .reseller-product-card .badge-row {
-        gap: 0.25rem;
-        flex-wrap: wrap;
-    }
-
-    .reseller-product-card .badge-sku {
-        max-width: 96px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    @media (max-width: 575.98px) {
-        .reseller-product-card .badge-row {
-            justify-content: flex-start;
-        }
-
-        .reseller-product-card .card-body {
-            padding: 0.75rem;
-        }
-
-        .reseller-product-card .card-img-top {
-            height: 120px;
-        }
-
-        .reseller-product-card .badge {
-            font-size: 0.65rem;
-        }
-
-        .reseller-product-card .product-title {
-            font-size: 0.85rem;
-            min-height: 2.4rem;
-        }
-
-        .reseller-product-card .price-block h5 {
-            font-size: 1rem;
-        }
-
-        .reseller-product-card .btn {
-            padding: 0.4rem 0.5rem;
-            font-size: 0.8rem;
-        }
-    }
-</style>
 <div class="container-fluid">
     <div class="card bg-light-info shadow-none position-relative overflow-hidden">
         <div class="card-body px-4 py-3">

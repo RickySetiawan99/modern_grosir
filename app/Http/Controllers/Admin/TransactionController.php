@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
-use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
 class TransactionController extends Controller
@@ -24,7 +24,7 @@ class TransactionController extends Controller
                 return $row->created_at->format('d M Y H:i');
             })
             ->editColumn('total_amount', function ($row) {
-                return 'Rp ' . number_format($row->total_amount, 0, ',', '.');
+                return GeneralHelper::formatCurrency($row->total_amount);
             })
             ->editColumn('user_name', function ($row) {
                 return $row->user->name ?? 'Unknown';
@@ -39,10 +39,11 @@ class TransactionController extends Controller
                     'canceled' => 'danger',
                     default => 'secondary',
                 };
-                return '<span class="badge bg-' . $color . '-subtle text-' . $color . '">' . ucfirst($row->status) . '</span>';
+
+                return '<span class="badge bg-'.$color.'-subtle text-'.$color.'">'.ucfirst($row->status).'</span>';
             })
             ->addColumn('action', function ($row) {
-                return '<a href="' . route('transactions.show', $row->id) . '" class="btn btn-sm btn-primary">
+                return '<a href="'.route('transactions.show', $row->id).'" class="btn btn-sm btn-primary">
                             <i class="ti ti-eye"></i> Detail
                         </a>';
             })
@@ -53,13 +54,14 @@ class TransactionController extends Controller
     public function show($id)
     {
         $transaction = Transaction::with(['details.product', 'user', 'customer', 'warehouse'])->findOrFail($id);
+
         return view('admin.transactions.show', compact('transaction'));
     }
 
     public function receipt($id)
     {
-        // For Invoice Partial
         $transaction = Transaction::with(['details.product', 'user', 'customer.reseller.tier', 'warehouse'])->findOrFail($id);
+
         return view('partials.invoice', ['data' => $transaction]);
     }
 }

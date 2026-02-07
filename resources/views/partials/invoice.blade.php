@@ -130,24 +130,4 @@
     </div>
 </div>
 
-<style>
-    @media print {
-        body * {
-            visibility: hidden;
-        }
-        .card, .card * {
-            visibility: visible;
-        }
-        .card {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        .no-print {
-            display: none !important;
-        }
-    }
-</style>
+

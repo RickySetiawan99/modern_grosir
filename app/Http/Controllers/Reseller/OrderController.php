@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Reseller;
 
+use App\Helpers\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Models\DraftOrder;
 use App\Models\DraftOrderItem;
@@ -12,13 +13,17 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-        $orders = DraftOrder::where('reseller_id', $user->id)
-            ->with(['items.product', 'warehouse'])
-            ->latest()
-            ->paginate(15);
-        
-        return view('reseller.orders.index', compact('orders'));
+        try {
+            $user = auth()->user();
+            $orders = DraftOrder::where('reseller_id', $user->id)
+                ->with(['items.product', 'warehouse'])
+                ->latest()
+                ->paginate(15);
+
+            return view('reseller.orders.index', compact('orders'));
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to load orders: '.$e->getMessage());
+        }
     }
 
     public function store(Request $request)
@@ -30,44 +35,41 @@ class OrderController extends Controller
             'orders.*.items.*.id' => 'required|exists:products,id',
             'orders.*.items.*.qty' => 'required|integer|min:1',
             'orders.*.items.*.price' => 'required|numeric|min:0',
-            'orders.*.notes' => 'nullable|string|max:500'
+            'orders.*.notes' => 'nullable|string|max:500',
         ]);
 
-        $user = auth()->user();
-        $reseller = $user->reseller;
-
-        if (!$reseller) {
-            return response()->json(['error' => 'Reseller profile not found'], 403);
-        }
-
-        DB::beginTransaction();
         try {
+            $user = auth()->user();
+            $reseller = $user->reseller;
+
+            if (! $reseller) {
+                return response()->json(['error' => 'Reseller profile not found'], 403);
+            }
+
+            DB::beginTransaction();
             $createdOrderIds = [];
 
             foreach ($request->orders as $orderData) {
-                // Calculate total
                 $totalAmount = 0;
                 foreach ($orderData['items'] as $item) {
                     $totalAmount += $item['price'] * $item['qty'];
                 }
 
-                // Create draft order
                 $draftOrder = DraftOrder::create([
                     'reseller_id' => $user->id,
                     'warehouse_id' => $orderData['warehouse_id'],
                     'status' => 'pending',
                     'total_amount' => $totalAmount,
-                    'notes' => $orderData['notes'] ?? null
+                    'notes' => $orderData['notes'] ?? null,
                 ]);
 
-                // Create draft order items
                 foreach ($orderData['items'] as $item) {
                     DraftOrderItem::create([
                         'draft_order_id' => $draftOrder->id,
                         'product_id' => $item['id'],
                         'quantity' => $item['qty'],
                         'unit_price' => $item['price'],
-                        'subtotal' => $item['price'] * $item['qty']
+                        'subtotal' => $item['price'] * $item['qty'],
                     ]);
                 }
 
@@ -79,34 +81,42 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Orders submitted successfully!',
-                'order_ids' => $createdOrderIds
+                'order_ids' => $createdOrderIds,
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Failed to create orders: ' . $e->getMessage()], 500);
+
+            return GeneralHelper::errorResponse('Failed to create orders: '.$e->getMessage());
         }
     }
 
     public function show($id)
     {
-        $user = auth()->user();
-        $order = DraftOrder::where('reseller_id', $user->id)
-            ->with(['items.product.unit', 'warehouse'])
-            ->findOrFail($id);
-        
-        return view('reseller.orders.show', compact('order'));
+        try {
+            $user = auth()->user();
+            $order = DraftOrder::where('reseller_id', $user->id)
+                ->with(['items.product.unit', 'warehouse'])
+                ->findOrFail($id);
+
+            return view('reseller.orders.show', compact('order'));
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to load order: '.$e->getMessage());
+        }
     }
 
     public function cancel($id)
     {
-        $user = auth()->user();
-        $order = DraftOrder::where('reseller_id', $user->id)
-            ->where('status', 'pending')
-            ->findOrFail($id);
-        
-        $order->update(['status' => 'cancelled']);
-        
-        return response()->json(['success' => true, 'message' => 'Order cancelled']);
+        try {
+            $user = auth()->user();
+            $order = DraftOrder::where('reseller_id', $user->id)
+                ->where('status', 'pending')
+                ->findOrFail($id);
+
+            $order->update(['status' => 'cancelled']);
+
+            return response()->json(['success' => true, 'message' => 'Order cancelled']);
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to cancel order: '.$e->getMessage());
+        }
     }
 }

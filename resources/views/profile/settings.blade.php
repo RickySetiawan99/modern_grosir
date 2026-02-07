@@ -166,23 +166,5 @@
     }
 </script>
 
-<style>
-    .default-avatar-pick {
-        padding: 3px;
-        border: 2px solid transparent;
-        border-radius: 50%;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-    .default-avatar-pick:hover {
-        border-color: var(--bs-primary-border-subtle);
-    }
-    .default-avatar-pick.active {
-        border-color: var(--bs-primary);
-        background-color: var(--bs-primary-bg-subtle);
-    }
-    .cursor-pointer {
-        cursor: pointer;
-    }
-</style>
+
 @endsection

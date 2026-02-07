@@ -162,8 +162,5 @@
   });
 </script>
 
-<style>
-  .input-group-text { border-right: none; }
-  .form-control:focus + .input-group-text { border-color: #5d87ff; }
-</style>
+
 @endsection

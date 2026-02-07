@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -9,30 +10,26 @@ use Yajra\DataTables\DataTables;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('admin.master.categories.index');
     }
 
-    /**
-     * Get data for DataTables
-     */
     public function data()
     {
         $categories = Category::query();
+
         return DataTables::of($categories)
             ->addIndexColumn()
             ->addColumn('checkbox', function ($category) {
                 return '<div class="form-check">
-                            <input class="form-check-input item-checkbox" type="checkbox" value="' . $category->id . '">
+                            <input class="form-check-input item-checkbox" type="checkbox" value="'.$category->id.'">
                         </div>';
             })
             ->addColumn('action', function ($category) {
                 $editUrl = route('master.categories.edit', $category->id);
                 $deleteUrl = route('master.categories.destroy', $category->id);
+
                 return '
                     <div class="dropdown dropstart">
                         <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -40,15 +37,15 @@ class CategoryController extends Controller
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="' . $editUrl . '">
+                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
                                     <i class="fs-3 ti ti-edit"></i>Edit
                                 </a>
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="' . $category->id . '" 
-                                    data-name="' . $category->name . '"
-                                    data-action="' . $deleteUrl . '">
+                                    data-id="'.$category->id.'" 
+                                    data-name="'.$category->name.'"
+                                    data-action="'.$deleteUrl.'">
                                     <i class="fs-3 ti ti-trash"></i>Delete
                                 </button>
                             </li>
@@ -71,9 +68,13 @@ class CategoryController extends Controller
             'slug' => 'required|string|max:255|unique:categories,slug',
         ]);
 
-        Category::create($request->all());
+        try {
+            Category::create($request->all());
 
-        return redirect()->route('master.categories.index')->with('success', 'Category created successfully.');
+            return redirect()->route('master.categories.index')->with('success', 'Category created successfully.');
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to create category: '.$e->getMessage());
+        }
     }
 
     public function edit(Category $category)
@@ -85,32 +86,46 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
+            'slug' => 'required|string|max:255|unique:categories,slug,'.$category->id,
         ]);
 
-        $category->update($request->all());
+        try {
+            $category->update($request->all());
 
-        return redirect()->route('master.categories.index')->with('success', 'Category updated successfully.');
+            return redirect()->route('master.categories.index')->with('success', 'Category updated successfully.');
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to update category: '.$e->getMessage());
+        }
     }
 
     public function destroy(Category $category)
     {
-        $category->delete();
-        
-        if (request()->ajax() || request()->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Category deleted successfully.']);
+        try {
+            $category->delete();
+
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'Category deleted successfully.']);
+            }
+
+            return redirect()->route('master.categories.index')->with('success', 'Category deleted successfully.');
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to delete category: '.$e->getMessage());
         }
-        
-        return redirect()->route('master.categories.index')->with('success', 'Category deleted successfully.');
     }
 
     public function bulkDelete(Request $request)
     {
         $ids = $request->ids;
-        if (!empty($ids)) {
-            Category::whereIn('id', $ids)->delete();
-            return response()->json(['success' => true, 'message' => 'Selected categories deleted successfully.']);
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No items selected.']);
         }
-        return response()->json(['success' => false, 'message' => 'No items selected.']);
+
+        try {
+            Category::whereIn('id', $ids)->delete();
+
+            return response()->json(['success' => true, 'message' => 'Selected categories deleted successfully.']);
+        } catch (\Exception $e) {
+            return GeneralHelper::errorResponse('Failed to delete categories: '.$e->getMessage());
+        }
     }
 }

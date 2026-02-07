@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class MasterDataController extends Controller
 {
@@ -25,4 +24,5 @@ class MasterDataController extends Controller
     public function suppliers()
     {
         return view('main.index');
-    }}
+    }
+}
