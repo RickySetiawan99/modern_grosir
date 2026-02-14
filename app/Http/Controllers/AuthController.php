@@ -39,12 +39,49 @@ class AuthController extends Controller
     {
         try {
             Auth::logout();
+
             $request->session()->invalidate();
+
             $request->session()->regenerateToken();
 
             return redirect('/login');
         } catch (\Exception $e) {
             return GeneralHelper::errorResponse('Logout failed: '.$e->getMessage());
+        }
+    }
+
+    public function apiLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            if (!$user->hasRole('reseller')) {
+                return response()->json(['message' => 'Unauthorized. Resellers only.'], 403);
+            }
+
+            $token = $user->createToken('reseller-app')->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+            ]);
+        }
+
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    public function apiLogout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logged out successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Logout failed'], 500);
         }
     }
 }
