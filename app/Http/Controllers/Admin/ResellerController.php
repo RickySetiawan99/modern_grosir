@@ -45,9 +45,13 @@ class ResellerController extends Controller
             ->editColumn('credit_limit', function ($reseller) {
                 return GeneralHelper::formatCurrency($reseller->credit_limit);
             })
+            ->editColumn('balance', function ($reseller) {
+                return GeneralHelper::formatCurrency($reseller->balance);
+            })
             ->addColumn('action', function ($reseller) {
                 $editUrl = route('master.resellers.edit', $reseller->id);
                 $deleteUrl = route('master.resellers.destroy', $reseller->id);
+                $formattedBalance = GeneralHelper::formatCurrency($reseller->balance);
 
                 return '
                     <div class="dropdown dropstart">
@@ -55,6 +59,14 @@ class ResellerController extends Controller
                             <i class="ti ti-dots-vertical fs-6"></i>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li>
+                                <a href="#" class="dropdown-item d-flex align-items-center gap-3 fs-3 btn-balance"
+                                    data-id="'.$reseller->id.'"
+                                    data-name="'.($reseller->user->name ?? 'Reseller').'"
+                                    data-balance="'.$formattedBalance.'">
+                                    <i class="fs-3 ti ti-wallet"></i>Manage Balance
+                                </a>
+                            </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
                                     <i class="fs-3 ti ti-edit"></i>Edit
@@ -90,6 +102,9 @@ class ResellerController extends Controller
             'password' => 'required|string|min:8',
             'reseller_tier_id' => 'required|exists:reseller_tiers,id',
             'credit_limit' => 'required|numeric|min:0',
+            'store_name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
         ]);
 
         try {
@@ -106,6 +121,9 @@ class ResellerController extends Controller
                     'user_id' => $user->id,
                     'reseller_tier_id' => $request->reseller_tier_id,
                     'credit_limit' => $request->credit_limit,
+                    'store_name' => $request->store_name,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
                 ]);
             });
 
@@ -130,6 +148,9 @@ class ResellerController extends Controller
             'reseller_tier_id' => 'required|exists:reseller_tiers,id',
             'credit_limit' => 'required|numeric|min:0',
             'password' => 'nullable|string|min:8',
+            'store_name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
         ]);
 
         try {
@@ -148,6 +169,9 @@ class ResellerController extends Controller
                 $reseller->update([
                     'reseller_tier_id' => $request->reseller_tier_id,
                     'credit_limit' => $request->credit_limit,
+                    'store_name' => $request->store_name,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
                 ]);
             });
 
@@ -200,6 +224,37 @@ class ResellerController extends Controller
             return response()->json(['success' => true, 'message' => 'Selected resellers deleted successfully.']);
         } catch (\Exception $e) {
             return GeneralHelper::errorResponse('Failed to delete resellers: '.$e->getMessage());
+        }
+    }
+
+    public function updateBalance(Request $request, Reseller $reseller)
+    {
+        $request->validate([
+            'amount' => 'required|numeric',
+            'type' => 'required|in:add,subtract',
+            'notes' => 'nullable|string'
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $reseller) {
+                $amount = $request->amount;
+                
+                if ($request->type === 'subtract') {
+                    if ($reseller->balance < $amount) {
+                         throw new \Exception('Insufficient balance.');
+                    }
+                    $reseller->decrement('balance', $amount);
+                } else {
+                    $reseller->increment('balance', $amount);
+                }
+
+                // Optional: Record transaction history here if transaction table supports it
+                // For now, minimal implementation just updates the balance column
+            });
+
+            return response()->json(['success' => true, 'message' => 'Balance updated successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
 }

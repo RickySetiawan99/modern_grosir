@@ -28,7 +28,13 @@ class ResellerProfileResource extends JsonResource
                 'discount_percentage' => (float) $this->tier->discount_percentage,
             ],
             'credit_limit' => (float) $this->credit_limit,
-            // Add more fields if necessary, e.g. loyalty points if they exist
+            'balance' => (float) $this->balance,
+            'points' => $this->loyalty_points,
+            'orders_count' => $this->orders()->count(),
+            'member_since' => $this->created_at->format('M Y'),
+            'business_name' => $this->store_name,
+            'business_location' => $this->address,
+            'phone' => $this->phone,
         ];
     }
 }

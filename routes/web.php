@@ -98,6 +98,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
         Route::get('resellers/data', [AdminResellerController::class, 'data'])->name('resellers.data');
         Route::post('resellers/bulk-delete', [AdminResellerController::class, 'bulkDelete'])->name('resellers.bulk-delete');
+        Route::post('resellers/{reseller}/balance', [AdminResellerController::class, 'updateBalance'])->name('resellers.balance');
         Route::resource('resellers', AdminResellerController::class);
 
         Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');

@@ -78,6 +78,33 @@
             </div>
           </div>
 
+          <hr class="my-4">
+          <h6 class="fw-semibold mb-3">Business Information (Optional)</h6>
+
+          <div class="mb-3">
+            <label for="store_name" class="form-label">Store/Business Name</label>
+            <input type="text" class="form-control @error('store_name') is-invalid @enderror" id="store_name" name="store_name" value="{{ old('store_name', $reseller->store_name) }}" placeholder="e.g., Toko Sejahtera">
+            @error('store_name')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $reseller->phone) }}" placeholder="e.g., 08123456789">
+            @error('phone')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div class="mb-3">
+            <label for="address" class="form-label">Business Address</label>
+            <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3" placeholder="Full business address">{{ old('address', $reseller->address) }}</textarea>
+            @error('address')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
           <button type="submit" class="btn btn-primary">Update Reseller</button>
           <a href="{{ route('master.resellers.index') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
         </form>

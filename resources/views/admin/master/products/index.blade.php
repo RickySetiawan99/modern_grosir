@@ -25,6 +25,22 @@
   </div>
 </div>
 
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card mb-0">
+      <div class="card-body p-3">
+        <label for="category-filter" class="form-label fs-2 fw-semibold text-muted mb-1">Filter by Category</label>
+        <select id="category-filter" class="form-select form-select-sm border-0 bg-light">
+          <option value="all">All Categories</option>
+          @foreach($categories as $category)
+            <option value="{{ $category->id }}">{{ $category->name }}</option>
+          @endforeach
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="card">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -75,8 +91,13 @@
 @section('scripts')
 <script>
   $(document).ready(function() {
-    initModernDatatable('#main-table', {
-      ajax: '{{ route("master.products.data") }}',
+    var table = initModernDatatable('#main-table', {
+      ajax: {
+        url: '{{ route("master.products.data") }}',
+        data: function(d) {
+          d.category_id = $('#category-filter').val();
+        }
+      },
       itemName: 'Product',
       columns: [
         { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
@@ -93,6 +114,10 @@
       messages: {
         deleteText: 'Produk "{name}" akan dihapus permanen!'
       }
+    });
+
+    $('#category-filter').on('change', function() {
+      table.ajax.reload();
     });
   });
 </script>

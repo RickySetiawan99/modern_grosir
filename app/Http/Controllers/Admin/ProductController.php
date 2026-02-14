@@ -22,14 +22,19 @@ class ProductController extends Controller
 
     public function index()
     {
-        return view('admin.master.products.index');
+        $categories = Category::all();
+        return view('admin.master.products.index', compact('categories'));
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $products = Product::with(['category', 'unit'])->select('products.*');
+        $query = Product::with(['category', 'unit'])->select('products.*');
 
-        return DataTables::of($products)
+        if ($request->has('category_id') && $request->category_id != 'all') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('checkbox', function ($product) {
                 return '<div class="form-check">

@@ -20,17 +20,18 @@ class ResellerService
         $query = Product::with(['category', 'unit', 'stockLevels.warehouse', 'tierPrices']);
 
         // Apply filters
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+        $query->when($filters['search'] ?? null, function ($q, $search) {
+            $q->where(function ($sq) use ($search) {
+                $sq->where('name', 'like', "%{$search}%")
                     ->orWhere('sku', 'like', "%{$search}%");
             });
-        }
+        });
 
-        if (!empty($filters['category_id']) && $filters['category_id'] !== 'all') {
-            $query->where('category_id', $filters['category_id']);
-        }
+        $query->when($filters['category_id'] ?? null, function ($q, $categoryId) {
+            if ($categoryId !== 'all') {
+                $q->where('category_id', $categoryId);
+            }
+        });
 
         $products = $query->paginate(48);
 
