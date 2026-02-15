@@ -57,7 +57,21 @@
                     
                     <button type="submit" class="btn btn-primary w-100 py-3 mb-4 rounded-3 fs-4 fw-bold shadow-sm">Sign In</button>
                     
-                    <div class="text-center mt-3">
+                    <div class="position-relative text-center my-4">
+                      <p class="mb-0 fs-3 px-3 d-inline-block bg-body text-dark z-index-5 position-relative">or sign in with</p>
+                      <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-12">
+                        <a href="{{ route('auth.social', 'google') }}" class="btn btn-outline-primary w-100 py-2 rounded-3 d-flex align-items-center justify-content-center gap-2">
+                          <img src="{{ URL::asset('build/images/svgs/google-icon.svg') }}" alt="Google" width="18">
+                          <span>Sign in with Google</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div class="text-center mt-4">
                       <p class="fs-2 text-muted mb-0">ModernGrosir Enterprise v1.0</p>
                     </div>
                   </form>

@@ -6,13 +6,12 @@
     @yield('css')
 </head>
 <body class="link-sidebar">
-    <!-- Preloader -->
     <div class="preloader">
-        <img src="{{ URL::asset('images/logos/favicon.png') }}" alt="loader" class="lds-ripple img-fluid" width="50" />
+        <img src="{{ URL::asset('images/logos/favicon.svg') }}" alt="loader" class="lds-ripple img-fluid" width="50" />
     </div>
 
     @yield('pageContent')
-    @include('layouts.customizer')
+
 
     <div class="dark-transparent sidebartoggler"></div>
     @include('layouts.scripts2')

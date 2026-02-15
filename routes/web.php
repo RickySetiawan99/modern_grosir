@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PageController;
@@ -22,18 +23,23 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Reseller\CatalogController;
 use App\Http\Controllers\Reseller\OrderController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    return view('landing');
 });
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+
+    // Socialite Routes
+    Route::get('/auth/{provider}', [SocialiteController::class, 'redirectToProvider'])->name('auth.social');
+    Route::get('/auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 // ModernGrosir Core Routes
 Route::prefix('admin')->middleware(['auth'])->group(function () {
@@ -61,9 +67,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/transactions/{id}/receipt', [TransactionController::class, 'receipt'])->name('transactions.receipt')->middleware('role:admin|cashier');
 
     // Reports & Analytics (Admin Only)
-    Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index')->middleware('role:admin');
-    Route::get('/reports/export-excel', [\App\Http\Controllers\ReportController::class, 'exportExcel'])->name('reports.excel')->middleware('role:admin');
-    Route::get('/reports/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.pdf')->middleware('role:admin');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('role:admin');
+    Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.excel')->middleware('role:admin');
+    Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf')->middleware('role:admin');
 
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
     Route::get('/pos/products', [POSController::class, 'products'])->name('pos.products');

@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email',
         'avatar',
         'password',
+        'social_id',
+        'social_type',
     ];
 
     /**
@@ -52,5 +54,23 @@ class User extends Authenticatable
     public function reseller()
     {
         return $this->hasOne(Reseller::class);
+    }
+
+    /**
+     * Get the reseller profile, or create one if it doesn't exist and the user is a reseller.
+     */
+    public function getResellerProfile()
+    {
+        $reseller = $this->reseller;
+
+        if (!$reseller && $this->hasRole('reseller')) {
+            $reseller = Reseller::create([
+                'user_id' => $this->id,
+                'reseller_tier_id' => 1, // Default to Bronze
+                'store_name' => $this->name . "'s Store",
+            ]);
+        }
+
+        return $reseller;
     }
 }

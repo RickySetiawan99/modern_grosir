@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\LoginController as ApiLoginController;
 use App\Http\Controllers\Api\Reseller\CartController;
 use App\Http\Controllers\Api\Reseller\CatalogController;
 use App\Http\Controllers\Api\Reseller\NotificationController;
 use App\Http\Controllers\Api\Reseller\OrderController;
 use App\Http\Controllers\Api\Reseller\ProfileController;
 use App\Http\Controllers\Api\Reseller\WalletController;
-use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,10 +21,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [AuthController::class, 'apiLogin']);
+Route::post('/login', [ApiLoginController::class, 'login']);
 
 Route::middleware(['auth:sanctum', 'role:reseller'])->prefix('reseller')->group(function () {
-    Route::post('/logout', [AuthController::class, 'apiLogout']);
+    Route::post('/logout', [ApiLoginController::class, 'logout']);
     
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);

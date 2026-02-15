@@ -23,7 +23,8 @@ class CatalogController extends Controller
     {
         try {
             $user = auth()->user();
-            $reseller = $user->reseller;
+            $reseller = $user->getResellerProfile();
+            
             if (! $reseller) {
                 return response()->json(['error' => 'Reseller profile not found'], 403);
             }
