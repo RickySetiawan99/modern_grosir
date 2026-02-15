@@ -15,7 +15,8 @@ class Transaction extends Model
         'warehouse_id',
         'transaction_code',
         'total_amount',
-        'status'
+        'payment_method',
+        'status',
     ];
 
     public function details()

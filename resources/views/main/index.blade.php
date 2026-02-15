@@ -90,6 +90,19 @@
             </div>
         </div>
         @endrole
+        @role('reseller')
+        <div class="item">
+            <div class="card border-0 zoom-in bg-primary-subtle shadow-none">
+                <div class="card-body">
+                    <a href="{{ route('reseller.wallet.index') }}" class="text-decoration-none text-center d-block">
+                        <img src="{{ URL::asset('build/images/svgs/icon-wallet.svg') }}" width="50" height="50" class="mb-3" alt="modernize-img" />
+                        <p class="fw-semibold fs-3 text-primary mb-1">Wallet Balance</p>
+                        <h5 class="fw-semibold text-primary mb-0">Rp {{ number_format($walletBalance, 0, ',', '.') }}</h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endrole
         <div class="item">
             <div class="card border-0 zoom-in bg-warning-subtle shadow-none">
                 <div class="card-body">
@@ -117,8 +130,14 @@
                 <div class="card-body">
                     <div class="text-center">
                         <img src="{{ URL::asset('build/images/svgs/icon-favorites.svg') }}" width="50" height="50" class="mb-3" alt="modernize-img" />
-                        <p class="fw-semibold fs-3 text-danger mb-1">Total Sales</p>
-                        <h5 class="fw-semibold text-danger mb-0">Rp {{ number_format($totalSales / 1000000, 1) }}M</h5>
+                        <p class="fw-semibold fs-3 text-danger mb-1">{{ auth()->user()->hasRole('reseller') ? 'Total Spending' : 'Total Sales' }}</p>
+                        <h5 class="fw-semibold text-danger mb-0">
+                            @if(auth()->user()->hasRole('reseller'))
+                                Rp {{ number_format($totalSales, 0, ',', '.') }}
+                            @else
+                                Rp {{ number_format($totalSales / 1000000, 1) }}M
+                            @endif
+                        </h5>
                     </div>
                 </div>
             </div>
@@ -146,7 +165,13 @@
                     <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                         <div class="mb-3 mb-sm-0">
                             <h4 class="card-title fw-semibold">Performance Overview</h4>
-                            <p class="card-subtitle mb-0">Revenue vs Profit in {{ date('Y') }}</p>
+                            <p class="card-subtitle mb-0">
+                                @if(auth()->user()->hasRole('admin'))
+                                    Revenue vs Profit in {{ date('Y') }}
+                                @else
+                                    Monthly Spendings in {{ date('Y') }}
+                                @endif
+                            </p>
                         </div>
                         @role('admin')
                         <div class="d-flex align-items-center gap-2">
@@ -168,8 +193,8 @@
         <div class="col-lg-4 d-flex align-items-stretch">
             <div class="card w-100 mt-n1">
                 <div class="card-body">
-                    <h4 class="card-title fw-semibold">Top Selling Products</h4>
-                    <p class="card-subtitle mb-4">By quantity sold</p>
+                    <h4 class="card-title fw-semibold">{{ auth()->user()->hasRole('reseller') ? 'My Top Products' : 'Top Selling Products' }}</h4>
+                    <p class="card-subtitle mb-4">{{ auth()->user()->hasRole('reseller') ? 'Most purchased items' : 'By quantity sold' }}</p>
                     <div class="position-relative">
                         @forelse($topProducts as $tp)
                             <div class="d-flex align-items-center justify-content-between mb-7">

@@ -47,6 +47,14 @@
             <span class="hide-menu">My Orders</span>
           </a>
         </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/reseller/wallet*') ? 'active' : '' }}" href="{{ route('reseller.wallet.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-wallet"></i>
+            </span>
+            <span class="hide-menu">My Wallet</span>
+          </a>
+        </li>
         @endrole
 
         @role('admin')
@@ -194,6 +202,14 @@
               <i class="ti ti-users"></i>
             </span>
             <span class="hide-menu">Reseller Accounts</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/master/topups*') ? 'active' : '' }}" href="{{ route('master.topups.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-cash-banknote"></i>
+            </span>
+            <span class="hide-menu">Top-up Verification</span>
           </a>
         </li>
         @endrole

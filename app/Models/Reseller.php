@@ -22,4 +22,9 @@ class Reseller extends Model
     {
         return $this->hasMany(DraftOrder::class, 'reseller_id', 'user_id');
     }
+
+    public function walletTransactions()
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
 }

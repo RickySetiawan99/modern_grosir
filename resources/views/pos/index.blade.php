@@ -106,9 +106,17 @@
                         <span class="text-success fs-3">Reseller Discount</span>
                         <span class="fs-4 fw-semibold text-success" id="discount-display">- Rp 0</span>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fs-5 fw-bold text-dark">TOTAL</span>
                         <span class="fs-6 fw-bolder text-primary" id="total-display">Rp 0</span>
+                    </div>
+
+                    <div class="mb-3 mt-3" id="payment-method-row">
+                        <label class="form-label fs-2 fw-semibold">Payment Method</label>
+                        <select id="payment-method-select" class="form-select">
+                            <option value="cash">💵 Cash / Manual Transfer</option>
+                            <option value="wallet">💳 Wallet Balance</option>
+                        </select>
                     </div>
                     
                     <div class="d-grid gap-2">
@@ -401,7 +409,8 @@
                 target: getSwalTarget()
             }).then((result) => {
                 if (result.isConfirmed) {
-                    processCheckout(total, customerId);
+                    const paymentMethod = $('#payment-method-select').val();
+                    processCheckout(total, customerId, paymentMethod);
                 }
             });
     });
@@ -600,7 +609,7 @@
         $('#subtotal-display').text(`Rp ${new Intl.NumberFormat('id-ID').format(subtotal)}`); // Simplify for now
     }
 
-    function processCheckout(totalAmount, customerId) {
+    function processCheckout(totalAmount, customerId, paymentMethod = 'cash') {
         $.ajax({
             url: '{{ route("pos.checkout") }}',
             method: 'POST',
@@ -610,6 +619,7 @@
                 warehouse_id: selectedWarehouse, // Global fallback
                 customer_id: customerId,
                 total_amount: totalAmount,
+                payment_method: paymentMethod,
                 draft_order_ids: loadedDraftIds 
             },
             beforeSend: function() {

@@ -10,13 +10,19 @@ class DashboardController extends Controller
     {
         try {
             $user = auth()->user();
-            $transactionQuery = \App\Models\Transaction::query();
-            $detailQuery = \App\Models\TransactionDetail::query();
+            $transactionQuery = \App\Models\Transaction::where('status', 'completed');
+            $detailQuery = \App\Models\TransactionDetail::whereHas('transaction', function ($q) {
+                $q->where('status', 'completed');
+            });
+            $walletBalance = 0;
             if ($user->hasRole('reseller')) {
                 $transactionQuery->where('customer_id', $user->id);
                 $detailQuery->whereHas('transaction', function ($q) use ($user) {
                     $q->where('customer_id', $user->id);
                 });
+                
+                $reseller = \App\Models\Reseller::where('user_id', $user->id)->first();
+                $walletBalance = $reseller ? $reseller->balance : 0;
             }
             $lowStockProducts = [];
             $lowStockCount = 0;
@@ -37,9 +43,19 @@ class DashboardController extends Controller
                 $lowStockCount = $lowStockProducts->count();
             }
             $totalSales = (clone $transactionQuery)->sum('total_amount');
+            $totalTransactions = (clone $transactionQuery)->count();
+
+            if ($user->hasRole('reseller')) {
+                // For resellers, Transactions on dashboard should match their Orders (DraftOrders)
+                $orderQuery = \App\Models\DraftOrder::where('reseller_id', $user->id)
+                    ->where('status', 'completed');
+                
+                $totalTransactions = (clone $orderQuery)->count();
+                $totalSales = (clone $orderQuery)->sum('total_amount');
+            }
+
             $totalProducts = \App\Models\Product::count();
             $totalResellers = \App\Models\User::role('reseller')->count();
-            $totalTransactions = (clone $transactionQuery)->count();
             $totalProfit = 0;
             if ($user->hasRole('admin')) {
                 $totalProfit = (clone $detailQuery)
@@ -55,6 +71,18 @@ class DashboardController extends Controller
                 ->get()
                 ->pluck('total', 'month')
                 ->toArray();
+
+            if ($user->hasRole('reseller')) {
+                $monthlySales = \App\Models\DraftOrder::where('reseller_id', $user->id)
+                    ->where('status', 'completed')
+                    ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
+                    ->whereYear('created_at', date('Y'))
+                    ->groupBy('month')
+                    ->orderBy('month')
+                    ->get()
+                    ->pluck('total', 'month')
+                    ->toArray();
+            }
             $monthlyProfit = [];
             if ($user->hasRole('admin')) {
                 $monthlyProfit = (clone $detailQuery)
@@ -78,6 +106,7 @@ class DashboardController extends Controller
                 ->latest()
                 ->take(5)
                 ->get();
+
             $topProducts = (clone $detailQuery)
                 ->with('product')
                 ->selectRaw('product_id, SUM(quantity) as total_qty')
@@ -85,6 +114,29 @@ class DashboardController extends Controller
                 ->orderByDesc('total_qty')
                 ->take(5)
                 ->get();
+
+            if ($user->hasRole('reseller')) {
+                $recentTransactions = \App\Models\DraftOrder::where('reseller_id', $user->id)
+                    ->with(['warehouse']) // DraftOrder doesn't have 'customer' (it IS the reseller)
+                    ->latest()
+                    ->take(5)
+                    ->get()
+                    ->map(function($order) {
+                        // Map DraftOrder properties to match Transaction for the view
+                        $order->transaction_code = $order->order_code;
+                        return $order;
+                    });
+
+                $topProducts = \App\Models\DraftOrderItem::whereHas('draftOrder', function($q) use ($user) {
+                        $q->where('reseller_id', $user->id)->where('status', 'completed');
+                    })
+                    ->with('product')
+                    ->selectRaw('product_id, SUM(quantity) as total_qty')
+                    ->groupBy('product_id')
+                    ->orderByDesc('total_qty')
+                    ->take(5)
+                    ->get();
+            }
 
             return view('main.index', compact(
                 'totalSales',
@@ -97,7 +149,8 @@ class DashboardController extends Controller
                 'lowStockCount',
                 'lowStockProducts',
                 'totalProfit',
-                'profitChartData'
+                'profitChartData',
+                'walletBalance'
             ));
         } catch (\Exception $e) {
             return GeneralHelper::errorResponse('Failed to load dashboard: '.$e->getMessage());

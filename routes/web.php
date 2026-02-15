@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Admin\TopupController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 use App\Http\Controllers\Reseller\CatalogController;
@@ -65,6 +66,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/transactions/data', [TransactionController::class, 'data'])->name('transactions.data')->middleware('role:admin|cashier');
     Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show')->middleware('role:admin|cashier');
     Route::get('/transactions/{id}/receipt', [TransactionController::class, 'receipt'])->name('transactions.receipt')->middleware('role:admin|cashier');
+    Route::post('/transactions/{id}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel')->middleware('role:admin');
 
     // Reports & Analytics (Admin Only)
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('role:admin');
@@ -98,6 +100,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('warehouses/bulk-delete', [WarehouseController::class, 'bulkDelete'])->name('warehouses.bulk-delete');
         Route::resource('warehouses', WarehouseController::class);
 
+        // Top-up Management
+        Route::get('topups', [TopupController::class, 'index'])->name('topups.index');
+        Route::post('topups/{transaction}/approve', [TopupController::class, 'approve'])->name('topups.approve');
+        Route::post('topups/{transaction}/reject', [TopupController::class, 'reject'])->name('topups.reject');
+
         Route::get('reseller-tiers/data', [ResellerTierController::class, 'data'])->name('reseller-tiers.data');
         Route::post('reseller-tiers/bulk-delete', [ResellerTierController::class, 'bulkDelete'])->name('reseller-tiers.bulk-delete');
         Route::resource('reseller-tiers', ResellerTierController::class);
@@ -119,6 +126,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/catalog', [CatalogController::class, 'index'])->name('reseller.catalog.index');
         Route::get('/catalog/products', [CatalogController::class, 'products'])->name('reseller.catalog.products');
         
+        // Wallet & Top-up
+        Route::get('/wallet', [\App\Http\Controllers\Reseller\WalletController::class, 'index'])->name('reseller.wallet.index');
+        Route::post('/wallet/topup', [\App\Http\Controllers\Reseller\WalletController::class, 'store'])->name('reseller.wallet.topup');
+
         // Order Management
         Route::get('/orders', [OrderController::class, 'index'])->name('reseller.orders.index');
         Route::post('/orders', [OrderController::class, 'store'])->name('reseller.orders.store');

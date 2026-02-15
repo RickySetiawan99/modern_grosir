@@ -53,14 +53,64 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $transaction = Transaction::with(['details.product', 'user', 'customer', 'warehouse'])->findOrFail($id);
+        $transaction = \App\Models\Transaction::with(['details.product.unit', 'user', 'customer.reseller', 'warehouse'])->findOrFail($id);
 
         return view('admin.transactions.show', compact('transaction'));
     }
 
+    public function cancel($id)
+    {
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $transaction = \App\Models\Transaction::with(['details', 'customer.reseller'])->findOrFail($id);
+
+            if ($transaction->status !== 'completed') {
+                return redirect()->back()->with('error', 'Only completed transactions can be cancelled.');
+            }
+
+            // 1. Restore Stock
+            foreach ($transaction->details as $detail) {
+                $stock = \App\Models\StockLevel::where('product_id', $detail->product_id)
+                    ->where('warehouse_id', $transaction->warehouse_id)
+                    ->first();
+                
+                if ($stock) {
+                    $stock->increment('quantity', $detail->quantity);
+                }
+            }
+
+            // 2. Handle Wallet Refund
+            if ($transaction->payment_method === 'wallet' && $transaction->customer_id) {
+                $reseller = $transaction->customer->reseller;
+                if ($reseller) {
+                    $reseller->increment('balance', $transaction->total_amount);
+
+                    \App\Models\WalletTransaction::create([
+                        'reseller_id' => $reseller->id,
+                        'amount' => $transaction->total_amount,
+                        'type' => 'refund',
+                        'status' => 'completed',
+                        'notes' => 'Refund for cancelled transaction ' . $transaction->transaction_code,
+                    ]);
+                }
+            }
+
+            // 3. Mark as cancelled
+            $transaction->update(['status' => 'canceled']);
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return redirect()->back()->with('success', 'Transaction cancelled and funds refunded (if applicable).');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to cancel: ' . $e->getMessage());
+        }
+    }
+
     public function receipt($id)
     {
-        $transaction = Transaction::with(['details.product', 'user', 'customer.reseller.tier', 'warehouse'])->findOrFail($id);
+        $transaction = \App\Models\Transaction::with(['details.product', 'user', 'customer.reseller.tier', 'warehouse'])->findOrFail($id);
 
         return view('partials.invoice', ['data' => $transaction]);
     }

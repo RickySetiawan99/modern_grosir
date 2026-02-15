@@ -75,6 +75,7 @@ class POSController extends Controller
             'warehouse_id' => 'required|exists:warehouses,id',
             'customer_id' => 'nullable|exists:users,id',
             'total_amount' => 'required|numeric|min:0',
+            'payment_method' => 'nullable|string|in:cash,wallet',
         ]);
 
         try {
@@ -83,6 +84,23 @@ class POSController extends Controller
             $globalWarehouseId = $request->warehouse_id;
             $customerId = $request->customer_id;
             $cart = $request->cart;
+            $paymentMethod = $request->payment_method ?? 'cash';
+
+            // Wallet Check
+            if ($paymentMethod === 'wallet') {
+                if (!$customerId) {
+                    throw new \Exception('Customer selection is required for wallet payment.');
+                }
+
+                $customer = User::with('reseller')->find($customerId);
+                if (!$customer || !$customer->reseller) {
+                    throw new \Exception('Reseller profile not found for this customer.');
+                }
+
+                if ($customer->reseller->balance < $request->total_amount) {
+                    throw new \Exception('Insufficient wallet balance. Sisa Saldo: Rp ' . number_format($customer->reseller->balance, 0, ',', '.'));
+                }
+            }
 
             $groupedCart = [];
             foreach ($cart as $item) {
@@ -99,7 +117,7 @@ class POSController extends Controller
                 $code = null;
 
                 if ($request->has('draft_order_ids')) {
-                    $draftOrders = DraftOrder::whereIn('id', $request->draft_order_ids)->get();
+                    $draftOrders = \App\Models\DraftOrder::whereIn('id', $request->draft_order_ids)->get();
                     $matchingDraft = $draftOrders->where('warehouse_id', $whId)->first();
 
                     if ($matchingDraft && $matchingDraft->order_code) {
@@ -109,7 +127,7 @@ class POSController extends Controller
 
                 if (! $code) {
                     $date = date('Ymd');
-                    $lastDraft = DraftOrder::whereDate('created_at', today())->orderBy('id', 'desc')->first();
+                    $lastDraft = \App\Models\DraftOrder::whereDate('created_at', today())->orderBy('id', 'desc')->first();
                     $lastTrx = Transaction::whereDate('created_at', today())->orderBy('id', 'desc')->first();
 
                     $draftSeq = ($lastDraft && $lastDraft->order_code) ? intval(substr($lastDraft->order_code, -4)) : 0;
@@ -125,6 +143,7 @@ class POSController extends Controller
                     'warehouse_id' => $whId,
                     'transaction_code' => $code,
                     'total_amount' => 0,
+                    'payment_method' => $paymentMethod,
                     'status' => 'completed',
                 ]);
 
@@ -161,7 +180,7 @@ class POSController extends Controller
                     $subtotal = $price * $item['qty'];
                     $grandTotal += $subtotal;
 
-                    TransactionDetail::create([
+                    \App\Models\TransactionDetail::create([
                         'transaction_id' => $transaction->id,
                         'product_id' => $product->id,
                         'quantity' => $item['qty'],
@@ -173,6 +192,21 @@ class POSController extends Controller
                 }
 
                 $transaction->update(['total_amount' => $grandTotal]);
+                
+                // Record wallet deduction if payment method is wallet
+                if ($paymentMethod === 'wallet' && $grandTotal > 0) {
+                    $customerReseller = User::find($customerId)->reseller;
+                    $customerReseller->decrement('balance', $grandTotal);
+                    
+                    \App\Models\WalletTransaction::create([
+                        'reseller_id' => $customerReseller->id,
+                        'amount' => $grandTotal,
+                        'type' => 'payment',
+                        'status' => 'completed',
+                        'notes' => 'Payment for transaction ' . $code,
+                    ]);
+                }
+
                 $createdTransactions[] = [
                     'id' => $transaction->id,
                     'code' => $code,
@@ -180,7 +214,7 @@ class POSController extends Controller
             }
 
             if ($request->has('draft_order_ids')) {
-                DraftOrder::whereIn('id', $request->draft_order_ids)->update(['status' => 'completed']);
+                \App\Models\DraftOrder::whereIn('id', $request->draft_order_ids)->update(['status' => 'completed']);
             }
 
             DB::commit();
