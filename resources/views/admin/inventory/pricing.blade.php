@@ -82,85 +82,10 @@
 
 @section('scripts')
 <script>
-  $(document).ready(function() {
-    const table = initModernDatatable('#main-table', {
-      ajax: '{{ route("pricing.data") }}',
-      columns: [
-        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-        { data: 'name', name: 'name' },
-        { data: 'retail_price', name: 'retail_price' },
-        { data: 'tier_prices', name: 'tier_prices', orderable: false },
-        { data: 'action', name: 'action', orderable: false, searchable: false }
-      ],
-      order: [[1, 'asc']]
-    });
-
-    let currentProductId = null;
-
-    // Handle Edit Prices Click
-    $('#main-table').on('click', '.btn-edit-prices', function() {
-      currentProductId = $(this).data('id');
-      const productName = $(this).data('name');
-      
-      $.get(`/admin/pricing/${currentProductId}`, function(data) {
-        $('#modal-product-name').text(data.product_name);
-        $('#modal-retail-price').text('Rp ' + new Intl.NumberFormat('id-ID').format(data.retail_price));
-        
-        let html = '';
-        data.tiers.forEach(tier => {
-          html += `
-            <div class="mb-3 p-3 bg-light rounded-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="fw-bold text-dark fs-3">${tier.tier_name} <small class="text-muted">(${tier.discount}% Default Disc)</small></span>
-                <span class="fs-2 text-muted">Default: Rp ${new Intl.NumberFormat('id-ID').format(tier.default_price)}</span>
-              </div>
-              <div class="input-group input-group-sm">
-                <span class="input-group-text bg-white">Rp</span>
-                <input type="number" class="form-control border-start-0" 
-                  name="prices[${tier.tier_id}]" 
-                  value="${tier.override_price || ''}" 
-                  placeholder="Set manual price or leave empty for default">
-              </div>
-            </div>`;
-        });
-        
-        $('#tiers-container').html(html);
-        $('#pricingModal').modal('show');
-      });
-    });
-
-    // Handle Form Submit
-    $('#pricingForm').on('submit', function(e) {
-      e.preventDefault();
-      
-      $.ajax({
-        url: `/admin/pricing/${currentProductId}`,
-        method: 'POST',
-        data: $(this).serialize() + `&_token=${$('meta[name="csrf-token"]').attr('content')}`,
-        success: function(response) {
-          if (response.success) {
-            $('#pricingModal').modal('hide');
-            Swal.fire({
-              icon: 'success',
-              title: 'Success!',
-              text: response.message,
-              timer: 1500,
-              showConfirmButton: false
-            });
-            table.ajax.reload(null, false);
-          }
-        },
-        error: function(xhr) {
-          let errorMessage = 'Something went wrong.';
-          if (xhr.responseJSON && xhr.responseJSON.message) {
-            errorMessage = xhr.responseJSON.message;
-          }
-          Swal.fire('Error!', errorMessage, 'error');
-        }
-      });
-    });
-  });
+    window.csrfToken = '{{ csrf_token() }}';
+    window.pricingRoutes = {
+        data: '{{ route("pricing.data") }}'
+    };
 </script>
-
-
+<script src="{{ asset('js/admin/inventory-pricing.js') }}"></script>
 @endsection

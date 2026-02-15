@@ -130,87 +130,11 @@
 
 @section('scripts')
 <script>
-  $(document).ready(function() {
-    const table = initModernDatatable('#main-table', {
-      ajax: '{{ route("master.resellers.data") }}',
-      columns: [
-        { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
-        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-        { data: 'user.name', name: 'user.name' },
-        { data: 'tier.name', name: 'tier.name' },
-        { data: 'credit_limit', name: 'credit_limit' },
-        { data: 'balance', name: 'balance' },
-        { data: 'action', name: 'action', orderable: false, searchable: false }
-      ],
-      order: [[2, 'asc']], 
-      bulkDeleteUrl: '{{ route("master.resellers.bulk-delete") }}',
-      messages: {
-        deleteText: 'Reseller "{name}" akan dihapus permanen beserta akun user-nya!'
-      }
-    });
-
-    // Balance Modal Handler
-    $(document).on('click', '.btn-balance', function() {
-      const id = $(this).data('id');
-      const name = $(this).data('name');
-      // Ideally we should pass current balance via data attribute, 
-      // but for now let's set it to 'Unknown' or fetch via ajax if needed. 
-      // Assuming datatable row data has it, we could enhance this.
-      // For simplicity let's just show the modal for now.
-      
-      // Let's grab balance from the row text for display purposes
-      const $row = $(this).closest('tr');
-      // Balance is in 5th column (index 4) if responsive mode is off, 
-      // but easier to send it via data attribute in controller.
-      
-      const balance = $(this).data('balance');
-
-      $('#balance-reseller-id').val(id);
-      $('#display-balance').text(balance);
-      $('#modalBalanceLabel').text(`Manage Balance: ${name}`);
-      $('#form-balance')[0].reset();
-      $('#modal-balance').modal('show');
-    });
-
-    $('#form-balance').on('submit', function(e) {
-      e.preventDefault();
-      const id = $('#balance-reseller-id').val();
-      const $btn = $('.btn-save-balance');
-
-      $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Processing...');
-
-      $.ajax({
-        url: `/admin/master/resellers/${id}/balance`,
-        method: 'POST',
-        data: {
-            _token: '{{ csrf_token() }}',
-            type: $('input[name="type"]:checked').val(),
-            amount: $('#amount').val(),
-            notes: $('#notes').val()
-        },
-        success: function(response) {
-            $('#modal-balance').modal('hide');
-            table.ajax.reload(null, false);
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.message,
-                timer: 1500,
-                showConfirmButton: false
-            });
-        },
-        error: function(xhr) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: xhr.responseJSON?.message || 'Something went wrong'
-            });
-        },
-        complete: function() {
-            $btn.prop('disabled', false).text('Submit');
-        }
-      });
-    });
-  });
+    window.csrfToken = '{{ csrf_token() }}';
+    window.resellerRoutes = {
+        data: '{{ route("master.resellers.data") }}',
+        bulkDelete: '{{ route("master.resellers.bulk-delete") }}'
+    };
 </script>
+<script src="{{ asset('js/admin/resellers.js') }}"></script>
 @endsection

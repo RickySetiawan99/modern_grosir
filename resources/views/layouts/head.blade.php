@@ -5,6 +5,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- Favicon icon-->
+<link rel="shortcut icon" type="image/svg+xml" href="{{ asset('images/logos/favicon.svg') }}" />
 <link rel="icon" type="image/svg+xml" href="{{ asset('images/logos/favicon.svg') }}" />
 
 <!-- Core Css -->

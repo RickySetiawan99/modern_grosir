@@ -1,4 +1,5 @@
 <!-- Import Js Files -->
+<script src="{{ URL::asset('js/app-helpers.js') }}"></script>
 <script src="{{ URL::asset('build/libs/jquery-steps/lib/jquery-1.11.1.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/simplebar/dist/simplebar.min.js') }}"></script>

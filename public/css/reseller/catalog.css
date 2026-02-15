@@ -1,0 +1,96 @@
+.product-catalog-redesign {
+    --primary-gradient: linear-gradient(135deg, #1e4db7 0%, #3074e0 100%);
+}
+
+.fs-10 { font-size: 2.2rem !important; }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.cat-pill {
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.cat-pill.active {
+    box-shadow: 0 4px 10px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+.reseller-product-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.reseller-product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    border-color: var(--bs-primary-border-subtle);
+}
+
+.product-image-container {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1/1; /* Back to square for consistency */
+    background: #fff; /* White background to blend with card and image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.card-img-top {
+    transition: transform 0.5s ease;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* 'Fit' the image without cropping */
+}
+
+.reseller-product-card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(46, 204, 113, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+}
+
+.save-label {
+    color: #2ecc71;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+/* Skeleton Loading Styles */
+.skeleton {
+    background: #eee;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    border-radius: 5px;
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+}
+
+@keyframes shine {
+    to { background-position-x: -200%; }
+}
+
+@media (max-width: 768px) {
+    .cat-pill { padding: 0.4rem 1rem !important; }
+    .integrated-search {
+        margin-bottom: -1.5rem;
+        position: relative;
+        z-index: 10;
+    }
+}
