@@ -6,10 +6,18 @@ use App\Helpers\GeneralHelper;
 use App\Models\StockLevel;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class InventoryController extends Controller
 {
+    protected $batchService;
+
+    public function __construct(\App\Services\BatchService $batchService)
+    {
+        $this->batchService = $batchService;
+    }
+
     public function index()
     {
         $warehouses = Warehouse::all();
@@ -74,19 +82,74 @@ class InventoryController extends Controller
     {
         $request->validate([
             'quantity' => 'required|integer|min:0',
+            'reason' => 'nullable|string',
         ]);
 
         try {
-            $stock = StockLevel::findOrFail($id);
+            DB::beginTransaction();
+
+            $stock = StockLevel::with('product')->findOrFail($id);
+            $oldQuantity = $stock->quantity;
+            $newQuantity = $request->quantity;
+            $diff = $newQuantity - $oldQuantity;
+
+            // Update stock level
             $stock->update([
-                'quantity' => $request->quantity,
+                'quantity' => $newQuantity,
             ]);
+
+            // Handle batch updates if product has expiration
+            if ($stock->product->has_expiration && $diff != 0) {
+                if ($diff > 0) {
+                    // Manual increase - create a new batch for the difference
+                    // We don't have expiration date here, so it will use default shelf life
+                    $this->batchService->createBatch([
+                        'product_id' => $stock->product_id,
+                        'warehouse_id' => $stock->warehouse_id,
+                        'quantity' => $diff,
+                        'received_date' => now(),
+                        'notes' => 'Manual stock adjustment (Increase) - ' . ($request->reason ?? 'No reason provided'),
+                    ]);
+                } else {
+                    // Manual decrease - dispose from batches (FIFO/FEFO)
+                    // Since this is manual adjustment, we use disposeBatch which logs it
+                    $decreaseAmount = abs($diff);
+                    
+                    // Get batches to deduct from (closest to expiry first)
+                    $batches = \App\Models\InventoryBatch::where('product_id', $stock->product_id)
+                        ->where('warehouse_id', $stock->warehouse_id)
+                        ->where('status', 'active')
+                        ->where('quantity', '>', 0)
+                        ->orderByRaw('CASE WHEN expiration_date IS NULL THEN 1 ELSE 0 END')
+                        ->orderBy('expiration_date', 'asc')
+                        ->orderBy('received_date', 'asc')
+                        ->get();
+
+                    foreach ($batches as $batch) {
+                        if ($decreaseAmount <= 0) break;
+
+                        $deduct = min($batch->quantity, $decreaseAmount);
+                        
+                        $this->batchService->disposeBatch(
+                            $batch->id,
+                            $deduct,
+                            'other', 
+                            'Manual stock adjustment (Decrease) - ' . ($request->reason ?? 'No reason provided')
+                        );
+
+                        $decreaseAmount -= $deduct;
+                    }
+                }
+            }
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Stock updated successfully',
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return GeneralHelper::errorResponse('Failed to update stock: '.$e->getMessage());
         }
     }

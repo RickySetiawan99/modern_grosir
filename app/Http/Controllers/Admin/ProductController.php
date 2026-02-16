@@ -116,6 +116,7 @@ class ProductController extends Controller
 
         try {
             $data = $request->except('image');
+            $data['has_expiration'] = $request->has('has_expiration');
 
             if ($request->hasFile('image')) {
                 $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/products');
@@ -153,6 +154,7 @@ class ProductController extends Controller
 
         try {
             $data = $request->except('image');
+            $data['has_expiration'] = $request->has('has_expiration');
 
             if ($request->hasFile('image')) {
                 $data['image'] = $this->fileService->upload($request->file('image'), 'uploads/products', $product->image);

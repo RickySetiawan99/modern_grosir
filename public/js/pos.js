@@ -106,6 +106,23 @@ $(document).ready(function() {
             return;
         }
 
+        if (product.has_near_expiry) {
+            Swal.fire({
+                title: 'Near Expiration Warning',
+                text: `This product has a batch expiring soon (${product.earliest_expiry}). Proceed?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                confirmButtonText: 'Yes, Sell It',
+                target: ModernGrosir.getSwalTarget('#pos-wrapper')
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    addToCart(product);
+                }
+            });
+            return;
+        }
+
         addToCart(product);
     });
 
@@ -256,10 +273,16 @@ function fetchProducts(append = false) {
                 const stockClass = stock > 0 ? 'text-success' : 'text-danger';
                 const disableClass = stock <= 0 ? 'opacity-50 pointer-events-none' : 'cursor-pointer product-card';
                 const imageUrl = p.image ? `/${p.image}` : '/build/images/products/product-1.jpg';
+                
+                let expiryBadge = '';
+                if (p.has_near_expiry) {
+                    expiryBadge = `<span class="badge bg-warning text-dark fs-2 position-absolute top-0 end-0 m-2" title="Expired Soon: ${p.earliest_expiry}">Expiring Soon</span>`;
+                }
 
                 html += `
                 <div class="col-6 col-sm-6 col-md-4">
                     <div class="card h-100 hover-img shadow-sm pos-product-card ${disableClass}" data-id="${p.id}">
+                        ${expiryBadge}
                         <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-start mb-2 badge-row">

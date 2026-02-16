@@ -137,6 +137,31 @@ class DashboardController extends Controller
                     ->take(5)
                     ->get();
             }
+            $expiringBatches = [];
+            $expiringCount = 0;
+            $expiredCount = 0;
+
+            if ($user->hasRole('admin')) {
+                $expiringBatches = \App\Models\InventoryBatch::with('product')
+                    ->where('status', 'active')
+                    ->whereNotNull('expiration_date')
+                    ->where('expiration_date', '>', now())
+                    ->where('expiration_date', '<=', now()->addDays(30))
+                    ->orderBy('expiration_date', 'asc')
+                    ->take(5)
+                    ->get();
+                
+                $expiringCount = \App\Models\InventoryBatch::where('status', 'active')
+                    ->whereNotNull('expiration_date')
+                    ->where('expiration_date', '>', now())
+                    ->where('expiration_date', '<=', now()->addDays(30))
+                    ->count();
+
+                $expiredCount = \App\Models\InventoryBatch::where('status', 'active') // Should ideally be handled by job, but good to show
+                    ->whereNotNull('expiration_date')
+                    ->where('expiration_date', '<=', now())
+                    ->count();
+            }
 
             return view('main.index', compact(
                 'totalSales',
@@ -150,7 +175,10 @@ class DashboardController extends Controller
                 'lowStockProducts',
                 'totalProfit',
                 'profitChartData',
-                'walletBalance'
+                'walletBalance',
+                'expiringBatches',
+                'expiringCount',
+                'expiredCount'
             ));
         } catch (\Exception $e) {
             return GeneralHelper::errorResponse('Failed to load dashboard: '.$e->getMessage());

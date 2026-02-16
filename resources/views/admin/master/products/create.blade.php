@@ -118,6 +118,13 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
+          <div class="mb-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="has_expiration" name="has_expiration" {{ old('has_expiration') ? 'checked' : '' }}>
+              <label class="form-check-label fw-semibold" for="has_expiration">Lacak Kedaluwarsa (Expiration Tracking)</label>
+            </div>
+            <small class="text-muted">Aktifkan jika produk ini memiliki tanggal kedaluwarsa dan ingin menggunakan sistem FEFO.</small>
+          </div>
           <div class="mt-4">
             <button type="submit" class="btn btn-primary w-100 mb-2">Save Product</button>
             <a href="{{ route('master.products.index') }}" class="btn btn-outline-secondary w-100">Cancel</a>

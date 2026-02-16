@@ -56,6 +56,27 @@ class POSController extends Controller
                 $product->current_stock = $stock;
                 $product->formatted_price = GeneralHelper::formatCurrency($product->retail_price);
 
+                // Add batch info if product has expiration
+                $product->earliest_expiry = null;
+                $product->has_near_expiry = false;
+
+                if ($product->has_expiration && $warehouseId) {
+                    $earliestBatch = \App\Models\InventoryBatch::where('product_id', $product->id)
+                        ->where('warehouse_id', $warehouseId)
+                        ->where('status', 'active')
+                        ->where('quantity', '>', 0)
+                        ->orderByRaw('CASE WHEN expiration_date IS NULL THEN 1 ELSE 0 END')
+                        ->orderBy('expiration_date', 'asc')
+                        ->first();
+
+                    if ($earliestBatch && $earliestBatch->expiration_date) {
+                        $product->earliest_expiry = $earliestBatch->expiration_date->format('Y-m-d');
+                        if ($earliestBatch->days_until_expiry <= 30) { // Warning threshold
+                            $product->has_near_expiry = true;
+                        }
+                    }
+                }
+
                 return $product;
             });
 
@@ -63,6 +84,13 @@ class POSController extends Controller
         } catch (\Exception $e) {
             return GeneralHelper::errorResponse('Failed to fetch products: '.$e->getMessage());
         }
+    }
+
+    protected $expirationService;
+
+    public function __construct(\App\Services\ExpirationService $expirationService)
+    {
+        $this->expirationService = $expirationService;
     }
 
     public function checkout(Request $request)
@@ -152,6 +180,7 @@ class POSController extends Controller
                 foreach ($items as $item) {
                     $product = Product::with('tierPrices')->find($item['id']);
 
+                    // Check total stock availability first
                     $stock = StockLevel::where('product_id', $product->id)
                         ->where('warehouse_id', $whId)
                         ->lockForUpdate()
@@ -180,14 +209,36 @@ class POSController extends Controller
                     $subtotal = $price * $item['qty'];
                     $grandTotal += $subtotal;
 
-                    \App\Models\TransactionDetail::create([
-                        'transaction_id' => $transaction->id,
-                        'product_id' => $product->id,
-                        'quantity' => $item['qty'],
-                        'unit_price' => $price,
-                        'subtotal' => $subtotal,
-                    ]);
+                    // Handle FEFO deduction if product has expiration
+                    if ($product->has_expiration) {
+                        // Use ExpirationService to deduct from batches
+                        $allocations = $this->expirationService->deductStock($product->id, $whId, $item['qty']);
 
+                        foreach ($allocations as $alloc) {
+                            $allocPrice = ($alloc['quantity'] / $item['qty']) * $price; // Pro-rated price (not typically needed for unit price but for consistency)
+                            $allocSubtotal = $price * $alloc['quantity'];
+
+                            \App\Models\TransactionDetail::create([
+                                'transaction_id' => $transaction->id,
+                                'product_id' => $product->id,
+                                'batch_id' => $alloc['batch_id'],
+                                'quantity' => $alloc['quantity'],
+                                'unit_price' => $price,
+                                'subtotal' => $allocSubtotal,
+                            ]);
+                        }
+                    } else {
+                        // Standard deduction without batch
+                        \App\Models\TransactionDetail::create([
+                            'transaction_id' => $transaction->id,
+                            'product_id' => $product->id,
+                            'quantity' => $item['qty'],
+                            'unit_price' => $price,
+                            'subtotal' => $subtotal,
+                        ]);
+                    }
+
+                    // Always decrement total stock level
                     $stock->decrement('quantity', $item['qty']);
                 }
 

@@ -125,11 +125,19 @@
           <span class="hide-menu">INVENTORY & SALES</span>
         </li>
         <li class="sidebar-item">
-          <a class="sidebar-link {{ request()->is('admin/inventory*') ? 'active' : '' }}" href="{{ route('inventory.index') }}" aria-expanded="false">
+          <a class="sidebar-link {{ request()->is('admin/inventory*') && !request()->is('admin/inventory/batches*') ? 'active' : '' }}" href="{{ route('inventory.index') }}" aria-expanded="false">
             <span>
               <i class="ti ti-package"></i>
             </span>
             <span class="hide-menu">Stock Levels</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/inventory/batches*') ? 'active' : '' }}" href="{{ route('inventory.batches.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-layers-intersect"></i>
+            </span>
+            <span class="hide-menu">Batch Management</span>
           </a>
         </li>
         @role('admin')
@@ -160,11 +168,19 @@
         </li>
         @role('admin')
         <li class="sidebar-item">
-          <a class="sidebar-link {{ request()->is('admin/reports*') ? 'active' : '' }}" href="{{ route('reports.index') }}" aria-expanded="false">
+          <a class="sidebar-link {{ request()->is('admin/reports*') && !request()->is('admin/reports/expiration*') ? 'active' : '' }}" href="{{ route('reports.index') }}" aria-expanded="false">
             <span>
               <i class="ti ti-chart-bar"></i>
             </span>
             <span class="hide-menu">Analytics & Reports</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->is('admin/reports/expiration*') ? 'active' : '' }}" href="{{ route('reports.expiration.index') }}" aria-expanded="false">
+            <span>
+              <i class="ti ti-clock"></i>
+            </span>
+            <span class="hide-menu">Expiration Reports</span>
           </a>
         </li>
         @endrole
