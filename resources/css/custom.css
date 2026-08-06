@@ -247,3 +247,60 @@
         display: none !important;
     }
 }
+
+/* Theme Customizer Black_Theme & skin-7 */
+.color-pallete label .color-box.skin-7 {
+    background-color: #171717 !important;
+}
+
+[data-bs-theme="light"][data-color-theme="Black_Theme"],
+[data-bs-theme="dark"][data-color-theme="Black_Theme"] {
+    --bs-primary: #171717 !important;
+    --bs-primary-rgb: 23, 23, 23 !important;
+    --bs-light-primary: rgba(23, 23, 23, 0.08) !important;
+    --bs-primary-bg-subtle: rgba(23, 23, 23, 0.08) !important;
+    --bs-secondary: #404040 !important;
+    --bs-secondary-rgb: 64, 64, 64 !important;
+    --bs-light-secondary: rgba(64, 64, 64, 0.08) !important;
+    --bs-secondary-bg-subtle: rgba(64, 64, 64, 0.08) !important;
+}
+
+[data-color-theme="Black_Theme"] .btn-primary {
+    --bs-btn-bg: #171717 !important;
+    --bs-btn-border-color: #171717 !important;
+    --bs-btn-hover-bg: #000000 !important;
+    --bs-btn-hover-border-color: #000000 !important;
+    --bs-btn-active-bg: #000000 !important;
+    --bs-btn-active-border-color: #000000 !important;
+    --bs-btn-color: #ffffff !important;
+    --bs-btn-hover-color: #ffffff !important;
+    background-color: #171717 !important;
+    border-color: #171717 !important;
+    color: #ffffff !important;
+}
+
+[data-color-theme="Black_Theme"] .btn-outline-primary {
+    --bs-btn-color: #171717 !important;
+    --bs-btn-border-color: #171717 !important;
+    --bs-btn-hover-bg: #171717 !important;
+    --bs-btn-hover-border-color: #171717 !important;
+    --bs-btn-hover-color: #ffffff !important;
+    color: #171717 !important;
+    border-color: #171717 !important;
+}
+
+[data-color-theme="Black_Theme"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link,
+[data-color-theme="Black_Theme"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link:hover,
+[data-color-theme="Black_Theme"] .sidebar-nav ul .sidebar-item > .sidebar-link.active {
+    background-color: #171717 !important;
+    color: #ffffff !important;
+}
+
+[data-color-theme="Black_Theme"] .badge-primary,
+[data-color-theme="Black_Theme"] .bg-primary {
+    background-color: #171717 !important;
+}
+
+[data-color-theme="Black_Theme"] .text-primary {
+    color: #171717 !important;
+}

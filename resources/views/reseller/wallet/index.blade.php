@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'My Wallet - ModernGrosir')
+@section('title', 'My Wallet - ' . config('app.name', 'ModernGrosir'))
 
 @section('pageContent')
 <div class="row">

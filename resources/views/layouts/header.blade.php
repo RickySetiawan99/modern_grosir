@@ -45,7 +45,7 @@
   </ul>
 
   <div class="d-block d-lg-none py-4">
-    <a href="{{ route('dashboard') }}" class="text-nowrap logo-img">
+    <a href="{{ url('/') }}" class="text-nowrap logo-img">
       <img src="{{ URL::asset('images/logos/logo-dark.svg') }}" class="dark-logo" alt="Logo-Dark" height="35" />
       <img src="{{ URL::asset('images/logos/logo-light.svg') }}" class="light-logo" alt="Logo-Light" height="35" />
     </a>

@@ -1,25 +1,8 @@
-<svg width="220" height="50" viewBox="0 0 220 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- ICON: ModernGrosir Signature Style (Identical to Step 579) -->
-  <g transform="translate(6, 6)">
-    <!-- Main Warehouse Shape -->
-    <!-- Left Contour (Outline) -->
-    <path d="M2 18L18 8V40H2V18Z" stroke="#2A3547" stroke-width="3.5" stroke-linejoin="round"/>
-    
-    <!-- Right Section (Solid Blue) -->
-    <path d="M18 8L36 18V40H18V8Z" fill="#5D87FF"/>
-    <path d="M18 8L36 18V40H18" stroke="#2A3547" stroke-width="3.5" stroke-linejoin="round"/>
-    
-    <!-- The 3 White Boxes (Iconic detail) -->
-    <!-- Top Box -->
-    <rect x="23.5" y="24" width="7" height="7" fill="white" fill-opacity="0.9"/>
-    <!-- Bottom Left Box -->
-    <rect x="20.5" y="32" width="6.5" height="6.5" fill="white" fill-opacity="0.9"/>
-    <!-- Bottom Right Box -->
-    <rect x="28" y="32" width="6.5" height="6.5" fill="white" fill-opacity="0.7"/>
+<svg width="220" height="40" viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(2, 2)">
+    <rect width="36" height="36" rx="10" fill="#171717"/>
+    <path d="M10 11C10 10.1716 10.6716 9.5 11.5 9.5H18C18.8284 9.5 19.5 10.1716 19.5 11V25C19.5 25.8284 18.8284 26.5 18 26.5H11.5C10.6716 26.5 10 25.8284 10 25V11Z" fill="white"/>
+    <path d="M19.5 16.5C19.5 15.6716 20.1716 15 21 15H24.5C25.3284 15 26 15.6716 26 16.5V25C26 25.8284 25.3284 26.5 24.5 26.5H21C20.1716 26.5 19.5 25.8284 19.5 25V16.5Z" fill="white" fill-opacity="0.55"/>
   </g>
-
-  <!-- Text Section -->
-  <text x="50" y="36" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.8px;">
-    <tspan fill="#2A3547">Modern</tspan><tspan fill="#5D87FF">Grosir</tspan>
-  </text>
+  <text x="48" y="26" font-family="Geist, -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="20" font-weight="600" letter-spacing="-0.04em" fill="#171717">Modern<tspan fill="#737373">Grosir</tspan></text>
 </svg>

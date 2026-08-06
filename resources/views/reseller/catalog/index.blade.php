@@ -14,7 +14,7 @@
         <div class="card-body px-5 py-5 h-100 d-flex flex-column justify-content-center">
             <div class="row align-items-center">
                 <div class="col-lg-7 text-white mt-1">
-                    <h2 class="fw-bolder mb-3 text-white fs-10 mb-2">ModernGrosir Catalog</h2>
+                    <h2 class="fw-bolder mb-3 text-white fs-10 mb-2">{{ config('app.name', 'ModernGrosir') }} Catalog</h2>
                     <p class="fs-4 opacity-75 mb-4">Discover high-quality products from multiple warehouses at your exclusive reseller rates.</p>
                     
                     <!-- Integrated Search Bar -->

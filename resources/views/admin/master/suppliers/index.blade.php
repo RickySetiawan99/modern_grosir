@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'ModernGrosir - Suppliers')
+@section('title', config('app.name', 'ModernGrosir') . ' - Suppliers')
 
 @section('pageContent')
 <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">

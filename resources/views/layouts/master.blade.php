@@ -13,7 +13,7 @@
         html.setAttribute('dir', getSetting('direction', 'ltr'));
     </script>
     @include('layouts.head')
-    <title>@yield('title', 'ModernGrosir Admin')</title>
+    <title>@yield('title', config('app.name', 'ModernGrosir') . ' Admin')</title>
     @yield('css')
 </head>
 <body class="link-sidebar">
@@ -21,7 +21,7 @@
     <div class="preloader">
         <div class="loader-wrapper d-flex flex-column align-items-center justify-content-center">
             <img src="{{ URL::asset('images/logos/favicon.svg') }}" alt="loader" class="img-fluid pulse-animation" width="64" />
-            <div class="mt-3 fs-3 fw-semibold text-primary">ModernGrosir</div>
+            <div class="mt-3 fs-3 fw-semibold text-primary">{{ config('app.name', 'ModernGrosir') }}</div>
         </div>
     </div>
     

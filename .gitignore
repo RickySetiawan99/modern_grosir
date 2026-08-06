@@ -22,3 +22,4 @@ yarn-error.log
 composer.lock
 postman_collection.json
 .DS_Store
+/docs/

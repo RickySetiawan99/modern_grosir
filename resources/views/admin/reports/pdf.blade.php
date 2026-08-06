@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Laporan Analitik - ModernGrosir</title>
+    <title>Laporan Analitik - {{ config('app.name', 'ModernGrosir') }}</title>
     <style>
         body { font-family: sans-serif; font-size: 12px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }

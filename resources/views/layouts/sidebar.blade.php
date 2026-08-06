@@ -3,9 +3,9 @@
     <!-- Start Vertical Layout Sidebar -->
     <!-- ---------------------------------- -->
     <div class="brand-logo d-flex align-items-center justify-content-between">
-      <a href="{{ route('dashboard') }}" class="text-nowrap logo-img">
-        <img src="{{ URL::asset('images/logos/logo-dark.svg') }}" class="dark-logo" alt="Logo-Dark" height="50" />
-        <img src="{{ URL::asset('images/logos/logo-light.svg') }}" class="light-logo" alt="Logo-Light" height="50" />
+      <a href="{{ url('/') }}" class="text-nowrap logo-img">
+        <img src="{{ URL::asset('images/logos/logo-dark.svg') }}" class="dark-logo" alt="Logo-Dark" height="38" />
+        <img src="{{ URL::asset('images/logos/logo-light.svg') }}" class="light-logo" alt="Logo-Light" height="38" />
       </a>
       <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
         <i class="ti ti-x"></i>

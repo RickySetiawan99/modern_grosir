@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'ModernGrosir - Add Reseller Tier')
+@section('title', config('app.name', 'ModernGrosir') . ' - Add Reseller Tier')
 
 @section('pageContent')
 <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">

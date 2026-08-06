@@ -1,11 +1,5 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- ICON: ModernGrosir Signature (Building + Boxes) -->
-  <!-- Left Wireframe part -->
-  <path d="M4 14L14 7V28H4V14Z" stroke="#5D87FF" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Right Solid Blue part -->
-  <path d="M14 7L24 14V28H14V7Z" fill="#5D87FF"/>
-  <!-- Internal Boxes Details -->
-  <rect x="17" y="21" width="4" height="4" fill="white"/>
-  <rect x="21" y="21" width="2" height="4" fill="white" fill-opacity="0.6"/>
-  <rect x="18" y="17" width="4" height="4" fill="white" fill-opacity="0.8"/>
+  <rect width="32" height="32" rx="8" fill="#171717"/>
+  <path d="M9 10.5C9 9.67157 9.67157 9 10.5 9H15.5C16.3284 9 17 9.67157 17 10.5V21.5C17 22.3284 16.3284 23 15.5 23H10.5C9.67157 23 9 22.3284 9 21.5V10.5Z" fill="white"/>
+  <path d="M17 15.5C17 14.6716 17.6716 14 18.5 14H21.5C22.3284 14 23 14.6716 23 15.5V21.5C23 22.3284 22.3284 23 21.5 23H18.5C17.6716 23 17 22.3284 17 21.5V15.5Z" fill="white" fill-opacity="0.6"/>
 </svg>

@@ -92,6 +92,14 @@
           <i class="ti ti-check text-white d-flex icon fs-5"></i>
         </div>
       </label>
+
+      <input type="radio" class="btn-check" name="color-theme-layout" id="black-theme-layout" autocomplete="off" />
+      <label class="btn p-9 btn-outline-primary d-flex align-items-center justify-content-center" onclick="handleColorTheme('Black_Theme')"
+        for="black-theme-layout" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="BLACK_THEME">
+        <div class="color-box rounded-circle d-flex align-items-center justify-content-center skin-7">
+          <i class="ti ti-check text-white d-flex icon fs-5"></i>
+        </div>
+      </label>
     </div>
 
     <h6 class="mt-5 fw-semibold fs-4 mb-2">Layout Type</h6>

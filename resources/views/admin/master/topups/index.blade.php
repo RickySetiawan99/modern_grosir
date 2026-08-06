@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Top-up Verification - ModernGrosir')
+@section('title', 'Top-up Verification - ' . config('app.name', 'ModernGrosir'))
 
 @section('pageContent')
 <div class="card bg-primary-subtle shadow-none position-relative overflow-hidden mb-4">

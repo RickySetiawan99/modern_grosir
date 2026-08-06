@@ -1,88 +1,362 @@
 @extends('layouts.master-auth')
 
-@section('title', 'ModernGrosir - Login')
+@section('title', config('app.name', 'ModernGrosir') . ' — Sign In')
+
+@section('css')
+<style>
+    :root {
+        --color-canvas: #f5f5f5;
+        --color-paper: #ffffff;
+        --color-surface-alt: #fafafa;
+        --color-ink: #0a0a0a;
+        --color-ink-soft: #171717;
+        --color-mid-gray: #737373;
+        --color-hairline: #e5e5e5;
+        --color-ember: #e7000b;
+        --font-geist: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        background-color: var(--color-canvas) !important;
+        font-family: var(--font-geist) !important;
+        color: var(--color-ink) !important;
+    }
+
+    .auth-bg-wrapper {
+        min-height: 100vh;
+        background-color: var(--color-canvas);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .auth-card {
+        background: var(--color-paper);
+        border: 1px solid var(--color-hairline);
+        border-radius: 24px;
+        box-shadow: 0px 0px 0px 1px rgba(23, 23, 23, 0.05),
+                    0px 1px 3px 0px rgba(0, 0, 0, 0.08),
+                    0px 1px 2px -1px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        max-width: 920px;
+        width: 100%;
+    }
+
+    .auth-card .row {
+        align-items: stretch;
+    }
+
+    .auth-brand-col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .auth-brand-side {
+        background: var(--color-ink);
+        color: #fafafa;
+        padding: 48px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        min-height: 100%;
+    }
+
+    .auth-brand-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        color: #ffffff;
+    }
+
+    .auth-brand-logo .logo-box {
+        width: 32px;
+        height: 32px;
+        background: #ffffff;
+        color: var(--color-ink);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .auth-brand-copy h1 {
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: -0.05em;
+        line-height: 1.15;
+        color: #ffffff;
+        margin-bottom: 12px;
+    }
+
+    .auth-brand-copy p {
+        font-size: 14px;
+        color: #a3a3a3;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .auth-form-side {
+        padding: 48px 40px;
+        background: var(--color-paper);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-form-header {
+        margin-bottom: 28px;
+    }
+
+    .auth-form-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: -0.04em;
+        margin-bottom: 6px;
+        color: var(--color-ink);
+    }
+
+    .auth-form-header p {
+        font-size: 14px;
+        color: var(--color-mid-gray);
+        margin: 0;
+    }
+
+    .form-label-custom {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-ink);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        height: 42px;
+        padding: 8px 14px;
+        background-color: var(--color-canvas);
+        border: 1px solid var(--color-hairline);
+        border-radius: 18px;
+        font-family: var(--font-geist);
+        font-size: 14px;
+        color: var(--color-ink);
+        outline: none;
+        transition: all 0.15s ease;
+    }
+
+    .form-control-custom:focus {
+        background-color: var(--color-paper);
+        border-color: var(--color-ink);
+        box-shadow: 0 0 0 1px var(--color-ink);
+    }
+
+    .form-control-custom.is-invalid {
+        border-color: var(--color-ember);
+        background-color: #fef2f2;
+    }
+
+    .btn-pill-primary {
+        width: 100%;
+        height: 42px;
+        background: var(--color-ink);
+        color: #fafafa;
+        border: none;
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: var(--font-geist);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-pill-primary:hover {
+        background: var(--color-ink-soft);
+        transform: translateY(-1px);
+    }
+
+    .btn-pill-outline {
+        width: 100%;
+        height: 42px;
+        background: transparent;
+        color: var(--color-ink);
+        border: 1px solid var(--color-hairline);
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: var(--font-geist);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-pill-outline:hover {
+        background: var(--color-surface-alt);
+        border-color: var(--color-mid-gray);
+        color: var(--color-ink);
+    }
+
+    .divider-line {
+        position: relative;
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .divider-line::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--color-hairline);
+    }
+
+    .divider-text {
+        position: relative;
+        background: var(--color-paper);
+        padding: 0 12px;
+        font-size: 12px;
+        color: var(--color-mid-gray);
+    }
+
+    .custom-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+    }
+
+    .custom-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--color-mid-gray);
+        cursor: pointer;
+    }
+
+    .forgot-link {
+        color: var(--color-ink);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .forgot-link:hover {
+        text-decoration: underline;
+    }
+
+    .badge-infra {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 2px 10px;
+        background: #262626;
+        color: #a3a3a3;
+        border-radius: 18px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+</style>
+@endsection
 
 @section('pageContent')
-  <div id="main-wrapper" class="auth-customizer-none">
-    <div class="position-relative overflow-hidden min-vh-100 w-100 d-flex align-items-center justify-content-center">
-      <div class="row justify-content-center w-100 m-0">
-        <div class="col-xl-9 col-lg-11">
-          <div class="card overflow-hidden border-0 shadow-lg rounded-4">
-            <div class="row g-0">
-              <!-- Left side: Background Image -->
-              <div class="col-lg-6 d-none d-lg-block position-relative" 
-                   style="background: url('{{ URL::asset('images/backgrounds/login-bg.png') }}') center center / cover no-repeat; min-height: 600px;">
-                <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary opacity-25"></div>
-                <div class="position-absolute bottom-0 start-0 p-5 text-white">
-                  <h1 class="fw-bolder display-6 text-white text-shadow">ModernGrosir</h1>
-                  <p class="fs-5 opacity-75">Efficiency in every transaction, clarity in every stock.</p>
-                </div>
-              </div>
-              
-              <!-- Right side: Login Form -->
-              <div class="col-lg-6 bg-body">
-                <div class="p-5 h-100 d-flex flex-column justify-content-center">
-                  <div class="mb-4 text-center">
-                    <img src="{{ URL::asset('images/logos/logo-dark.svg') }}" alt="ModernGrosir Logo" class="img-fluid" height="50">
-                  </div>
-                  <div class="text-center mb-5">
-                    <h2 class="fw-bolder fs-7 mb-1">Welcome Back!</h2>
-                    <p class="text-muted">Sign in to manage your inventory and sales.</p>
-                  </div>
-                  
-                  <form action="{{ route('login') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                      <label for="email" class="form-label fw-semibold">Email address</label>
-                      <input type="email" name="email" class="form-control form-control-lg @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}" required placeholder="admin@moderngrosir.com">
-                      @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
-                    
-                    <div class="mb-4">
-                      <label for="password" class="form-label fw-semibold">Password</label>
-                      <input type="password" name="password" class="form-control form-control-lg" id="password" required placeholder="••••••••">
-                    </div>
-                    
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                      <div class="form-check">
-                        <input class="form-check-input primary" type="checkbox" name="remember" id="remember" checked>
-                        <label class="form-check-label text-dark fs-3" for="remember">
-                          Remember this Device
-                        </label>
-                      </div>
-                      <a class="text-primary fw-medium fs-3" href="javascript:void(0)">Forgot Password?</a>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100 py-3 mb-4 rounded-3 fs-4 fw-bold shadow-sm">Sign In</button>
-                    
-                    <div class="position-relative text-center my-4">
-                      <p class="mb-0 fs-3 px-3 d-inline-block bg-body text-dark z-index-5 position-relative">or sign in with</p>
-                      <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+<div class="auth-bg-wrapper">
+    <div class="auth-card">
+        <div class="row g-0">
+            <!-- Left Side: Brand & Infrastructure Blueprint -->
+            <div class="col-lg-5 d-none d-lg-block auth-brand-col">
+                <div class="auth-brand-side">
+                    <a href="{{ url('/') }}" class="auth-brand-logo" style="text-decoration: none; cursor: pointer;">
+                        <img src="{{ asset('images/logos/logo-light.svg') }}" alt="{{ config('app.name', 'ModernGrosir') }}" height="36">
+                    </a>
+
+                    <div class="auth-brand-copy">
+                        <div style="margin-bottom: 16px;">
+                            <span class="badge-infra">Infrastructure System</span>
+                        </div>
+                        <h1>Efisiensi Distribusi Grosir Modern.</h1>
+                        <p>Platform B2B all-in-one untuk kontrol stok FEFO, tiering reseller otomatis, dan kecepatan kasir POS.</p>
                     </div>
 
-                    <div class="row g-3">
-                      <div class="col-12">
-                        <a href="{{ route('auth.social', 'google') }}" class="btn btn-outline-primary w-100 py-2 rounded-3 d-flex align-items-center justify-content-center gap-2">
-                          <img src="{{ URL::asset('build/images/svgs/google-icon.svg') }}" alt="Google" width="18">
-                          <span>Sign in with Google</span>
-                        </a>
-                      </div>
+                    <div style="font-size: 12px; color: #737373;">
+                        &copy; {{ date('Y') }} {{ config('app.name', 'ModernGrosir') }} Ecosystem
                     </div>
-
-                    <div class="text-center mt-4">
-                      <p class="fs-2 text-muted mb-0">ModernGrosir Enterprise v1.0</p>
-                    </div>
-                  </form>
                 </div>
-              </div>
             </div>
-          </div>
+
+            <!-- Right Side: Login Form -->
+            <div class="col-lg-7">
+                <div class="auth-form-side">
+                    <div class="d-lg-none mb-4">
+                        <a href="{{ url('/') }}" class="auth-brand-logo" style="text-decoration: none; cursor: pointer;">
+                            <img src="{{ asset('images/logos/logo-dark.svg') }}" alt="{{ config('app.name', 'ModernGrosir') }}" height="32">
+                        </a>
+                    </div>
+                    <div class="auth-form-header">
+                        <h2>Selamat Datang Kembali</h2>
+                        <p>Masukkan akun Anda untuk mengelola inventaris dan penjualan.</p>
+                    </div>
+
+                    <form action="{{ route('login') }}" method="POST">
+                        @csrf
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label-custom">Email Address</label>
+                            <input type="email" name="email" id="email" 
+                                   class="form-control-custom @error('email') is-invalid @enderror" 
+                                   value="{{ old('email') }}" required autofocus 
+                                   placeholder="admin@moderngrosir.com">
+                            @error('email')
+                                <div style="color: var(--color-ember); font-size: 12px; margin-top: 4px;">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label-custom">Password</label>
+                            <input type="password" name="password" id="password" 
+                                   class="form-control-custom" required 
+                                   placeholder="••••••••">
+                        </div>
+
+                        <div class="custom-checkbox-wrapper mb-4">
+                            <label class="custom-checkbox-label">
+                                <input type="checkbox" name="remember" id="remember" checked style="accent-color: var(--color-ink);">
+                                <span>Ingat Perangkat Ini</span>
+                            </label>
+                            <a href="javascript:void(0)" class="forgot-link">Lupa Password?</a>
+                        </div>
+
+                        <button type="submit" class="btn-pill-primary mb-3">Sign In ke Dashboard</button>
+
+                        <div class="divider-line">
+                            <span class="divider-text">atau gunakan</span>
+                        </div>
+
+                        <a href="{{ route('auth.social', 'google') }}" class="btn-pill-outline">
+                            <img src="{{ URL::asset('build/images/svgs/google-icon.svg') }}" alt="Google" width="16" onerror="this.style.display='none';">
+                            <span>Sign in with Google</span>
+                        </a>
+                    </form>
+
+                    <div style="text-align: center; margin-top: 28px; font-size: 12px; color: var(--color-mid-gray);">
+                        {{ config('app.name', 'ModernGrosir') }} B2B Platform v2.0
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-
-
+</div>
 @endsection

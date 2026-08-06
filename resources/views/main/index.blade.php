@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'ModernGrosir Dashboard')
+@section('title', config('app.name', 'ModernGrosir') . ' Dashboard')
 
 @section('css')
   <link rel="stylesheet" href="{{ URL::asset('build/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}" />

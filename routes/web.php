@@ -28,7 +28,13 @@ use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('landing');
-});
+})->name('landing');
+
+// Public Pages (Privacy, Terms, Contact)
+Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'submitContact'])->name('contact.submit');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {

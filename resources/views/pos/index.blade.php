@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'ModernGrosir - POS')
+@section('title', config('app.name', 'ModernGrosir') . ' - POS')
 
 @section('pageContent')
 
