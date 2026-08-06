@@ -27,17 +27,20 @@ $(document).ready(function() {
             let html = '';
             data.tiers.forEach(tier => {
                 html += `
-                <div class="mb-3 p-3 bg-light rounded-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fw-bold text-dark fs-3">${tier.tier_name} <small class="text-muted">(${tier.discount}% Default Disc)</small></span>
-                        <span class="fs-2 text-muted">Default: ${ModernGrosir.formatMoney(tier.default_price)}</span>
+                <div class="p-4 bg-light rounded-4 border">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="fw-bold text-dark fs-3">${tier.tier_name}</span>
+                            <small class="text-muted ms-1.5 fs-2">(${tier.discount}% Default Disc)</small>
+                        </div>
+                        <span class="badge bg-white text-dark border fs-2 fw-normal px-2.5 py-1.5">Default: ${ModernGrosir.formatMoney(tier.default_price)}</span>
                     </div>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white">Rp</span>
-                        <input type="number" class="form-control border-start-0" 
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border border-end-0 text-muted px-3 fs-2">Rp</span>
+                        <input type="number" class="form-control bg-white border border-start-0 py-2 fs-2" 
                             name="prices[${tier.tier_id}]" 
                             value="${tier.override_price || ''}" 
-                            placeholder="Set manual price or leave empty for default">
+                            placeholder="Set harga manual atau kosongkan untuk default">
                     </div>
                 </div>`;
             });

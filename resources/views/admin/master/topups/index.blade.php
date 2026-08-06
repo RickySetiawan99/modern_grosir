@@ -3,20 +3,16 @@
 @section('title', 'Top-up Verification - ' . config('app.name', 'ModernGrosir'))
 
 @section('pageContent')
-<div class="card bg-primary-subtle shadow-none position-relative overflow-hidden mb-4">
-    <div class="card-body px-4 py-3">
-        <div class="row align-items-center">
-            <div class="col-9">
-                <h4 class="fw-semibold mb-8">Top-up Verification</h4>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a class="text-muted text-decoration-none" href="{{ route('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item" aria-current="page">Top-up Requests</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="col-3 text-end">
-                <i class="ti ti-wallet fs-8 text-primary opacity-50"></i>
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary-subtle position-relative">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Partners</span>
+                    <span class="text-muted fs-2">&bull; Verifikasi Saldo</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-dark">Top-up Verification</h3>
+                <p class="text-muted mb-0 fs-3">Review dan verifikasi permintaan top-up saldo dari akun reseller.</p>
             </div>
         </div>
     </div>
@@ -146,7 +142,7 @@
                 </div>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                 <div class="ms-auto d-flex gap-2">
                     <form id="reject-form" action="" method="POST">
                         @csrf

@@ -70,6 +70,7 @@ class BatchController extends Controller
             ->withQueryString();
 
         $warehouses = Warehouse::all();
+        $suppliers = Supplier::all();
         $summary = [
             'total_active' => InventoryBatch::active()->count(),
             'expiring_soon' => InventoryBatch::expiringWithin(30)->count(),
@@ -77,7 +78,26 @@ class BatchController extends Controller
             'value_at_risk' => $this->expirationService->getValueAtRisk(30),
         ];
 
-        return view('admin.inventory.batch-management', compact('batches', 'warehouses', 'summary'));
+        return view('admin.inventory.batch-management', compact('batches', 'warehouses', 'suppliers', 'summary'));
+    }
+
+    /**
+     * Show the specified batch details.
+     */
+    public function show($id)
+    {
+        try {
+            $batch = InventoryBatch::with(['product', 'warehouse', 'supplier'])->findOrFail($id);
+            return response()->json([
+                'success' => true,
+                'batch' => $batch
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Batch not found'
+            ], 404);
+        }
     }
 
     /**
@@ -138,13 +158,14 @@ class BatchController extends Controller
     {
         $request->validate([
             'expiration_date' => 'nullable|date',
+            'supplier_id' => 'nullable|exists:suppliers,id',
             'purchase_price' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
         try {
             $batch = $this->batchService->updateBatch($id, $request->only([
-                'expiration_date', 'purchase_price', 'notes'
+                'expiration_date', 'supplier_id', 'purchase_price', 'notes'
             ]));
 
             return response()->json([

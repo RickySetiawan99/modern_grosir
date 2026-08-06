@@ -20,13 +20,13 @@ function initModernDatatable(tableSelector, options = {}) {
     }
 
     // Initial check for bulk delete button
-    toggleBulkDeleteBtn(tableSelector, options.bulkDeleteUrl);
+    toggleBulkDeleteBtn(tableSelector, options.bulkDeleteUrl, options.itemName || 'Item');
 
     // Handle select-all checkbox
     $(tableSelector).on('change', '#select-all', function () {
         const isChecked = $(this).is(':checked');
         $(`${tableSelector} .item-checkbox, ${tableSelector} .row-checkbox`).prop('checked', isChecked);
-        toggleBulkDeleteBtn(tableSelector, options.bulkDeleteUrl);
+        toggleBulkDeleteBtn(tableSelector, options.bulkDeleteUrl, options.itemName || 'Item');
     });
 
     // Handle individual checkbox change
@@ -34,13 +34,13 @@ function initModernDatatable(tableSelector, options = {}) {
         const $checkboxes = $(`${tableSelector} .item-checkbox, ${tableSelector} .row-checkbox`);
         const allChecked = $checkboxes.length > 0 && $checkboxes.filter(':checked').length === $checkboxes.length;
         $(`${tableSelector} #select-all`).prop('checked', allChecked);
-        toggleBulkDeleteBtn(tableSelector, options.bulkDeleteUrl);
+        toggleBulkDeleteBtn(tableSelector, options.bulkDeleteUrl, options.itemName || 'Item');
     });
 
     return table;
 }
 
-function toggleBulkDeleteBtn(tableSelector, bulkDeleteUrl) {
+function toggleBulkDeleteBtn(tableSelector, bulkDeleteUrl, itemName = 'Item') {
     if (!bulkDeleteUrl) return;
 
     const selectedCount = $(`${tableSelector} .item-checkbox:checked, ${tableSelector} .row-checkbox:checked`).length;
@@ -49,16 +49,95 @@ function toggleBulkDeleteBtn(tableSelector, bulkDeleteUrl) {
     if (selectedCount > 0) {
         $btn.removeClass('d-none');
         $btn.find('.selected-count').text(`(${selectedCount})`);
+        $btn.data('table-selector', tableSelector).data('bulk-url', bulkDeleteUrl).data('item-name', itemName);
     } else {
         $btn.addClass('d-none');
     }
 }
 
 function executeBulkDelete() {
-    // This assumes the page has specific context for what's being deleted
-    // Usually defined in the page's scripts
-    if (typeof window.executeBulkDelete === 'function') {
-        window.executeBulkDelete();
+    const $btn = $('#bulk-delete');
+    const tableSelector = $btn.data('table-selector') || '#main-table';
+    const bulkUrl = $btn.data('bulk-url');
+    const itemName = $btn.data('item-name') || 'Item';
+
+    const $checked = $(`${tableSelector} .item-checkbox:checked, ${tableSelector} .row-checkbox:checked`);
+    const ids = $checked.map(function () { return $(this).val(); }).get();
+
+    if (ids.length === 0) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('Info', 'Tidak ada item yang dipilih.', 'info');
+        } else {
+            alert('Tidak ada item yang dipilih.');
+        }
+        return;
+    }
+
+    if (!bulkUrl) {
+        console.warn('bulkDeleteUrl is not defined for Datatable bulk delete.');
+        return;
+    }
+
+    const performDeleteAction = function () {
+        $.ajax({
+            url: bulkUrl,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                ids: ids
+            },
+            success: function (response) {
+                if (response.success) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Berhasil!', response.message || `${ids.length} ${itemName} berhasil dihapus.`, 'success');
+                    } else {
+                        alert(response.message || `${ids.length} ${itemName} berhasil dihapus.`);
+                    }
+                    $(`${tableSelector} #select-all`).prop('checked', false);
+                    if ($.fn.DataTable.isDataTable(tableSelector)) {
+                        $(tableSelector).DataTable().ajax.reload(null, false);
+                    } else {
+                        location.reload();
+                    }
+                    $btn.addClass('d-none');
+                } else {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error!', response.message || 'Gagal menghapus item.', 'error');
+                    } else {
+                        alert(response.message || 'Gagal menghapus item.');
+                    }
+                }
+            },
+            error: function (xhr) {
+                const msg = xhr.responseJSON?.message || 'Gagal menghapus item yang dipilih.';
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error!', msg, 'error');
+                } else {
+                    alert(msg);
+                }
+            }
+        });
+    };
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Hapus Item Terpilih?',
+            text: `Apakah Anda yakin ingin menghapus ${ids.length} ${itemName} yang dipilih? Tindakan ini tidak dapat dibatalkan!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#5d87ff',
+            confirmButtonText: 'Ya, Hapus Semua!',
+            cancelButtonText: 'Batal'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                performDeleteAction();
+            }
+        });
+    } else {
+        if (confirm(`Apakah Anda yakin ingin menghapus ${ids.length} ${itemName} yang dipilih?`)) {
+            performDeleteAction();
+        }
     }
 }
 

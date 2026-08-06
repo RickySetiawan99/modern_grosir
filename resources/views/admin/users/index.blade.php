@@ -3,36 +3,29 @@
 @section('title', config('app.name', 'ModernGrosir') . ' - Staff Management')
 
 @section('pageContent')
-<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-  <div class="card-body px-4 py-3">
-    <div class="row align-items-center">
-      <div class="col-9">
-        <h4 class="fw-semibold mb-8">Staff User Management</h4>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item" aria-current="page">Staff Users</li>
-          </ol>
-        </nav>
-      </div>
-      <div class="col-3">
-        <div class="text-center mb-n5">
-          <img src="{{ URL::asset('images/logos/favicon.svg') }}" alt="" class="img-fluid mb-n4" width="80" style="opacity: 0.1;">
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary-subtle position-relative">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Access Control</span>
+                    <span class="text-muted fs-2">&bull; Manajemen Tim Operasional</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-dark">Staff Users</h3>
+                <p class="text-muted mb-0 fs-3">Kelola akun staf, hak akses, dan peran pengguna operasional.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <a href="{{ route('master.users.create') }}" class="btn btn-primary px-3.5 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm fw-medium">
+                    <i class="ti ti-plus fs-5"></i>
+                    <span>Add New Staff</span>
+                </a>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
 <div class="card">
   <div class="card-body">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h5 class="card-title fw-semibold">Staff Members</h5>
-      <a href="{{ route('master.users.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
-        <i class="ti ti-plus fs-4"></i> Add New Staff
-      </a>
-    </div>
-
     <div class="table-responsive">
       <table id="main-table" class="table text-nowrap align-middle mb-0">
         <thead>

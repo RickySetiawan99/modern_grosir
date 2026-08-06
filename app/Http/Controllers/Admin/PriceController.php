@@ -44,10 +44,10 @@ class PriceController extends Controller
                     $displayPrice = $override ? $override->price : $calculatedPrice;
                     $isOverride = $override ? true : false;
 
-                    $badgeClass = $isOverride ? 'bg-primary' : 'bg-info-subtle text-info';
-                    $html .= '<div class="p-1 px-2 border rounded-pill '.$badgeClass.'" style="font-size: 0.7rem;">
+                    $badgeClass = $isOverride ? 'bg-primary-subtle text-primary border-primary-subtle' : 'bg-info-subtle text-info border-info-subtle';
+                    $html .= '<div class="p-1 px-2.5 border rounded-pill '.$badgeClass.'" style="font-size: 0.75rem;">
                                 <span class="fw-bold">'.$tier->name.':</span> '.GeneralHelper::formatCurrency($displayPrice).
-                                ($isOverride ? ' <i class="ti ti-star-filled ms-1" style="font-size: 0.5rem;"></i>' : '').
+                                ($isOverride ? ' <i class="ti ti-star-filled text-warning ms-1" style="font-size: 0.65rem;"></i>' : '').
                              '</div>';
                 }
                 $html .= '</div>';
@@ -55,8 +55,8 @@ class PriceController extends Controller
                 return $html;
             })
             ->addColumn('action', function ($product) {
-                return '<button class="btn btn-sm btn-outline-primary btn-edit-prices" data-id="'.$product->id.'" data-name="'.$product->name.'">
-                            <i class="ti ti-settings fs-3"></i> Manage
+                return '<button class="btn btn-sm btn-light border text-dark fw-semibold px-3 py-1.5 rounded-2 btn-edit-prices" data-id="'.$product->id.'" data-name="'.$product->name.'">
+                            <i class="ti ti-adjustments-horizontal me-1 text-primary"></i> Manage
                         </button>';
             })
             ->rawColumns(['name', 'tier_prices', 'action'])

@@ -3,21 +3,19 @@
 @section('title', config('app.name', 'ModernGrosir') . ' - Edit Reseller')
 
 @section('pageContent')
-<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-  <div class="card-body px-4 py-3">
-    <div class="row align-items-center">
-      <div class="col-9">
-        <h4 class="fw-semibold mb-8">Edit Reseller</h4>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('master.resellers.index') }}">Resellers</a></li>
-            <li class="breadcrumb-item" aria-current="page">Edit</li>
-          </ol>
-        </nav>
-      </div>
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary-subtle position-relative">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Partners</span>
+                    <span class="text-muted fs-2">&bull; Edit Data Reseller</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-dark">Edit Reseller</h3>
+                <p class="text-muted mb-0 fs-3">Perbarui informasi akun reseller yang sudah ada.</p>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="row">
@@ -105,8 +103,8 @@
             @enderror
           </div>
 
+          <a href="{{ route('master.resellers.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
           <button type="submit" class="btn btn-primary">Update Reseller</button>
-          <a href="{{ route('master.resellers.index') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
         </form>
       </div>
     </div>

@@ -3,55 +3,45 @@
 @section('title', config('app.name', 'ModernGrosir') . ' - Product Master')
 
 @section('pageContent')
-<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-  <div class="card-body px-4 py-3">
-    <div class="row align-items-center">
-      <div class="col-9">
-        <h4 class="fw-semibold mb-8">Products (Barang)</h4>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a class="text-muted" href="javascript:void(0)">Master Data</a></li>
-            <li class="breadcrumb-item" aria-current="page">Products</li>
-          </ol>
-        </nav>
-      </div>
-      <div class="col-3">
-        <div class="text-center mb-n5">
-          <img src="{{ URL::asset('images/logos/favicon.svg') }}" alt="" class="img-fluid mb-n4" width="80" style="opacity: 0.1;">
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary-subtle position-relative">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Master Data</span>
+                    <span class="text-muted fs-2">&bull; Manajemen Produk & Inventory</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-dark">Daftar Produk (Barang)</h3>
+                <p class="text-muted mb-0 fs-3">Kelola seluruh data produk, SKU, harga eceran, dan kategori barang dagangan.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <a href="{{ route('master.products.create') }}" class="btn btn-primary px-3.5 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm fw-medium">
+                    <i class="ti ti-plus fs-5"></i>
+                    <span>Add New Product</span>
+                </a>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-</div>
-
-<div class="row mb-4">
-  <div class="col-md-4">
-    <div class="card mb-0">
-      <div class="card-body p-3">
-        <label for="category-filter" class="form-label fs-2 fw-semibold text-muted mb-1">Filter by Category</label>
-        <select id="category-filter" class="form-select form-select-sm border-0 bg-light">
-          <option value="all">All Categories</option>
-          @foreach($categories as $category)
-            <option value="{{ $category->id }}">{{ $category->name }}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="card">
   <div class="card-body">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h5 class="card-title fw-semibold">Products List</h5>
-      <div class="d-flex gap-2">
+    <div class="row align-items-center justify-content-between mb-3 g-2">
+      <div class="col-md-6 col-lg-4">
+        <div class="d-flex align-items-center gap-2">
+          <label for="category-filter" class="form-label fs-2 fw-semibold text-muted mb-0 flex-shrink-0">Filter Kategori:</label>
+          <select id="category-filter" class="form-select form-select-sm border select2">
+            <option value="all">Semua Kategori</option>
+            @foreach($categories as $category)
+              <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+      <div class="col-md-auto ms-auto">
         <button id="bulk-delete" class="btn btn-sm btn-danger d-none" onclick="executeBulkDelete()">
           <i class="ti ti-trash fs-3 me-2"></i> Delete Selected <span class="selected-count"></span>
         </button>
-        <a href="{{ route('master.products.create') }}" class="btn btn-sm btn-primary">
-          <i class="ti ti-plus fs-3 me-2"></i> Add New Product
-        </a>
       </div>
     </div>
     

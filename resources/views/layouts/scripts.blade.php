@@ -18,9 +18,10 @@
 <script src="{{ URL::asset('build/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/datatable/custom_datatable.js') }}"></script>
 <script src="{{ URL::asset('build/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ URL::asset('build/libs/select2/dist/js/select2.full.min.js') }}"></script>
 
 <script>
-    // Global Datepicker Initialization
+    // Global Initializers (Datepicker & Select2)
     $(document).ready(function() {
         if ($.fn.datepicker) {
             $('.datepicker-input').datepicker({
@@ -28,6 +29,35 @@
                 autoclose: true,
                 todayHighlight: true,
                 orientation: "bottom auto"
+            });
+        }
+
+        if ($.fn.select2) {
+            // Initialize non-modal select2 elements on page load
+            $('select.select2').not('.modal select').each(function() {
+                var $this = $(this);
+                if ($this.hasClass('select2-hidden-accessible')) return;
+                $this.select2({ width: '100%' });
+            });
+
+            // Initialize modal select2 elements ONLY when the modal is shown (fully visible)
+            $(document).on('shown.bs.modal', '.modal', function() {
+                var $modal = $(this);
+                $modal.find('select.select2').each(function() {
+                    var $this = $(this);
+                    if ($this.hasClass('select2-hidden-accessible')) {
+                        // Re-trigger layout calculation if already initialized
+                        $this.select2({
+                            width: '100%',
+                            dropdownParent: $modal
+                        });
+                    } else {
+                        $this.select2({
+                            width: '100%',
+                            dropdownParent: $modal
+                        });
+                    }
+                });
             });
         }
     });

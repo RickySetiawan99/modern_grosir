@@ -1,11 +1,11 @@
 $(document).ready(function() {
-    // Initialize Select2
-    $('.select2').select2({
+    // Initialize Select2 specifically within createBatchModal
+    $('#createBatchModal .select2').select2({
         dropdownParent: $('#createBatchModal')
     });
 
     // Initialize Product Select2 with AJAX
-    $('.select2-products').select2({
+    $('#createBatchModal .select2-products').select2({
         dropdownParent: $('#createBatchModal'),
         ajax: {
             url: '/admin/master/products/data',
@@ -32,7 +32,7 @@ $(document).ready(function() {
     });
 
     // Initialize Supplier Select2 with AJAX
-    $('.select2-suppliers').select2({
+    $('#createBatchModal .select2-suppliers').select2({
         dropdownParent: $('#createBatchModal'),
         ajax: {
             url: '/admin/master/suppliers/data',
@@ -167,16 +167,92 @@ $(document).ready(function() {
             }
         });
     });
+    // Handle Edit Batch Form Submission
+    $('#editBatchForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const form = $(this);
+        const batchId = $('#edit_batch_id').val();
+        const url = `/admin/inventory/batches/${batchId}`;
+        const submitBtn = form.find('button[type="submit"]');
+        
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
+        
+        $.ajax({
+            url: url,
+            type: 'PUT',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    $('#editBatchModal').modal('hide');
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: response.message || 'Data batch berhasil diperbarui.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: response.message || 'Gagal memperbarui batch.',
+                        icon: 'error'
+                    });
+                }
+            },
+            error: function(xhr) {
+                let message = 'Terjadi kesalahan saat memperbarui batch.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    title: 'Error!',
+                    text: message,
+                    icon: 'error'
+                });
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false).html('Simpan Perubahan');
+            }
+        });
+    });
 });
 
 // Helper Functions
 function editBatch(id) {
-    // For now, simpler edit functionality can be added here
-    // Or reuse the create modal with pre-filled values
-    Swal.fire({
-        title: 'Coming Soon',
-        text: 'Edit functionality will be implemented in the next phase.',
-        icon: 'info'
+    $('#editBatchForm')[0].reset();
+    $('#edit_batch_id').val(id);
+
+    $.get(`/admin/inventory/batches/${id}`, function(response) {
+        if (response.success && response.batch) {
+            const batch = response.batch;
+            $('#edit_batch_number_display').text('Batch #' + batch.batch_number);
+            $('#edit_product_name').val(batch.product ? batch.product.name + ' (' + batch.product.sku + ')' : '-');
+            $('#edit_warehouse_name').val(batch.warehouse ? batch.warehouse.name : '-');
+            $('#edit_quantity').val(batch.quantity + ' unit');
+            
+            if (batch.expiration_date) {
+                const expDate = new Date(batch.expiration_date).toISOString().split('T')[0];
+                $('#edit_expiration_date').val(expDate);
+            } else {
+                $('#edit_expiration_date').val('');
+            }
+            
+            if ($('#edit_supplier_id').length) {
+                $('#edit_supplier_id').val(batch.supplier_id || '').trigger('change');
+            }
+            
+            $('#edit_purchase_price').val(batch.purchase_price || '');
+            $('#edit_notes').val(batch.notes || '');
+
+            $('#editBatchModal').modal('show');
+        } else {
+            Swal.fire('Error', response.message || 'Gagal memuat data batch', 'error');
+        }
+    }).fail(function() {
+        Swal.fire('Error', 'Gagal memuat data dari server', 'error');
     });
 }
 
@@ -213,43 +289,59 @@ function viewHistory(id) {
     $('#historyContent').hide();
 
     $.get(`/admin/inventory/batches/${id}/history`, function(data) {
+        const statusBadgeClass = data.status === 'active' 
+            ? 'bg-success-subtle text-success border-success-subtle' 
+            : (data.status === 'expired' ? 'bg-danger-subtle text-danger border-danger-subtle' : 'bg-secondary-subtle text-secondary border-secondary-subtle');
+
         let html = `
-            <div class="mb-4">
-                <h5>Batch Details</h5>
-                <div class="row g-3">
+            <div class="card border-0 bg-primary-subtle rounded-4 p-3 mb-4">
+                <div class="row g-3 align-items-center">
                     <div class="col-6 col-md-3">
-                        <small class="text-muted d-block">Batch Number</small>
-                        <span class="fw-semibold">${data.batch.batch_number}</span>
+                        <small class="text-muted d-block fs-2 text-uppercase tracking-wider fw-medium mb-1">No. Batch</small>
+                        <span class="badge bg-white text-dark font-monospace border border-secondary-subtle px-2.5 py-1.5 fs-2 fw-semibold">
+                            #${data.batch.batch_number}
+                        </span>
                     </div>
                     <div class="col-6 col-md-3">
-                        <small class="text-muted d-block">Product</small>
-                        <span class="fw-semibold">${data.batch.product.name}</span>
+                        <small class="text-muted d-block fs-2 text-uppercase tracking-wider fw-medium mb-1">Produk</small>
+                        <span class="fw-bold text-dark fs-3 d-block text-truncate">${data.batch.product.name}</span>
                     </div>
                     <div class="col-6 col-md-3">
-                        <small class="text-muted d-block">Current Status</small>
-                        <span class="badge bg-${data.status === 'active' ? 'success' : (data.status === 'expired' ? 'danger' : 'secondary')}-subtle text-${data.status === 'active' ? 'success' : (data.status === 'expired' ? 'danger' : 'secondary')}">
+                        <small class="text-muted d-block fs-2 text-uppercase tracking-wider fw-medium mb-1">Status Batch</small>
+                        <span class="badge ${statusBadgeClass} border px-2.5 py-1 rounded-pill fs-2 fw-semibold">
                             ${data.status.toUpperCase()}
                         </span>
                     </div>
                     <div class="col-6 col-md-3">
-                        <small class="text-muted d-block">Current Stock</small>
-                        <span class="fw-bold">${data.current_stock}</span>
+                        <small class="text-muted d-block fs-2 text-uppercase tracking-wider fw-medium mb-1">Sisa Stok</small>
+                        <span class="fw-bold fs-4 text-primary d-block">${data.current_stock}</span>
                     </div>
                 </div>
             </div>
 
-            <ul class="timeline-widget mb-0 position-relative mb-n5">
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                    <div class="timeline-time text-dark flex-shrink-0 text-end">${moment(data.receipt.date).format('DD MMM YYYY')}</div>
-                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                        <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
-                        <span class="timeline-badge-border d-block flex-shrink-0"></span>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold text-dark mb-0 fs-3">Histori & Audit Trail Pergerakan Stok</h6>
+                <span class="badge bg-light text-muted border fs-2 fw-normal">Rotasi FEFO</span>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+                <!-- Initial Intake Event -->
+                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light border position-relative">
+                    <div class="p-2 rounded-circle bg-success text-white shadow-sm flex-shrink-0 mt-0.5 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="ti ti-box-seam fs-5 text-white"></i>
                     </div>
-                    <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">
-                        Received Stock
-                        <span class="d-block fw-normal text-muted fs-2">Quantity: ${data.receipt.quantity} <br> Supplier: ${data.receipt.supplier || '-'}</span>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                            <h6 class="fw-bold text-dark mb-0 fs-3">Stok Masuk (Penerimaan Supplier)</h6>
+                            <span class="badge bg-white text-dark border fs-2 fw-normal">${moment(data.receipt.date).format('DD MMM YYYY')}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 fs-2 text-muted flex-wrap">
+                            <span>Kuantitas: <strong class="text-success">+${data.receipt.quantity}</strong></span>
+                            <span>&bull;</span>
+                            <span>Supplier: <strong class="text-dark">${data.receipt.supplier || '-'}</strong></span>
+                        </div>
                     </div>
-                </li>
+                </div>
         `;
 
         // Sort sales and disposals by date
@@ -260,7 +352,7 @@ function viewHistory(id) {
                 type: 'sale',
                 date: sale.date,
                 quantity: sale.quantity,
-                detail: sale.customer || 'POS Sale'
+                detail: sale.customer || 'Transaksi Kasir POS'
             });
         });
 
@@ -269,7 +361,7 @@ function viewHistory(id) {
                 type: 'disposal',
                 date: disposal.date,
                 quantity: disposal.quantity,
-                detail: disposal.reason + ' (' + disposal.disposed_by + ')'
+                detail: (disposal.reason || 'Disposisi') + (disposal.disposed_by ? ' (' + disposal.disposed_by + ')' : '')
             });
         });
 
@@ -278,25 +370,32 @@ function viewHistory(id) {
 
         events.forEach(event => {
             const isSale = event.type === 'sale';
-            const badgeColor = isSale ? 'primary' : 'danger';
-            const title = isSale ? 'Stock Sold' : 'Stock Disposed';
+            const icon = isSale ? 'ti-shopping-cart' : 'ti-trash';
+            const iconBg = isSale ? 'bg-primary text-white shadow-sm' : 'bg-danger text-white shadow-sm';
+            const title = isSale ? 'Penjualan / Terjual (POS)' : 'Disposisi / Pembuangan Stok';
+            const qtyColor = isSale ? 'text-primary' : 'text-danger';
             
             html += `
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                    <div class="timeline-time text-dark flex-shrink-0 text-end">${moment(event.date).format('DD MMM YYYY')}</div>
-                    <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                        <span class="timeline-badge border-2 border border-${badgeColor} flex-shrink-0 my-8"></span>
-                        <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light border position-relative">
+                    <div class="p-2 ${iconBg} rounded-circle flex-shrink-0 mt-0.5 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="ti ${icon} fs-5 text-white"></i>
                     </div>
-                    <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">
-                        ${title}
-                        <span class="d-block fw-normal text-muted fs-2">Quantity: ${event.quantity} <br> ${event.detail}</span>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                            <h6 class="fw-bold text-dark mb-0 fs-3">${title}</h6>
+                            <span class="badge bg-white text-dark border fs-2 fw-normal">${moment(event.date).format('DD MMM YYYY')}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 fs-2 text-muted flex-wrap">
+                            <span>Kuantitas: <strong class="${qtyColor}">-${event.quantity}</strong></span>
+                            <span>&bull;</span>
+                            <span>Keterangan: <strong class="text-dark">${event.detail}</strong></span>
+                        </div>
                     </div>
-                </li>
+                </div>
             `;
         });
 
-        html += `</ul>`;
+        html += `</div>`;
 
         $('#historyContent').html(html);
         $('#historyLoading').hide();

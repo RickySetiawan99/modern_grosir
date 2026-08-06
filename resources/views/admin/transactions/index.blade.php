@@ -3,48 +3,52 @@
 @section('title', config('app.name', 'ModernGrosir') . ' - Transaction History')
 
 @section('pageContent')
-<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-  <div class="card-body px-4 py-3">
-    <div class="row align-items-center">
-      <div class="col-9">
-        <h4 class="fw-semibold mb-8">Transaction History</h4>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item" aria-current="page">Transactions</li>
-          </ol>
-        </nav>
-      </div>
-      <div class="col-3">
-        <div class="text-center mb-n5">
-          <img src="{{ URL::asset('images/logos/favicon.svg') }}" alt="" class="img-fluid mb-n4" width="80" style="opacity: 0.1;">
+    <!-- Header Banner Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary-subtle position-relative">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Audit & POS Record</span>
+                        <span class="text-muted fs-2">&bull; Riwayat Transaksi Penjualan</span>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-dark">Riwayat Transaksi POS & Sales</h3>
+                    <p class="text-muted mb-0 fs-3">Pantau arus kas transaksi ritel, kasir yang bertugas, serta status pembayaran pelanggan.</p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-</div>
 
-<div class="card w-100 position-relative overflow-hidden">
-  <div class="card-body p-4">
-    <div class="table-responsive rounded-2 mb-4">
-      <table id="transactions-table" class="table border text-nowrap customize-table mb-0 align-middle">
-        <thead class="text-dark fs-4">
-          <tr>
-            <th>No</th>
-            <th>Date</th>
-            <th>Code</th>
-            <th>Cashier</th>
-            <th>Customer</th>
-            <th>Warehouse</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-      </table>
+    <!-- Main Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="ti ti-receipt-tax fs-5 text-primary"></i> Daftar Seluruh Transaksi
+                </h5>
+            </div>
+
+            <div class="table-responsive">
+                <table id="transactions-table" class="table table-hover align-middle text-nowrap mb-0">
+                    <thead>
+                        <tr class="text-uppercase fs-2 text-muted tracking-wider border-bottom">
+                            <th scope="col" class="ps-3 py-3" style="width: 50px;">No</th>
+                            <th scope="col" class="py-3">Waktu & Tanggal</th>
+                            <th scope="col" class="py-3">Kode Transaksi</th>
+                            <th scope="col" class="py-3">Kasir / User</th>
+                            <th scope="col" class="py-3">Pelanggan</th>
+                            <th scope="col" class="py-3">Gudang</th>
+                            <th scope="col" class="py-3">Total Transaksi</th>
+                            <th scope="col" class="py-3">Status</th>
+                            <th scope="col" class="pe-3 py-3 text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 @endsection
 
 @section('scripts')

@@ -285,8 +285,26 @@
     --bs-btn-hover-bg: #171717 !important;
     --bs-btn-hover-border-color: #171717 !important;
     --bs-btn-hover-color: #ffffff !important;
-    color: #171717 !important;
+    --bs-btn-active-bg: #171717 !important;
+    --bs-btn-active-border-color: #171717 !important;
+    --bs-btn-active-color: #ffffff !important;
+    color: #171717;
+    border-color: #171717;
+}
+
+[data-color-theme="Black_Theme"] .btn-outline-primary:hover,
+[data-color-theme="Black_Theme"] .btn-outline-primary:focus,
+[data-color-theme="Black_Theme"] .btn-outline-primary:active,
+[data-color-theme="Black_Theme"] .btn-outline-primary.active {
+    background-color: #171717 !important;
     border-color: #171717 !important;
+    color: #ffffff !important;
+}
+
+[data-color-theme="Black_Theme"] .btn-outline-primary:hover *,
+[data-color-theme="Black_Theme"] .btn-outline-primary:focus *,
+[data-color-theme="Black_Theme"] .btn-outline-primary:active * {
+    color: #ffffff !important;
 }
 
 [data-color-theme="Black_Theme"] .sidebar-nav ul .sidebar-item.selected > .sidebar-link,
@@ -303,4 +321,191 @@
 
 [data-color-theme="Black_Theme"] .text-primary {
     color: #171717 !important;
+}
+
+/* Table Dropdown Clipping Fix */
+/* Custom Padding & Z-Index Utilities for ModernGrosir */
+.p-2.5 { padding: 0.625rem !important; }
+.px-2.5 { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
+.py-2.5 { padding-top: 0.625rem !important; padding-bottom: 0.625rem !important; }
+.p-3.5 { padding: 1.125rem !important; }
+.px-3.5 { padding-left: 1.125rem !important; padding-right: 1.125rem !important; }
+.py-3.5 { padding-top: 1.125rem !important; padding-bottom: 1.125rem !important; }
+
+.table-responsive {
+    min-height: 300px;
+}
+
+.table-responsive .dropdown-menu {
+    z-index: 1055 !important;
+}
+
+/* Lighter Outline Secondary Border Style for Cancel / Batal / Kembali / Close Buttons */
+.btn-outline-secondary {
+    border: 1px solid #e2e8f0 !important;
+    color: #7c8ba1 !important;
+    background-color: transparent !important;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active,
+.btn-outline-secondary.active {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-outline-secondary:hover *,
+.btn-outline-secondary:focus *,
+.btn-outline-secondary:active * {
+    color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
+    background-color: transparent !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .btn-outline-secondary:focus,
+[data-bs-theme="dark"] .btn-outline-secondary:active {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary:hover *,
+[data-bs-theme="dark"] .btn-outline-secondary:focus *,
+[data-bs-theme="dark"] .btn-outline-secondary:active * {
+    color: #f1f5f9 !important;
+}
+
+/* Select2 Modernize Design System Styling */
+select.select2-hidden-accessible {
+    border: 0 !important;
+    clip: rect(0 0 0 0) !important;
+    height: 1px !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: absolute !important;
+    width: 1px !important;
+}
+
+.select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+    flex: 1 1 auto;
+    max-width: 100%;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: 7px !important;
+    background-color: var(--bs-body-bg, #ffffff) !important;
+    background-image: none !important; /* CRITICAL: Remove Bootstrap form-select arrow background image */
+    position: relative !important; /* CRITICAL: Ensure arrow positions inside select box */
+    display: block !important;
+    box-shadow: none !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--bs-body-color, #2a3547) !important;
+    padding-left: 12px !important;
+    padding-right: 30px !important;
+    font-size: 0.875rem !important;
+    line-height: 36px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+    position: absolute !important;
+    top: 1px !important;
+    right: 8px !important;
+    width: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #5a6a85 transparent transparent transparent !important;
+    border-style: solid !important;
+    border-width: 5px 4px 0 4px !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent #5a6a85 transparent !important;
+    border-width: 0 4px 5px 4px !important;
+}
+
+.select2-container--default .select2-dropdown {
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: 7px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    background-color: var(--bs-body-bg, #ffffff) !important;
+    z-index: 1065 !important;
+}
+
+.select2-container--default .select2-search--dropdown {
+    padding: 8px !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: 5px !important;
+    padding: 6px 10px !important;
+    outline: none !important;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 8px 12px !important;
+    font-size: 0.875rem !important;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--bs-primary, #5d87ff) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .select2-container--default .select2-selection--single {
+    background-color: #2a3447 !important;
+    border-color: #334155 !important;
+    background-image: none !important;
+}
+
+[data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .select2-container--default .select2-dropdown {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #94a3b8 transparent transparent transparent !important;
 }

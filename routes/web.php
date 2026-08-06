@@ -66,6 +66,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/inventory/batches/create', [App\Http\Controllers\Admin\BatchController::class, 'create'])->name('inventory.batches.create')->middleware('role:admin|cashier');
     Route::get('/inventory/batches', [App\Http\Controllers\Admin\BatchController::class, 'index'])->name('inventory.batches.index')->middleware('role:admin|cashier');
     Route::post('/inventory/batches', [App\Http\Controllers\Admin\BatchController::class, 'store'])->name('inventory.batches.store')->middleware('role:admin|cashier');
+    Route::get('/inventory/batches/{id}', [App\Http\Controllers\Admin\BatchController::class, 'show'])->name('inventory.batches.show')->middleware('role:admin|cashier');
     Route::put('/inventory/batches/{id}', [App\Http\Controllers\Admin\BatchController::class, 'update'])->name('inventory.batches.update')->middleware('role:admin|cashier');
     Route::post('/inventory/batches/{id}/dispose', [App\Http\Controllers\Admin\BatchController::class, 'dispose'])->name('inventory.batches.dispose')->middleware('role:admin|cashier');
     Route::post('/inventory/batches/{id}/transfer', [App\Http\Controllers\Admin\BatchController::class, 'transfer'])->name('inventory.batches.transfer')->middleware('role:admin|cashier');

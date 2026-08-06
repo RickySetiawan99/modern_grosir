@@ -3,21 +3,19 @@
 @section('title', config('app.name', 'ModernGrosir') . ' - Create Staff')
 
 @section('pageContent')
-<div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
-  <div class="card-body px-4 py-3">
-    <div class="row align-items-center">
-      <div class="col-9">
-        <h4 class="fw-semibold mb-8">Create New Staff Member</h4>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a class="text-muted" href="{{ route('master.users.index') }}">Staff Users</a></li>
-            <li class="breadcrumb-item" aria-current="page">Create</li>
-          </ol>
-        </nav>
-      </div>
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-primary-subtle position-relative">
+    <div class="card-body p-4">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Access Control</span>
+                    <span class="text-muted fs-2">&bull; Tambah Staff Baru</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-dark">Tambah Staff Baru</h3>
+                <p class="text-muted mb-0 fs-3">Isi form di bawah untuk membuat akun staf operasional baru.</p>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="card shadow-sm">
@@ -80,8 +78,8 @@
       </div>
 
       <div class="d-flex align-items-center gap-3 mt-5 pt-3 border-top">
-        <button type="submit" class="btn btn-primary px-4">Create Account</button>
-        <a href="{{ route('master.users.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+        <a href="{{ route('master.users.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
+          <button type="submit" class="btn btn-primary px-4">Create Account</button>
       </div>
     </form>
   </div>
