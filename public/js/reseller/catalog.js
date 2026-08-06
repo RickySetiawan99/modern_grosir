@@ -99,7 +99,7 @@ function renderProducts(products) {
 
     if (products.length === 0) {
         html =
-            '<div class="col-12 text-center text-muted py-5"><img src="/build/images/svgs/empty-shopping-bag.svg" width="100" class="mb-3 opacity-50"><h5 class="fw-semibold">No products found</h5><p>Try adjusting your filters or search terms.</p></div>';
+            '<div class="col-12 text-center text-muted py-5"><i class="ti ti-shopping-cart-off fs-8 mb-2 d-block text-secondary"></i><h5 class="fw-semibold">No products found</h5><p>Try adjusting your filters or search terms.</p></div>';
     } else {
         products.forEach((p) => {
             const stockInfo = getStockDisplay(p.stock_by_warehouse);
@@ -109,30 +109,39 @@ function renderProducts(products) {
                 ? `/${p.image}`
                 : "/build/images/products/product-1.jpg";
 
+            let discountBadge = '';
+            if (savingsPercent > 0) {
+                discountBadge = `<span class="badge bg-danger text-white border border-danger fs-1 position-absolute top-0 end-0 m-1.5 rounded-md px-1.5 py-0.5 fw-bold shadow-xs">-${savingsPercent}% Off</span>`;
+            }
+
             html += `
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="card h-100 shadow-sm border-0 reseller-product-card">
-                    <div class="product-image-container">
-                        ${savingsPercent > 0 ? `<div class="discount-badge">-${savingsPercent}% Off</div>` : ""}
+            <div class="col-6 col-sm-4 col-md-3 col-xl-3">
+                <div class="card h-100 pos-product-card reseller-product-card" data-id="${p.id}">
+                    ${discountBadge}
+                    <div class="product-img-wrapper">
                         <img src="${imageUrl}" class="card-img-top" alt="${p.name}">
                     </div>
-                    <div class="card-body px-3 pb-3 pt-0">
-                        <p class="text-primary fw-bold fs-2 mb-0">${p.category.name}</p>
-                        <h6 class="fw-bold mb-2 text-dark product-title" style="height: 2.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${p.name}</h6>
-                        
-                        <div class="price-info mb-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <h5 class="fw-bolder text-dark mb-0">${p.formatted_your_price}</h5>
+                    <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-2 gap-1">
+                                <span class="badge-shadcn-category text-truncate">${p.category.name}</span>
+                                <span class="badge-shadcn-sku text-truncate" title="${p.sku}">${p.sku}</span>
                             </div>
-                            <div class="d-flex align-items-center gap-1 mt-1">
-                                <span class="text-muted text-decoration-line-through fs-1">${p.formatted_base_price}</span>
-                                <span class="save-label">Save ${ModernGrosir.formatMoney(savings)}</span>
-                            </div>
+                            <h6 class="fw-bold fs-3 text-dark mb-0 text-truncate-2 product-title" title="${p.name}">${p.name}</h6>
                         </div>
 
-                        ${stockInfo}
-                        
-                        <button class="btn btn-primary rounded-pill w-100 btn-add-to-cart mt-3 shadow-sm" 
+                        <div class="product-price-stock-box pt-2 border-top mt-auto mb-3">
+                            <div class="d-flex align-items-baseline justify-content-between gap-1 flex-wrap mb-1.5">
+                                <div>
+                                    <span class="fs-1 text-muted d-block fw-semibold text-uppercase tracking-wider mb-0.5">Harga Reseller</span>
+                                    <span class="fs-4 fw-bold text-dark text-nowrap">${p.formatted_your_price}</span>
+                                </div>
+                                ${savings > 0 ? `<span class="text-muted text-decoration-line-through fs-1 ms-auto">${p.formatted_base_price}</span>` : ''}
+                            </div>
+                            ${stockInfo}
+                        </div>
+
+                        <button class="btn btn-primary btn-sm rounded-2 w-100 btn-add-to-cart py-2 fw-semibold shadow-xs" 
                             data-id="${p.id}" 
                             data-name="${p.name}" 
                             data-price="${p.your_price}"
@@ -153,19 +162,19 @@ function getStockDisplay(stockByWarehouse) {
     let html = "";
 
     if (selectedWh !== "all") {
-        // Show only selected warehouse
         const whName = $("#warehouse-filter option:selected").text();
         const stock = stockByWarehouse[whName] || 0;
-        const stockClass = stock > 0 ? "text-success" : "text-danger";
+        const stockBadgeClass = stock > 0 ? "badge-shadcn-stock-available" : "badge-shadcn-stock-empty";
+        const stockIcon = stock > 0 ? "ti-box" : "ti-box-off";
+        const stockText = stock > 0 ? `${stock} unit` : "Habis";
         html = `
-            <div class="border-top pt-2 mt-1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted fs-1 mt-1">Stock at ${whName}:</span>
-                    <span class="${stockClass} fs-2 fw-bold">${stock}</span>
-                </div>
+            <div class="d-flex justify-content-between align-items-center w-100 mt-2">
+                <span class="text-muted fs-1 text-truncate me-1">${whName}:</span>
+                <span class="badge ${stockBadgeClass} d-inline-flex align-items-center flex-shrink-0">
+                    <i class="ti ${stockIcon} me-1"></i>${stockText}
+                </span>
             </div>`;
     }
-    // If 'all' selected, don't show stock section
 
     return html;
 }

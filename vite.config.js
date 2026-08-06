@@ -37,6 +37,7 @@ export default defineConfig({
                 'resources/css/styles-rtl.css',
                 'resources/scss/styles.scss',
                 'resources/css/custom_datatable.css',
+                'resources/css/custom_select2.css',
                 'resources/css/custom.css',
             ],
             refresh: true,

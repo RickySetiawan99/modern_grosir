@@ -12,6 +12,60 @@ let currentResellerId = null;
 let loadedDraftIds = []; 
 
 $(document).ready(function() {
+    function initPosSelect2() {
+        if ($.fn.select2) {
+            $('#pos-wrapper select.select2').each(function() {
+                let $select = $(this);
+                if ($select.hasClass('select2-hidden-accessible')) {
+                    $select.select2('destroy');
+                }
+                $select.select2({
+                    dropdownParent: $('#pos-wrapper'),
+                    width: '100%'
+                });
+            });
+        }
+    }
+    initPosSelect2();
+
+    function applyFullpageState(enable) {
+        const $btn = $('#btn-fullscreen');
+        const $wrapper = $('#pos-wrapper');
+        if (enable) {
+            $wrapper.addClass('pos-css-fullpage pos-fullscreen-active');
+            $btn.html('<i class="ti ti-minimize fs-4 text-primary"></i> <span class="fs-2 fw-semibold d-none d-md-inline">Exit Full</span>');
+            localStorage.setItem('pos_fullpage', 'true');
+        } else {
+            $wrapper.removeClass('pos-css-fullpage pos-fullscreen-active');
+            $btn.html('<i class="ti ti-maximize fs-4 text-primary"></i> <span class="fs-2 fw-semibold d-none d-md-inline">Fullpage</span>');
+            localStorage.setItem('pos_fullpage', 'false');
+        }
+        initPosSelect2();
+    }
+
+    function syncFullscreenState() {
+        const isNativeFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+        const isSavedFull = localStorage.getItem('pos_fullpage') === 'true';
+
+        if (isNativeFull || isSavedFull) {
+            applyFullpageState(true);
+        } else {
+            applyFullpageState(false);
+        }
+    }
+
+    document.addEventListener('fullscreenchange', function() {
+        if (!document.fullscreenElement) {
+            // Keep CSS fullpage if persistent option is set, otherwise sync
+            syncFullscreenState();
+        }
+    });
+    document.addEventListener('webkitfullscreenchange', syncFullscreenState);
+    document.addEventListener('msfullscreenchange', syncFullscreenState);
+
+    // Run on load to persist fullpage mode across page refreshes
+    syncFullscreenState();
+
     function openCartDrawer() {
         $('body').addClass('pos-cart-open');
     }
@@ -199,19 +253,21 @@ $(document).ready(function() {
     });
 
     $('#btn-fullscreen').click(function() {
+        const isCurrentlyFull = $('#pos-wrapper').hasClass('pos-css-fullpage') || !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
         const elem = document.getElementById('pos-wrapper');
-        if (!document.fullscreenElement) {
-            if (elem.requestFullscreen) elem.requestFullscreen();
+
+        if (isCurrentlyFull) {
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
+            }
+            applyFullpageState(false);
+        } else {
+            applyFullpageState(true);
+            if (elem.requestFullscreen) elem.requestFullscreen().catch(()=>{});
             else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
             else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-            $(this).html('<i class="ti ti-minimize"></i>');
-            $(elem).addClass('p-3'); 
-        } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            else if (document.msExitFullscreen) document.msExitFullscreen();
-            $(this).html('<i class="ti ti-maximize"></i>');
-            $(elem).removeClass('p-3');
         }
     });
 });
@@ -246,7 +302,7 @@ function fetchProducts(append = false) {
     const catId = $('#category-filter').val();
     
     if (!append) {
-        $('#product-grid').html('<div class="col-12 text-center py-5"><i class="ti ti-loader animate-spin fs-6"></i> Loading...</div>');
+        $('#product-grid').html('<div class="col-12 text-center py-5"><i class="ti ti-loader animate-spin fs-6 text-primary"></i><p class="mt-2 text-muted fs-3">Memuat Produk...</p></div>');
     }
 
     $.ajax({
@@ -270,30 +326,36 @@ function fetchProducts(append = false) {
             let html = '';
             products.forEach(p => {
                 const stock = parseInt(p.current_stock || 0);
-                const stockClass = stock > 0 ? 'text-success' : 'text-danger';
+                const stockBadgeClass = stock > 0 ? 'badge-shadcn-stock-available' : 'badge-shadcn-stock-empty';
+                const stockIcon = stock > 0 ? 'ti-box' : 'ti-box-off';
+                const stockText = stock > 0 ? `${stock} ${p.unit.name}` : 'Habis';
                 const disableClass = stock <= 0 ? 'opacity-50 pointer-events-none' : 'cursor-pointer product-card';
                 const imageUrl = p.image ? `/${p.image}` : '/build/images/products/product-1.jpg';
                 
                 let expiryBadge = '';
                 if (p.has_near_expiry) {
-                    expiryBadge = `<span class="badge bg-warning text-dark fs-2 position-absolute top-0 end-0 m-2" title="Expired Soon: ${p.earliest_expiry}">Expiring Soon</span>`;
+                    expiryBadge = `<span class="badge bg-warning text-dark border border-warning fs-1 position-absolute top-0 end-0 m-1.5 rounded-md px-1.5 py-0.5" title="Expired Soon: ${p.earliest_expiry}"><i class="ti ti-alert-triangle me-1"></i>Expiring</span>`;
                 }
 
                 html += `
-                <div class="col-6 col-sm-6 col-md-4">
-                    <div class="card h-100 hover-img shadow-sm pos-product-card ${disableClass}" data-id="${p.id}">
+                <div class="col-6 col-sm-4 col-md-3 col-xl-3">
+                    <div class="card h-100 pos-product-card ${disableClass}" data-id="${p.id}">
                         ${expiryBadge}
-                        <img src="${imageUrl}" class="card-img-top rounded-0" alt="${p.name}">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2 badge-row">
-                                 <span class="badge bg-light text-dark fw-semibold fs-2">${p.category.name}</span>
-                                 <span class="badge bg-light text-dark fs-2 badge-sku" title="${p.sku}">${p.sku}</span>
+                        <div class="product-img-wrapper">
+                            <img src="${imageUrl}" class="card-img-top" alt="${p.name}">
+                        </div>
+                        <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-2 gap-1">
+                                    <span class="badge-shadcn-category text-truncate">${p.category.name}</span>
+                                    <span class="badge-shadcn-sku text-truncate" title="${p.sku}">${p.sku}</span>
+                                </div>
+                                <h6 class="fw-bold fs-3 text-dark mb-0 text-truncate-2 product-title" title="${p.name}">${p.name}</h6>
                             </div>
-                            <h6 class="fw-semibold fs-3 mb-1 product-title">${p.name}</h6>
-                            <div class="d-flex justify-content-between align-items-center mt-3 price-row">
-                                <h5 class="fw-bold text-primary mb-0">Rp ${p.formatted_price}</h5>
-                                <span class="${stockClass} fs-2 fw-semibold">
-                                    <i class="ti ti-box"></i> ${stock} ${p.unit.name}
+                            <div class="d-flex align-items-center justify-content-between gap-1 flex-wrap pt-2.5 border-top mt-3">
+                                <span class="fs-3 fw-bold text-dark text-nowrap">${p.formatted_price}</span>
+                                <span class="badge ${stockBadgeClass} d-inline-flex align-items-center ms-auto">
+                                    <i class="ti ${stockIcon} me-1 fs-1"></i>${stockText}
                                 </span>
                             </div>
                         </div>
@@ -302,7 +364,7 @@ function fetchProducts(append = false) {
             });
 
             if (products.length === 0 && !append) {
-                html = '<div class="col-12 text-center text-muted py-5">No products found</div>';
+                html = '<div class="col-12 text-center text-muted py-5"><i class="ti ti-mood-empty fs-8 mb-2 d-block text-secondary"></i><p class="fs-3 mb-0">Tidak ada produk ditemukan</p></div>';
             }
 
             if (append) $('#product-grid').append(html);
@@ -312,7 +374,7 @@ function fetchProducts(append = false) {
         },
         error: function() {
             isLoading = false;
-            if (!append) $('#product-grid').html('<div class="col-12 text-center text-danger py-5">Failed to load products</div>');
+            if (!append) $('#product-grid').html('<div class="col-12 text-center text-danger py-5"><i class="ti ti-alert-circle fs-8 mb-2 d-block"></i><p class="fs-3">Gagal memuat daftar produk</p></div>');
         }
     });
 }
