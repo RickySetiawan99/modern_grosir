@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\EnsureEnvironmentIntegrity::class);
+        $middleware->append(\Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class);
+        $middleware->append(\Spatie\Csp\AddCspHeaders::class);
 
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
