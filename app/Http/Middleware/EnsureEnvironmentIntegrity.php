@@ -15,7 +15,7 @@ class EnsureEnvironmentIntegrity
      */
     public function handle(Request $request, Closure $next): Response
     { 
-        $licenseKey = env('APP_LICENSE_KEY');
+        $licenseKey = config('app.license_key');
 
         // Prevent empty key
         if (empty($licenseKey)) {

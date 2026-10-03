@@ -8,15 +8,15 @@
         <i class="ti ti-menu-2"></i>
       </a>
     </li>
-    <li class="nav-item nav-icon-hover-bg rounded-circle d-none d-lg-flex">
+    {{-- <li class="nav-item nav-icon-hover-bg rounded-circle d-none d-lg-flex">
       <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal"
         data-bs-target="#exampleModal">
         <i class="ti ti-search"></i>
       </a>
-    </li>
+    </li> --}}
   </ul>
 
-  <ul class="navbar-nav quick-links d-none d-lg-flex align-items-center">
+  {{-- <ul class="navbar-nav quick-links d-none d-lg-flex align-items-center">
     <!-- ------------------------------- -->
     <!-- start apps Dropdown -->
     <!-- ------------------------------- -->
@@ -42,7 +42,7 @@
     <li class="nav-item dropdown-hover d-none d-lg-block">
       <a class="nav-link" href="main/app-email">Email</a>
     </li>
-  </ul>
+  </ul> --}}
 
   <div class="d-block d-lg-none py-4">
     <a href="{{ url('/') }}" class="text-nowrap logo-img">
@@ -106,7 +106,7 @@
           <a class="nav-link pe-0" href="javascript:void(0)" id="drop1" aria-expanded="false">
             <div class="d-flex align-items-center">
               <div class="user-profile-img">
-                <img src="{{ Auth::user()?->avatar ? asset(Auth::user()->avatar) : URL::asset('build/images/profile/user-1.jpg') }}" class="rounded-circle" width="35" height="35"
+                <img src="{{ Auth::user()?->avatar_url ?? asset('build/images/profile/user-1.jpg') }}" class="rounded-circle" width="35" height="35"
                   alt="modernize-img" style="object-fit: cover;" />
               </div>
             </div>

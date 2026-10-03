@@ -73,4 +73,20 @@ class User extends Authenticatable
 
         return $reseller;
     }
+
+    /**
+     * Get the full URL for the user's avatar.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if (!$this->avatar) {
+            return asset('build/images/profile/user-1.jpg');
+        }
+
+        if (filter_var($this->avatar, FILTER_VALIDATE_URL) || str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+            return $this->avatar;
+        }
+
+        return asset($this->avatar);
+    }
 }

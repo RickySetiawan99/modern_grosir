@@ -34,7 +34,7 @@
                                         <p class="card-subtitle mb-4">Change your profile picture from here</p>
                                         <div class="text-center">
                                             <div class="position-relative d-inline-block">
-                                                <img src="{{ $user->avatar ? asset($user->avatar) : URL::asset('build/images/profile/user-1.jpg') }}" id="avatar-preview" alt="modernize-img" class="rounded-circle" width="120" height="120" style="object-fit: cover; border: 3px solid var(--bs-primary-bg-subtle);">
+                                                <img src="{{ $user->avatar_url }}" id="avatar-preview" alt="modernize-img" class="rounded-circle" width="120" height="120" style="object-fit: cover; border: 3px solid var(--bs-primary-bg-subtle);">
                                             </div>
                                             <div class="d-flex align-items-center justify-content-center my-4 gap-6">
                                                 <div class="btn btn-primary position-relative overflow-hidden">

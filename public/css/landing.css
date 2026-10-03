@@ -595,6 +595,158 @@ section {
     padding: 14px;
 }
 
+/* Role-Based Features Section */
+.roles-section {
+    padding: 90px 0;
+    background: var(--color-paper);
+    border-top: 1px solid var(--color-hairline);
+}
+
+.role-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 36px;
+    background: var(--color-canvas);
+    padding: 6px;
+    border-radius: var(--radius-cards);
+    border: 1px solid var(--color-hairline);
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.role-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-geist);
+    font-size: var(--text-body);
+    font-weight: 500;
+    color: var(--color-mid-gray);
+    border-radius: var(--radius-buttons);
+    transition: all 0.2s ease;
+    flex: 1;
+    justify-content: center;
+}
+
+.role-tab:hover {
+    color: var(--color-ink);
+}
+
+.role-tab.active {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-subtle);
+    font-weight: 600;
+}
+
+.role-tab i {
+    font-size: 18px;
+}
+
+.role-panels {
+    position: relative;
+}
+
+.role-panel {
+    display: none;
+    animation: roleFadeIn 0.25s ease;
+}
+
+.role-panel.active {
+    display: block;
+}
+
+@keyframes roleFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.role-panel-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding: 28px;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-cards);
+}
+
+.role-icon-wrap {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-ink);
+    color: #ffffff;
+    border-radius: 14px;
+    font-size: 24px;
+}
+
+.role-panel-header h3 {
+    font-size: var(--text-subheading);
+    margin-bottom: 4px;
+    letter-spacing: -0.03em;
+}
+
+.role-panel-header p {
+    font-size: var(--text-body);
+    color: var(--color-mid-gray);
+    margin: 0;
+}
+
+.role-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.role-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-nested);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.role-feature-item:hover {
+    border-color: var(--color-mid-gray);
+    box-shadow: var(--shadow-subtle);
+}
+
+.role-feature-item > i {
+    font-size: 22px;
+    color: var(--color-ink);
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.role-feature-item strong {
+    display: block;
+    font-size: var(--text-body);
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 4px;
+}
+
+.role-feature-item span {
+    display: block;
+    font-size: 13px;
+    color: var(--color-mid-gray);
+    line-height: 1.45;
+}
+
 /* Workflow Section */
 .workflow-section {
     background: var(--color-paper);
@@ -762,6 +914,7 @@ footer {
     .bento-col-8, .bento-col-4, .bento-col-6 { grid-column: span 12; }
     .hero-grid, .workflow-grid { grid-template-columns: 1fr; }
     .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+    .role-features-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
@@ -770,6 +923,11 @@ footer {
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-grid { grid-template-columns: 1fr; }
     .pricing-grid { grid-template-columns: 1fr; }
+    .role-tabs { max-width: 100%; }
+    .role-tab { padding: 8px 12px; font-size: 13px; }
+    .role-tab span { display: none; }
+    .role-panel-header { flex-direction: column; align-items: flex-start; padding: 20px; }
+    .roles-section { padding: 60px 0; }
 }
 
 /* Subpages — Linear / Vercel Documentation & Contact Style */

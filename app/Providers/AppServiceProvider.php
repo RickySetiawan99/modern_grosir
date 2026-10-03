@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Defense in Depth: Secondary License Check
         // If middleware is removed, this will still catch it.
-        $k = env('APP_LICENSE_KEY');
+        $k = config('app.license_key');
         $h = '9ea73808ed5698cabe9b4ce9f91a3f439cca10013214978d63eff2ad982ab36a';
         
         // Only run check if not in console to avoid breaking artisan commands during deployment/setup

@@ -31,6 +31,7 @@
                 <nav class="nav-links">
                     <a href="#tiering">Tiering</a>
                     <a href="#features">Fitur</a>
+                    <a href="#roles">Peran</a>
                     <a href="#workflow">Alur Kerja</a>
                 </nav>
                 <div class="nav-actions">
@@ -303,6 +304,192 @@
                         </div>
                         <div class="bento-inner-box" style="font-size: 12px; font-weight: 500;">
                             Auto Export: PDF & XLSX Supported
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Role-Based Features Section -->
+        <section id="roles" class="roles-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Fitur Berdasarkan Peran Pengguna</h2>
+                    <p>Setiap peran memiliki akses fitur khusus yang dirancang untuk kebutuhan spesifik mereka.</p>
+                </div>
+
+                <!-- Role Tabs -->
+                <div class="role-tabs">
+                    <button class="role-tab active" data-role="admin">
+                        <i class="ti ti-shield-check"></i>
+                        <span>Admin</span>
+                    </button>
+                    <button class="role-tab" data-role="cashier">
+                        <i class="ti ti-receipt"></i>
+                        <span>Cashier</span>
+                    </button>
+                    <button class="role-tab" data-role="reseller">
+                        <i class="ti ti-building-store"></i>
+                        <span>Reseller</span>
+                    </button>
+                </div>
+
+                <!-- Role Content Panels -->
+                <div class="role-panels">
+                    <!-- Admin Panel -->
+                    <div class="role-panel active" id="role-admin">
+                        <div class="role-panel-header">
+                            <div class="role-icon-wrap">
+                                <i class="ti ti-shield-check"></i>
+                            </div>
+                            <div>
+                                <h3>Admin — Kendali Penuh Operasional</h3>
+                                <p>Akses seluruh modul sistem untuk mengelola bisnis grosir dari ujung ke ujung.</p>
+                            </div>
+                        </div>
+                        <div class="role-features-grid">
+                            <div class="role-feature-item">
+                                <i class="ti ti-packages"></i>
+                                <div>
+                                    <strong>Manajemen Produk & Kategori</strong>
+                                    <span>Tambah, edit, dan atur produk beserta harga eceran serta harga tier khusus reseller.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-building-warehouse"></i>
+                                <div>
+                                    <strong>Inventori Multi-Gudang</strong>
+                                    <span>Pantau stok di berbagai gudang secara realtime, atur safety stock, dan transfer antar gudang.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-calendar-due"></i>
+                                <div>
+                                    <strong>Batch & Kadaluarsa FEFO</strong>
+                                    <span>Kelola batch produk dengan sistem First Expired First Out dan laporan perkiraan kadaluarsa.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-device-desktop"></i>
+                                <div>
+                                    <strong>Point of Sale (POS)</strong>
+                                    <span>Proses transaksi kasir, muat draft order reseller, dan cetak struk langsung dari dashboard.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-chart-bar"></i>
+                                <div>
+                                    <strong>Laporan Laba/Rugi & Analitik</strong>
+                                    <span>Pantau omzet, margin bersih, dan ekspor laporan ke format Excel maupun PDF.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-users-group"></i>
+                                <div>
+                                    <strong>Manajemen Reseller & Tier</strong>
+                                    <span>Atur reseller, tetapkan tier otomatis, dan kelola persetujuan wallet top-up.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-truck-delivery"></i>
+                                <div>
+                                    <strong>Manajemen Supplier</strong>
+                                    <span>Kelola data supplier, kontak, dan riwayat pembelian untuk rantai pasok yang optimal.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-clipboard-list"></i>
+                                <div>
+                                    <strong>Draft Orders & Approval</strong>
+                                    <span>Tinjau, setujui, dan proses pesanan draft dari seluruh reseller dalam satu panel.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cashier Panel -->
+                    <div class="role-panel" id="role-cashier">
+                        <div class="role-panel-header">
+                            <div class="role-icon-wrap">
+                                <i class="ti ti-receipt"></i>
+                            </div>
+                            <div>
+                                <h3>Cashier — Efisiensi Transaksi Kasir</h3>
+                                <p>Fokus pada pemrosesan penjualan cepat dengan akses terbatas pada modul operasional.</p>
+                            </div>
+                        </div>
+                        <div class="role-features-grid">
+                            <div class="role-feature-item">
+                                <i class="ti ti-device-desktop"></i>
+                                <div>
+                                    <strong>Point of Sale (POS)</strong>
+                                    <span>Proses checkout cepat, scan barcode, dan terima pembayaran tunai atau wallet reseller.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-layout-dashboard"></i>
+                                <div>
+                                    <strong>Dashboard Operasional</strong>
+                                    <span>Lihat ringkasan penjualan hari ini, jumlah transaksi, dan grafik performa kasir.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-package"></i>
+                                <div>
+                                    <strong>Lihat Inventori</strong>
+                                    <span>Periksa ketersediaan stok dan status batch produk untuk melayani pertanyaan pelanggan.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-file-invoice"></i>
+                                <div>
+                                    <strong>Riwayat Transaksi</strong>
+                                    <span>Akses riwayat penjualan harian untuk verifikasi, cetak ulang struk, atau rekonsiliasi kas.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reseller Panel -->
+                    <div class="role-panel" id="role-reseller">
+                        <div class="role-panel-header">
+                            <div class="role-icon-wrap">
+                                <i class="ti ti-building-store"></i>
+                            </div>
+                            <div>
+                                <h3>Reseller — Kelola Pesanan Mandiri</h3>
+                                <p>Pesan barang kapan saja dari mana saja, tanpa antrean fisik di gudang.</p>
+                            </div>
+                        </div>
+                        <div class="role-features-grid">
+                            <div class="role-feature-item">
+                                <i class="ti ti-shopping-bag"></i>
+                                <div>
+                                    <strong>Katalog Produk Khusus</strong>
+                                    <span>Jelajahi produk dengan harga tier otomatis, filter gudang, dan lihat stok tersedia.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-clipboard-check"></i>
+                                <div>
+                                    <strong>Self-Order & Draft Pesanan</strong>
+                                    <span>Buat draft pesanan mandiri yang langsung masuk antrian kasir untuk diproses.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-wallet"></i>
+                                <div>
+                                    <strong>Wallet & Top-Up Saldo</strong>
+                                    <span>Ajukan top-up saldo deposit dan bayar transaksi dengan wallet tanpa perlu uang tunai.</span>
+                                </div>
+                            </div>
+                            <div class="role-feature-item">
+                                <i class="ti ti-layout-dashboard"></i>
+                                <div>
+                                    <strong>Dashboard Reseller</strong>
+                                    <span>Lihat ringkasan pesanan, status tier saat ini, dan riwayat transaksi pribadi.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

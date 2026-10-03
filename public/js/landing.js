@@ -204,7 +204,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. Smooth Anchor Scroll
+    // 4. Role-Based Features Tabs
+    const roleTabs = document.querySelectorAll('.role-tab');
+    const rolePanels = document.querySelectorAll('.role-panel');
+
+    if (roleTabs.length > 0) {
+        roleTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetRole = tab.dataset.role;
+
+                roleTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                rolePanels.forEach(panel => {
+                    panel.classList.remove('active');
+                    if (panel.id === `role-${targetRole}`) {
+                        panel.classList.add('active');
+                    }
+                });
+            });
+        });
+    }
+
+    // 5. Smooth Anchor Scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const href = this.getAttribute('href');

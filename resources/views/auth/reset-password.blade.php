@@ -1,6 +1,6 @@
 @extends('layouts.master-auth')
 
-@section('title', config('app.name', 'ModernGrosir') . ' — Sign In')
+@section('title', config('app.name', 'ModernGrosir') . ' — Reset Password')
 
 @section('css')
 <style>
@@ -71,19 +71,6 @@
         font-weight: 600;
         letter-spacing: -0.03em;
         color: #ffffff;
-    }
-
-    .auth-brand-logo .logo-box {
-        width: 32px;
-        height: 32px;
-        background: #ffffff;
-        color: var(--color-ink);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 13px;
     }
 
     .auth-brand-copy h1 {
@@ -184,77 +171,19 @@
         transform: translateY(-1px);
     }
 
-    .btn-pill-outline {
-        width: 100%;
-        height: 42px;
-        background: transparent;
-        color: var(--color-ink);
-        border: 1px solid var(--color-hairline);
-        border-radius: 18px;
-        font-size: 14px;
-        font-weight: 500;
-        font-family: var(--font-geist);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        display: flex;
+    .back-to-login {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-decoration: none;
-    }
-
-    .btn-pill-outline:hover {
-        background: var(--color-surface-alt);
-        border-color: var(--color-mid-gray);
-        color: var(--color-ink);
-    }
-
-    .divider-line {
-        position: relative;
-        text-align: center;
-        margin: 20px 0;
-    }
-
-    .divider-line::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: var(--color-hairline);
-    }
-
-    .divider-text {
-        position: relative;
-        background: var(--color-paper);
-        padding: 0 12px;
-        font-size: 12px;
-        color: var(--color-mid-gray);
-    }
-
-    .custom-checkbox-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        gap: 6px;
         font-size: 13px;
-    }
-
-    .custom-checkbox-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
         color: var(--color-mid-gray);
-        cursor: pointer;
-    }
-
-    .forgot-link {
-        color: var(--color-ink);
         text-decoration: none;
         font-weight: 500;
+        transition: color 0.15s ease;
     }
 
-    .forgot-link:hover {
+    .back-to-login:hover {
+        color: var(--color-ink);
         text-decoration: underline;
     }
 
@@ -276,7 +205,7 @@
 <div class="auth-bg-wrapper">
     <div class="auth-card">
         <div class="row g-0">
-            <!-- Left Side: Brand & Infrastructure Blueprint -->
+            <!-- Left Side: Brand Blueprint -->
             <div class="col-lg-5 d-none d-lg-block auth-brand-col">
                 <div class="auth-brand-side">
                     <a href="{{ url('/') }}" class="auth-brand-logo" style="text-decoration: none; cursor: pointer;">
@@ -285,10 +214,10 @@
 
                     <div class="auth-brand-copy">
                         <div style="margin-bottom: 16px;">
-                            <span class="badge-infra">Infrastructure System</span>
+                            <span class="badge-infra">New Credentials</span>
                         </div>
-                        <h1>Efisiensi Distribusi Grosir Modern.</h1>
-                        <p>Platform B2B all-in-one untuk kontrol stok FEFO, tiering reseller otomatis, dan kecepatan kasir POS.</p>
+                        <h1>Buat Password Baru Anda.</h1>
+                        <p>Pastikan password baru Anda kuat, minimal 8 karakter, dan tidak digunakan di situs lain.</p>
                     </div>
 
                     <div style="font-size: 12px; color: #737373;">
@@ -297,7 +226,7 @@
                 </div>
             </div>
 
-            <!-- Right Side: Login Form -->
+            <!-- Right Side: Reset Password Form -->
             <div class="col-lg-7">
                 <div class="auth-form-side">
                     <div class="d-lg-none mb-4">
@@ -305,60 +234,54 @@
                             <img src="{{ asset('images/logos/logo-dark.svg') }}" alt="{{ config('app.name', 'ModernGrosir') }}" height="32">
                         </a>
                     </div>
+
                     <div class="auth-form-header">
-                        <h2>Selamat Datang Kembali</h2>
-                        <p>Masukkan akun Anda untuk mengelola inventaris dan penjualan.</p>
+                        <h2>Reset Password</h2>
+                        <p>Masukkan email dan password baru akun Anda.</p>
                     </div>
 
-                    @if (session('status'))
-                        <div style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 12px 16px; border-radius: 14px; font-size: 13px; margin-bottom: 20px;">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    <form action="{{ route('login') }}" method="POST">
+                    <form action="{{ route('password.update') }}" method="POST">
                         @csrf
-                        
+
+                        <input type="hidden" name="token" value="{{ $token }}">
+
                         <div class="mb-3">
                             <label for="email" class="form-label-custom">Email Address</label>
                             <input type="email" name="email" id="email" 
                                    class="form-control-custom @error('email') is-invalid @enderror" 
-                                   value="{{ old('email') }}" required autofocus 
-                                   placeholder="admin@moderngrosir.com">
+                                   value="{{ $email ?? old('email') }}" required autofocus 
+                                   placeholder="nama@email.com">
                             @error('email')
                                 <div style="color: var(--color-ember); font-size: 12px; margin-top: 4px;">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label-custom">Password</label>
+                            <label for="password" class="form-label-custom">Password Baru</label>
                             <input type="password" name="password" id="password" 
-                                   class="form-control-custom" required 
+                                   class="form-control-custom @error('password') is-invalid @enderror" 
+                                   required 
+                                   placeholder="••••••••">
+                            @error('password')
+                                <div style="color: var(--color-ember); font-size: 12px; margin-top: 4px;">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password_confirmation" class="form-label-custom">Konfirmasi Password Baru</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" 
+                                   class="form-control-custom" 
+                                   required 
                                    placeholder="••••••••">
                         </div>
 
-                        <div class="custom-checkbox-wrapper mb-4">
-                            <label class="custom-checkbox-label">
-                                <input type="checkbox" name="remember" id="remember" checked style="accent-color: var(--color-ink);">
-                                <span>Ingat Perangkat Ini</span>
-                            </label>
-                            <a href="{{ route('password.request') }}" class="forgot-link">Lupa Password?</a>
-                        </div>
-
-                        <button type="submit" class="btn-pill-primary mb-3">Sign In ke Dashboard</button>
-
-                        <div class="divider-line">
-                            <span class="divider-text">atau gunakan</span>
-                        </div>
-
-                        <a href="{{ route('auth.social', 'google') }}" class="btn-pill-outline">
-                            <img src="{{ URL::asset('build/images/svgs/google-icon.svg') }}" alt="Google" width="16" onerror="this.style.display='none';">
-                            <span>Sign in with Google</span>
-                        </a>
+                        <button type="submit" class="btn-pill-primary mb-4">Perbarui Password</button>
                     </form>
 
-                    <div style="text-align: center; margin-top: 28px; font-size: 12px; color: var(--color-mid-gray);">
-                        {{ config('app.name', 'ModernGrosir') }} B2B Platform v2.0
+                    <div style="text-align: center;">
+                        <a href="{{ route('login') }}" class="back-to-login">
+                            <i class="ti ti-arrow-left"></i> Batal & Kembali ke Login
+                        </a>
                     </div>
                 </div>
             </div>
