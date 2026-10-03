@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('reseller_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('warehouse_id')->nullable()->constrained()->onDelete('set null');
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'shipped', 'completed', 'cancelled'])->default('pending');
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->text('notes')->nullable();
             $table->timestamps();
