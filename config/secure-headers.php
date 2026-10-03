@@ -210,7 +210,7 @@ return [
      * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
      */
     'permissions-policy' => [
-        'enable' => true,
+        'enable' => false,
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy/accelerometer
         'accelerometer' => [
