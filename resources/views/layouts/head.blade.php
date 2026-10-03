@@ -10,7 +10,7 @@
 
 <!-- Core Css -->
 <!-- <script src="{{ URL::asset('build/css/styles.css') }}"></script> -->
-@vite(['resources/css/styles.css', 'resources/css/custom.css'])
+@vite(['resources/scss/styles.scss', 'resources/css/custom.css'])
 <link rel="stylesheet" href="{{ URL::asset('build/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('build/libs/sweetalert2/dist/sweetalert2.min.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('build/libs/select2/dist/css/select2.min.css') }}">
