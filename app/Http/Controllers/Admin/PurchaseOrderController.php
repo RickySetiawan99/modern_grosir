@@ -35,34 +35,41 @@ class PurchaseOrderController extends Controller
 
     public function receive(Request $request, PurchaseOrder $purchaseOrder)
     {
-        if ($purchaseOrder->status === 'received') {
-            return redirect()->back()->with('error', 'PO sudah pernah diterima.');
-        }
-
-        DB::beginTransaction();
         try {
-            foreach ($purchaseOrder->items as $item) {
+            DB::beginTransaction();
+
+            $po = PurchaseOrder::where('id', $purchaseOrder->id)
+                ->with('items')
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($po->status === 'received') {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'PO sudah pernah diterima.');
+            }
+
+            foreach ($po->items as $item) {
                 // 1. Buat InventoryBatch baru
                 InventoryBatch::create([
                     'product_id'     => $item->product_id,
-                    'warehouse_id'   => $purchaseOrder->warehouse_id,
-                    'batch_number'   => app(BatchService::class)->generateBatchNumber($purchaseOrder->warehouse_id),
+                    'warehouse_id'   => $po->warehouse_id,
+                    'batch_number'   => app(BatchService::class)->generateBatchNumber($po->warehouse_id),
                     'quantity'       => $item->received_qty > 0 ? $item->received_qty : $item->ordered_qty,
                     'received_date'  => now()->toDateString(),
-                    'supplier_id'    => $purchaseOrder->supplier_id,
+                    'supplier_id'    => $po->supplier_id,
                     'purchase_price' => $item->unit_price,
-                    'notes'          => 'Dari PO: ' . $purchaseOrder->po_number,
+                    'notes'          => 'Dari PO: ' . $po->po_number,
                     'status'         => 'active',
                 ]);
 
                 // 2. Update StockLevel (buat jika belum ada)
                 StockLevel::updateOrCreate(
-                    ['product_id' => $item->product_id, 'warehouse_id' => $purchaseOrder->warehouse_id],
+                    ['product_id' => $item->product_id, 'warehouse_id' => $po->warehouse_id],
                     ['quantity'   => DB::raw('quantity + ' . ($item->received_qty > 0 ? $item->received_qty : $item->ordered_qty))]
                 );
             }
 
-            $purchaseOrder->update(['status' => 'received', 'received_date' => now()]);
+            $po->update(['status' => 'received', 'received_date' => now()]);
             DB::commit();
 
             return redirect()->back()->with('success', 'Penerimaan barang berhasil. Stok telah diperbarui.');

@@ -60,20 +60,23 @@ class WalletController extends Controller
             ]);
 
             $user = $request->user();
-            $reseller = $user->getResellerProfile();
+
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $reseller = \App\Models\Reseller::where('user_id', $user->id)->lockForUpdate()->first();
 
             if (!$reseller) {
+                \Illuminate\Support\Facades\DB::rollBack();
                 return response()->json(['error' => 'Reseller profile not found'], 403);
             }
 
             if ($reseller->loyalty_points < $request->points) {
+                \Illuminate\Support\Facades\DB::rollBack();
                 return response()->json(['error' => 'Insufficient points. Sisa poin: ' . $reseller->loyalty_points], 400);
             }
 
             // Convert points to balance: 1 point = Rp 100
             $value = $request->points * 100;
-            
-            \Illuminate\Support\Facades\DB::beginTransaction();
 
             $reseller->decrement('loyalty_points', $request->points);
             $reseller->increment('balance', $value);
@@ -90,8 +93,8 @@ class WalletController extends Controller
 
             return response()->json([
                 'message' => 'Points successfully redeemed',
-                'balance' => (float) $reseller->balance,
-                'points' => $reseller->loyalty_points
+                'balance' => (float) $reseller->fresh()->balance,
+                'points' => $reseller->fresh()->loyalty_points
             ]);
 
         } catch (\Exception $e) {
@@ -115,10 +118,10 @@ class WalletController extends Controller
             }
 
             // Set your Merchant Server Key
-            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-            \Midtrans\Config::$isSanitized = true;
-            \Midtrans\Config::$is3ds = true;
+            \Midtrans\Config::$serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY'));
+            \Midtrans\Config::$isProduction = config('services.midtrans.is_production', false);
+            \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized', true);
+            \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds', true);
 
             \Illuminate\Support\Facades\DB::beginTransaction();
 

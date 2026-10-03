@@ -34,7 +34,7 @@ class OrderController extends Controller
             'orders.*.items' => 'required|array|min:1',
             'orders.*.items.*.id' => 'required|exists:products,id',
             'orders.*.items.*.qty' => 'required|integer|min:1',
-            'orders.*.items.*.price' => 'required|numeric|min:0',
+            'orders.*.items.*.price' => 'nullable|numeric|min:0',
             'orders.*.notes' => 'nullable|string|max:500',
         ]);
 
@@ -46,13 +46,28 @@ class OrderController extends Controller
                 return response()->json(['error' => 'Reseller profile not found'], 403);
             }
 
+            $resellerService = app(\App\Services\ResellerService::class);
+
             DB::beginTransaction();
             $createdOrderIds = [];
 
             foreach ($request->orders as $orderData) {
                 $totalAmount = 0;
+                $validatedItems = [];
+
                 foreach ($orderData['items'] as $item) {
-                    $totalAmount += $item['price'] * $item['qty'];
+                    $product = $resellerService->getProductDetail((int) $item['id'], $reseller);
+                    $officialPrice = (float) $product->calculated_price;
+                    $qty = (int) $item['qty'];
+                    $subtotal = $officialPrice * $qty;
+
+                    $totalAmount += $subtotal;
+                    $validatedItems[] = [
+                        'product_id' => $product->id,
+                        'quantity' => $qty,
+                        'unit_price' => $officialPrice,
+                        'subtotal' => $subtotal,
+                    ];
                 }
 
                 $draftOrder = DraftOrder::create([
@@ -63,13 +78,13 @@ class OrderController extends Controller
                     'notes' => $orderData['notes'] ?? null,
                 ]);
 
-                foreach ($orderData['items'] as $item) {
+                foreach ($validatedItems as $vItem) {
                     DraftOrderItem::create([
                         'draft_order_id' => $draftOrder->id,
-                        'product_id' => $item['id'],
-                        'quantity' => $item['qty'],
-                        'unit_price' => $item['price'],
-                        'subtotal' => $item['price'] * $item['qty'],
+                        'product_id' => $vItem['product_id'],
+                        'quantity' => $vItem['quantity'],
+                        'unit_price' => $vItem['unit_price'],
+                        'subtotal' => $vItem['subtotal'],
                     ]);
                 }
 

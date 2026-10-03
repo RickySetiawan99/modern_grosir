@@ -29,8 +29,8 @@ class PriceController extends Controller
             ->editColumn('name', function ($product) {
                 return '
                     <div class="ms-0">
-                        <h6 class="fw-semibold mb-0 fs-2">'.$product->name.'</h6>
-                        <span class="text-muted" style="font-size: 0.7rem;">'.$product->sku.'</span>
+                        <h6 class="fw-semibold mb-0 fs-2">'.e($product->name).'</h6>
+                        <span class="text-muted" style="font-size: 0.7rem;">'.e($product->sku).'</span>
                     </div>';
             })
             ->editColumn('retail_price', function ($product) {
@@ -46,7 +46,7 @@ class PriceController extends Controller
 
                     $badgeClass = $isOverride ? 'bg-primary-subtle text-primary border-primary-subtle' : 'bg-info-subtle text-info border-info-subtle';
                     $html .= '<div class="p-1 px-2.5 border rounded-pill '.$badgeClass.'" style="font-size: 0.75rem;">
-                                <span class="fw-bold">'.$tier->name.':</span> '.GeneralHelper::formatCurrency($displayPrice).
+                                <span class="fw-bold">'.e($tier->name).':</span> '.GeneralHelper::formatCurrency($displayPrice).
                                 ($isOverride ? ' <i class="ti ti-star-filled text-warning ms-1" style="font-size: 0.65rem;"></i>' : '').
                              '</div>';
                 }
@@ -55,7 +55,7 @@ class PriceController extends Controller
                 return $html;
             })
             ->addColumn('action', function ($product) {
-                return '<button class="btn btn-sm btn-light border text-dark fw-semibold px-3 py-1.5 rounded-2 btn-edit-prices" data-id="'.$product->id.'" data-name="'.$product->name.'">
+                return '<button class="btn btn-sm btn-light border text-dark fw-semibold px-3 py-1.5 rounded-2 btn-edit-prices" data-id="'.$product->id.'" data-name="'.e($product->name).'">
                             <i class="ti ti-adjustments-horizontal me-1 text-primary"></i> Manage
                         </button>';
             })

@@ -34,13 +34,13 @@ class ResellerController extends Controller
                 return '
                     <div class="d-flex align-items-center">
                         <div class="ms-0">
-                            <h6 class="fw-semibold mb-0 fs-2">'.($reseller->user->name ?? 'N/A').'</h6>
-                            <span class="text-muted" style="font-size: 0.7rem;">'.($reseller->user->email ?? '').'</span>
+                            <h6 class="fw-semibold mb-0 fs-2">'.e($reseller->user->name ?? 'N/A').'</h6>
+                            <span class="text-muted" style="font-size: 0.7rem;">'.e($reseller->user->email ?? '').'</span>
                         </div>
                     </div>';
             })
             ->editColumn('tier.name', function ($reseller) {
-                return '<span class="badge bg-primary-subtle text-primary fw-semibold">'.($reseller->tier->name ?? '-').'</span>';
+                return '<span class="badge bg-primary-subtle text-primary fw-semibold">'.e($reseller->tier->name ?? '-').'</span>';
             })
             ->editColumn('credit_limit', function ($reseller) {
                 return GeneralHelper::formatCurrency($reseller->credit_limit);
@@ -62,7 +62,7 @@ class ResellerController extends Controller
                             <li>
                                 <a href="#" class="dropdown-item d-flex align-items-center gap-3 fs-3 btn-balance"
                                     data-id="'.$reseller->id.'"
-                                    data-name="'.($reseller->user->name ?? 'Reseller').'"
+                                    data-name="'.e($reseller->user->name ?? 'Reseller').'"
                                     data-balance="'.$formattedBalance.'">
                                     <i class="fs-3 ti ti-wallet"></i>Manage Balance
                                 </a>
@@ -75,7 +75,7 @@ class ResellerController extends Controller
                             <li>
                                 <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
                                     data-id="'.$reseller->id.'" 
-                                    data-name="'.($reseller->user->name ?? 'Reseller').'"
+                                    data-name="'.e($reseller->user->name ?? 'Reseller').'"
                                     data-action="'.$deleteUrl.'">
                                     <i class="fs-3 ti ti-trash"></i>Delete
                                 </button>
@@ -230,26 +230,32 @@ class ResellerController extends Controller
     public function updateBalance(Request $request, Reseller $reseller)
     {
         $request->validate([
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|gt:0',
             'type' => 'required|in:add,subtract',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string|max:255'
         ]);
 
         try {
             DB::transaction(function () use ($request, $reseller) {
-                $amount = $request->amount;
+                $lockedReseller = Reseller::where('id', $reseller->id)->lockForUpdate()->firstOrFail();
+                $amount = (float) $request->amount;
                 
                 if ($request->type === 'subtract') {
-                    if ($reseller->balance < $amount) {
+                    if ($lockedReseller->balance < $amount) {
                          throw new \Exception('Insufficient balance.');
                     }
-                    $reseller->decrement('balance', $amount);
+                    $lockedReseller->decrement('balance', $amount);
                 } else {
-                    $reseller->increment('balance', $amount);
+                    $lockedReseller->increment('balance', $amount);
                 }
 
-                // Optional: Record transaction history here if transaction table supports it
-                // For now, minimal implementation just updates the balance column
+                \App\Models\WalletTransaction::create([
+                    'reseller_id' => $lockedReseller->id,
+                    'amount'      => $amount,
+                    'type'        => $request->type === 'add' ? 'topup' : 'payment',
+                    'status'      => 'completed',
+                    'notes'       => 'Manual adjustment by admin (' . $request->type . '): ' . ($request->notes ?? 'No notes'),
+                ]);
             });
 
             return response()->json(['success' => true, 'message' => 'Balance updated successfully.']);

@@ -48,16 +48,16 @@ class ProductController extends Controller
                     <div class="d-flex align-items-center">
                         <img src="'.$imageUrl.'" class="rounded-1 me-3" width="40" height="40" style="object-fit: cover;">
                         <div class="ms-0">
-                            <h6 class="fw-semibold mb-0 fs-2">'.$product->name.'</h6>
-                            <span class="text-muted" style="font-size: 0.7rem;">'.$product->sku.'</span>
+                            <h6 class="fw-semibold mb-0 fs-2">'.e($product->name).'</h6>
+                            <span class="text-muted" style="font-size: 0.7rem;">'.e($product->sku).'</span>
                         </div>
                     </div>';
             })
             ->editColumn('category.name', function ($product) {
-                return $product->category->name ?? '-';
+                return e($product->category->name ?? '-');
             })
             ->addColumn('unit_info', function ($product) {
-                return '<span class="badge bg-primary-subtle text-primary fw-semibold">'.($product->unit->short_name ?? '-').'</span>';
+                return '<span class="badge bg-primary-subtle text-primary fw-semibold">'.e($product->unit->short_name ?? '-').'</span>';
             })
             ->editColumn('retail_price', function ($product) {
                 return GeneralHelper::formatCurrency($product->retail_price);
@@ -74,13 +74,13 @@ class ProductController extends Controller
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
+                                     <i class="fs-3 ti ti-edit"></i>Edit
                                 </a>
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
                                     data-id="'.$product->id.'" 
-                                    data-name="'.$product->name.'"
+                                    data-name="'.e($product->name).'"
                                     data-action="'.$deleteUrl.'">
                                     <i class="fs-3 ti ti-trash"></i>Delete
                                 </button>

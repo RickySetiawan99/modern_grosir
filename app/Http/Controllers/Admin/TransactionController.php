@@ -60,14 +60,18 @@ class TransactionController extends Controller
 
     public function cancel($id)
     {
-        $transaction = \App\Models\Transaction::with(['details.product', 'details.batch'])->findOrFail($id);
-
-        if ($transaction->status === 'canceled' || $transaction->status === 'cancelled') {
-            return redirect()->back()->with('error', 'Transaksi sudah dibatalkan sebelumnya.');
-        }
-
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $transaction = \App\Models\Transaction::where('id', $id)
+                ->with(['details.product', 'details.batch'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($transaction->status === 'canceled' || $transaction->status === 'cancelled') {
+                \Illuminate\Support\Facades\DB::rollBack();
+                return redirect()->back()->with('error', 'Transaksi sudah dibatalkan sebelumnya.');
+            }
 
             // 1. Update transaction status
             $transaction->update(['status' => 'canceled']);
@@ -81,7 +85,7 @@ class TransactionController extends Controller
 
                 // Kembalikan InventoryBatch jika item berasal dari batch
                 if ($detail->batch_id) {
-                    $batch = \App\Models\InventoryBatch::find($detail->batch_id);
+                    $batch = \App\Models\InventoryBatch::where('id', $detail->batch_id)->lockForUpdate()->first();
                     if ($batch) {
                         $batch->increment('quantity', $detail->quantity);
                         // Re-activate batch jika sebelumnya disposed karena terkuras
@@ -94,7 +98,7 @@ class TransactionController extends Controller
 
             // 3. Rollback wallet balance jika payment method wallet
             if ($transaction->payment_method === 'wallet' && $transaction->customer_id) {
-                $reseller = \App\Models\User::find($transaction->customer_id)?->reseller;
+                $reseller = \App\Models\Reseller::where('user_id', $transaction->customer_id)->lockForUpdate()->first();
                 if ($reseller) {
                     $reseller->increment('balance', $transaction->total_amount);
 

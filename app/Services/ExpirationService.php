@@ -102,15 +102,29 @@ class ExpirationService
      */
     public function deductStock($productId, $warehouseId, $quantity)
     {
-        // Get available batches in FEFO order
-        $batches = $this->getAvailableBatches($productId, $warehouseId);
+        // Get available batches in FEFO order with lockForUpdate to prevent race condition
+        $batches = InventoryBatch::where('product_id', $productId)
+            ->where('warehouse_id', $warehouseId)
+            ->where('quantity', '>', 0)
+            ->where('status', 'active')
+            ->where(function($q) {
+                $q->whereNull('expiration_date')
+                  ->orWhere('expiration_date', '>=', now());
+            })
+            ->fefoOrder()
+            ->lockForUpdate()
+            ->get();
 
-        // Allocate quantity
+        // Allocate quantity across locked batches
         $allocation = $this->allocateQuantity($batches, $quantity);
 
         // Deduct from each batch
         foreach ($allocation as $alloc) {
-            $batch = InventoryBatch::lockForUpdate()->find($alloc['batch_id']);
+            $batch = $batches->firstWhere('id', $alloc['batch_id']);
+            if (!$batch || $batch->quantity < $alloc['quantity']) {
+                throw new \Exception("Stok batch #{$alloc['batch_id']} tidak mencukupi untuk pemenuhan transaksi.");
+            }
+
             $batch->decrement('quantity', $alloc['quantity']);
 
             if ($batch->quantity <= 0) {

@@ -40,15 +40,15 @@ class InventoryController extends Controller
                 return '
                     <div class="d-flex align-items-center">
                         <div class="ms-0">
-                            <h6 class="fw-semibold mb-0 fs-2">'.$level->product->name.'</h6>
-                            <span class="text-muted" style="font-size: 0.7rem;">'.$level->product->sku.'</span>
+                            <h6 class="fw-semibold mb-0 fs-2">'.e($level->product->name).'</h6>
+                            <span class="text-muted" style="font-size: 0.7rem;">'.e($level->product->sku).'</span>
                         </div>
                     </div>';
             })
             ->editColumn('warehouse.name', function ($level) {
                 $badgeClass = $level->warehouse->type === 'toko' ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success';
 
-                return '<div>'.$level->warehouse->name.' <span class="badge '.$badgeClass.' fw-semibold ms-1" style="font-size: 0.65rem;">'.ucfirst($level->warehouse->type).'</span></div>';
+                return '<div>'.e($level->warehouse->name).' <span class="badge '.$badgeClass.' fw-semibold ms-1" style="font-size: 0.65rem;">'.e(ucfirst($level->warehouse->type)).'</span></div>';
             })
             ->editColumn('quantity', function ($level) {
                 $colorClass = $level->quantity <= 10 ? 'text-danger' : 'text-dark';

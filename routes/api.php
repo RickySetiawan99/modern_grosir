@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', [ApiLoginController::class, 'login']);
+Route::post('/login', [ApiLoginController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/webhook/notifications', [NotificationController::class, 'handleWebhook']);
 Route::post('/midtrans/webhook', [\App\Http\Controllers\Api\MidtransWebhookController::class, 'handle']);
 

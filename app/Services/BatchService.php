@@ -64,7 +64,7 @@ class BatchService
     public function disposeBatch($batchId, $quantity, $reason = 'expired', $notes = null)
     {
         return DB::transaction(function() use ($batchId, $quantity, $reason, $notes) {
-            $batch = InventoryBatch::findOrFail($batchId);
+            $batch = InventoryBatch::where('id', $batchId)->lockForUpdate()->firstOrFail();
 
             // Validate quantity
             if ($quantity > $batch->quantity) {
@@ -89,6 +89,15 @@ class BatchService
                 $batch->update(['status' => 'disposed']);
             }
 
+            // Deduct total StockLevel as well to keep in sync
+            $stock = \App\Models\StockLevel::where('product_id', $batch->product_id)
+                ->where('warehouse_id', $batch->warehouse_id)
+                ->lockForUpdate()
+                ->first();
+            if ($stock) {
+                $stock->decrement('quantity', $quantity);
+            }
+
             return $disposal;
         });
     }
@@ -104,7 +113,7 @@ class BatchService
     public function transferBatch($batchId, $toWarehouseId, $quantity = null)
     {
         return DB::transaction(function() use ($batchId, $toWarehouseId, $quantity) {
-            $sourceBatch = InventoryBatch::findOrFail($batchId);
+            $sourceBatch = InventoryBatch::where('id', $batchId)->lockForUpdate()->firstOrFail();
 
             $transferQty = $quantity ?? $sourceBatch->quantity;
 
@@ -131,6 +140,21 @@ class BatchService
             if ($sourceBatch->quantity <= 0) {
                 $sourceBatch->update(['status' => 'disposed']);
             }
+
+            // Update StockLevel in source and target warehouses
+            $sourceStock = \App\Models\StockLevel::where('product_id', $sourceBatch->product_id)
+                ->where('warehouse_id', $sourceBatch->warehouse_id)
+                ->lockForUpdate()
+                ->first();
+            if ($sourceStock) {
+                $sourceStock->decrement('quantity', $transferQty);
+            }
+
+            $targetStock = \App\Models\StockLevel::firstOrCreate(
+                ['product_id' => $sourceBatch->product_id, 'warehouse_id' => $toWarehouseId],
+                ['quantity' => 0]
+            );
+            $targetStock->increment('quantity', $transferQty);
 
             return $newBatch;
         });

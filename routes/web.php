@@ -41,7 +41,7 @@ Route::post('/contact', [PageController::class, 'submitContact'])->name('contact
 // Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');
 
     // Password Reset Routes
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -81,7 +81,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/inventory/batches/{id}/history', [App\Http\Controllers\Admin\BatchController::class, 'history'])->name('inventory.batches.history')->middleware('role:admin|cashier');
 
     // Expiration Reports
-    Route::prefix('reports/expiration')->name('reports.expiration.')->group(function () {
+    Route::prefix('reports/expiration')->name('reports.expiration.')->middleware('role:admin')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'index'])->name('index');
         Route::get('/forecast', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'expirationForecast'])->name('forecast');
         Route::get('/disposal', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'disposalReport'])->name('disposal');
@@ -111,9 +111,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.excel')->middleware('role:admin');
     Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf')->middleware('role:admin');
 
-    Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
-    Route::get('/pos/products', [POSController::class, 'products'])->name('pos.products');
-    Route::post('/pos/checkout', [POSController::class, 'checkout'])->name('pos.checkout');
+    Route::get('/pos', [POSController::class, 'index'])->name('pos.index')->middleware('role:admin|cashier');
+    Route::get('/pos/products', [POSController::class, 'products'])->name('pos.products')->middleware('role:admin|cashier');
+    Route::post('/pos/checkout', [POSController::class, 'checkout'])->name('pos.checkout')->middleware('role:admin|cashier');
     Route::get('/resellers', [ResellerController::class, 'index'])->name('resellers.index')->middleware('role:admin');
 
     // Master Data Group (Admin Restricted)
@@ -185,4 +185,4 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 });
 
 // Standard Template Route (Catch-all) - Moved to bottom and protected
-Route::get('/{main}/{view}', [PageController::class, 'show'])->middleware('auth');
+Route::get('/{main}/{view}', [PageController::class, 'show'])->middleware(['auth', 'role:admin']);

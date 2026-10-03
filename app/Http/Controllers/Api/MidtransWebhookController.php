@@ -16,7 +16,8 @@ class MidtransWebhookController extends Controller
         $payload = $request->getContent();
         $notification = json_decode($payload);
         
-        $validSignatureKey = hash("sha512", $notification->order_id . $notification->status_code . $notification->gross_amount . env('MIDTRANS_SERVER_KEY'));
+        $serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY'));
+        $validSignatureKey = hash("sha512", $notification->order_id . $notification->status_code . $notification->gross_amount . $serverKey);
         
         if ($notification->signature_key != $validSignatureKey) {
             return response()->json(['message' => 'Invalid signature'], 403);
@@ -35,23 +36,26 @@ class MidtransWebhookController extends Controller
         }
         
         $transactionId = $parts[1];
-        $walletTransaction = WalletTransaction::find($transactionId);
-        
-        if (!$walletTransaction) {
-            return response()->json(['message' => 'Transaction not found'], 404);
-        }
-        
-        if ($walletTransaction->status === 'completed') {
-            return response()->json(['message' => 'Transaction already processed'], 200);
-        }
         
         if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
             DB::beginTransaction();
             try {
+                $walletTransaction = WalletTransaction::where('id', $transactionId)->lockForUpdate()->first();
+                
+                if (!$walletTransaction) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Transaction not found'], 404);
+                }
+                
+                if ($walletTransaction->status === 'completed') {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Transaction already processed'], 200);
+                }
+
                 $walletTransaction->status = 'completed';
                 $walletTransaction->save();
                 
-                $reseller = Reseller::find($walletTransaction->reseller_id);
+                $reseller = Reseller::where('id', $walletTransaction->reseller_id)->lockForUpdate()->first();
                 if ($reseller) {
                     $reseller->increment('balance', $walletTransaction->amount);
                 }
@@ -63,11 +67,9 @@ class MidtransWebhookController extends Controller
                 return response()->json(['message' => 'Failed to process topup'], 500);
             }
         } elseif ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
-            $walletTransaction->status = 'rejected';
-            $walletTransaction->save();
+            WalletTransaction::where('id', $transactionId)->where('status', '!=', 'completed')->update(['status' => 'rejected']);
         } elseif ($transactionStatus == 'pending') {
-            $walletTransaction->status = 'pending';
-            $walletTransaction->save();
+            WalletTransaction::where('id', $transactionId)->where('status', '!=', 'completed')->update(['status' => 'pending']);
         }
 
         return response()->json(['message' => 'Webhook handled properly'], 200);

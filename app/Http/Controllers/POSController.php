@@ -122,18 +122,20 @@ class POSController extends Controller
             $paymentMethod = $request->payment_method ?? 'cash';
 
             // Wallet Check
+            $customerReseller = null;
             if ($paymentMethod === 'wallet') {
                 if (!$customerId) {
                     throw new \Exception('Customer selection is required for wallet payment.');
                 }
 
-                $customer = User::with('reseller')->find($customerId);
-                if (!$customer || !$customer->reseller) {
+                $customer = User::find($customerId);
+                if (!$customer || !$customer->hasRole('reseller')) {
                     throw new \Exception('Reseller profile not found for this customer.');
                 }
 
-                if ($customer->reseller->balance < $request->total_amount) {
-                    throw new \Exception('Insufficient wallet balance. Sisa Saldo: Rp ' . number_format($customer->reseller->balance, 0, ',', '.'));
+                $customerReseller = \App\Models\Reseller::where('user_id', $customerId)->lockForUpdate()->first();
+                if (!$customerReseller) {
+                    throw new \Exception('Reseller profile not found for this customer.');
                 }
             }
 
@@ -264,8 +266,11 @@ class POSController extends Controller
             }
 
             // Wallet deduction SETELAH loop — hanya sekali dengan total akumulasi
-            if ($paymentMethod === 'wallet' && $totalGrandAmount > 0 && $customerId) {
-                $customerReseller = User::find($customerId)->reseller;
+            if ($paymentMethod === 'wallet' && $totalGrandAmount > 0 && $customerReseller) {
+                if ($customerReseller->balance < $totalGrandAmount) {
+                    throw new \Exception('Insufficient wallet balance. Sisa Saldo: Rp ' . number_format($customerReseller->balance, 0, ',', '.') . ', Total: Rp ' . number_format($totalGrandAmount, 0, ',', '.'));
+                }
+
                 $customerReseller->decrement('balance', $totalGrandAmount);
 
                 \App\Models\WalletTransaction::create([
