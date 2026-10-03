@@ -102,26 +102,23 @@ class ExpirationService
      */
     public function deductStock($productId, $warehouseId, $quantity)
     {
-        return DB::transaction(function() use ($productId, $warehouseId, $quantity) {
-            // Get available batches in FEFO order
-            $batches = $this->getAvailableBatches($productId, $warehouseId);
+        // Get available batches in FEFO order
+        $batches = $this->getAvailableBatches($productId, $warehouseId);
 
-            // Allocate quantity
-            $allocation = $this->allocateQuantity($batches, $quantity);
+        // Allocate quantity
+        $allocation = $this->allocateQuantity($batches, $quantity);
 
-            // Deduct from each batch
-            foreach ($allocation as $alloc) {
-                $batch = InventoryBatch::find($alloc['batch_id']);
-                $batch->decrement('quantity', $alloc['quantity']);
+        // Deduct from each batch
+        foreach ($allocation as $alloc) {
+            $batch = InventoryBatch::lockForUpdate()->find($alloc['batch_id']);
+            $batch->decrement('quantity', $alloc['quantity']);
 
-                // Auto-dispose if quantity reaches 0
-                if ($batch->quantity <= 0) {
-                    $batch->update(['status' => 'disposed']);
-                }
+            if ($batch->quantity <= 0) {
+                $batch->update(['status' => 'disposed']);
             }
+        }
 
-            return $allocation;
-        });
+        return $allocation;
     }
 
     /**

@@ -93,6 +93,13 @@ class POSController extends Controller
         $this->expirationService = $expirationService;
     }
 
+    private function generateTransactionCode(): string
+    {
+        $date   = date('Ymd');
+        $suffix = strtoupper(substr(str_replace('-', '', (string)\Illuminate\Support\Str::uuid()), 0, 6));
+        return 'TRX-' . $date . '-' . $suffix;
+    }
+
     public function checkout(Request $request)
     {
         $request->validate([
@@ -139,7 +146,9 @@ class POSController extends Controller
                 $groupedCart[$whId][] = $item;
             }
 
+            $totalGrandAmount = 0;
             $createdTransactions = [];
+            $createdTransactionCodes = [];
 
             foreach ($groupedCart as $whId => $items) {
                 $code = null;
@@ -153,27 +162,29 @@ class POSController extends Controller
                     }
                 }
 
-                if (! $code) {
-                    $date = date('Ymd');
-                    $lastDraft = \App\Models\DraftOrder::whereDate('created_at', today())->orderBy('id', 'desc')->first();
-                    $lastTrx = Transaction::whereDate('created_at', today())->orderBy('id', 'desc')->first();
-
-                    $draftSeq = ($lastDraft && $lastDraft->order_code) ? intval(substr($lastDraft->order_code, -4)) : 0;
-                    $trxSeq = ($lastTrx && $lastTrx->transaction_code) ? intval(substr($lastTrx->transaction_code, -4)) : 0;
-
-                    $nextSeq = max($draftSeq, $trxSeq) + 1;
-                    $code = 'TRX-'.$date.'-'.str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
-                }
-
-                $transaction = Transaction::create([
+                $transactionData = [
                     'user_id' => Auth::id(),
                     'customer_id' => $customerId,
                     'warehouse_id' => $whId,
-                    'transaction_code' => $code,
                     'total_amount' => 0,
                     'payment_method' => $paymentMethod,
                     'status' => 'completed',
-                ]);
+                ];
+
+                if ($code) {
+                    $transactionData['transaction_code'] = $code;
+                    $transaction = Transaction::create($transactionData);
+                } else {
+                    try {
+                        $transactionData['transaction_code'] = $this->generateTransactionCode();
+                        $transaction = Transaction::create($transactionData);
+                    } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+                        $transactionData['transaction_code'] = $this->generateTransactionCode();
+                        $transaction = Transaction::create($transactionData);
+                    }
+                }
+
+                $code = $transaction->transaction_code;
 
                 $grandTotal = 0;
 
@@ -243,20 +254,8 @@ class POSController extends Controller
                 }
 
                 $transaction->update(['total_amount' => $grandTotal]);
-                
-                // Record wallet deduction if payment method is wallet
-                if ($paymentMethod === 'wallet' && $grandTotal > 0) {
-                    $customerReseller = User::find($customerId)->reseller;
-                    $customerReseller->decrement('balance', $grandTotal);
-                    
-                    \App\Models\WalletTransaction::create([
-                        'reseller_id' => $customerReseller->id,
-                        'amount' => $grandTotal,
-                        'type' => 'payment',
-                        'status' => 'completed',
-                        'notes' => 'Payment for transaction ' . $code,
-                    ]);
-                }
+                $totalGrandAmount += $grandTotal;
+                $createdTransactionCodes[] = $code;
 
                 $createdTransactions[] = [
                     'id' => $transaction->id,
@@ -264,8 +263,33 @@ class POSController extends Controller
                 ];
             }
 
+            // Wallet deduction SETELAH loop — hanya sekali dengan total akumulasi
+            if ($paymentMethod === 'wallet' && $totalGrandAmount > 0 && $customerId) {
+                $customerReseller = User::find($customerId)->reseller;
+                $customerReseller->decrement('balance', $totalGrandAmount);
+
+                \App\Models\WalletTransaction::create([
+                    'reseller_id' => $customerReseller->id,
+                    'amount'      => $totalGrandAmount,
+                    'type'        => 'payment',
+                    'status'      => 'completed',
+                    'notes'       => 'Payment for: ' . implode(', ', $createdTransactionCodes),
+                ]);
+            }
+
             if ($request->has('draft_order_ids')) {
                 \App\Models\DraftOrder::whereIn('id', $request->draft_order_ids)->update(['status' => 'completed']);
+            }
+
+            // Loyalty Points Accumulation (1 point per Rp 10.000)
+            if ($customerId) {
+                $customerReseller = User::find($customerId)->reseller;
+                if ($customerReseller) {
+                    $pointsEarned = floor($totalGrandAmount / 10000);
+                    if ($pointsEarned > 0) {
+                        $customerReseller->increment('loyalty_points', $pointsEarned);
+                    }
+                }
             }
 
             DB::commit();

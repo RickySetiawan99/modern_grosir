@@ -60,51 +60,60 @@ class TransactionController extends Controller
 
     public function cancel($id)
     {
+        $transaction = \App\Models\Transaction::with(['details.product', 'details.batch'])->findOrFail($id);
+
+        if ($transaction->status === 'canceled' || $transaction->status === 'cancelled') {
+            return redirect()->back()->with('error', 'Transaksi sudah dibatalkan sebelumnya.');
+        }
+
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
 
-            $transaction = \App\Models\Transaction::with(['details', 'customer.reseller'])->findOrFail($id);
+            // 1. Update transaction status
+            $transaction->update(['status' => 'canceled']);
 
-            if ($transaction->status !== 'completed') {
-                return redirect()->back()->with('error', 'Only completed transactions can be cancelled.');
-            }
-
-            // 1. Restore Stock
+            // 2. Rollback stock for each item
             foreach ($transaction->details as $detail) {
-                $stock = \App\Models\StockLevel::where('product_id', $detail->product_id)
+                // Kembalikan StockLevel
+                \App\Models\StockLevel::where('product_id', $detail->product_id)
                     ->where('warehouse_id', $transaction->warehouse_id)
-                    ->first();
-                
-                if ($stock) {
-                    $stock->increment('quantity', $detail->quantity);
+                    ->increment('quantity', $detail->quantity);
+
+                // Kembalikan InventoryBatch jika item berasal dari batch
+                if ($detail->batch_id) {
+                    $batch = \App\Models\InventoryBatch::find($detail->batch_id);
+                    if ($batch) {
+                        $batch->increment('quantity', $detail->quantity);
+                        // Re-activate batch jika sebelumnya disposed karena terkuras
+                        if ($batch->status === 'disposed') {
+                            $batch->update(['status' => 'active']);
+                        }
+                    }
                 }
             }
 
-            // 2. Handle Wallet Refund
+            // 3. Rollback wallet balance jika payment method wallet
             if ($transaction->payment_method === 'wallet' && $transaction->customer_id) {
-                $reseller = $transaction->customer->reseller;
+                $reseller = \App\Models\User::find($transaction->customer_id)?->reseller;
                 if ($reseller) {
                     $reseller->increment('balance', $transaction->total_amount);
 
                     \App\Models\WalletTransaction::create([
                         'reseller_id' => $reseller->id,
-                        'amount' => $transaction->total_amount,
-                        'type' => 'refund',
-                        'status' => 'completed',
-                        'notes' => 'Refund for cancelled transaction ' . $transaction->transaction_code,
+                        'amount'      => $transaction->total_amount,
+                        'type'        => 'refund',
+                        'status'      => 'completed',
+                        'notes'       => 'Refund untuk pembatalan transaksi ' . $transaction->transaction_code,
                     ]);
                 }
             }
 
-            // 3. Mark as cancelled
-            $transaction->update(['status' => 'canceled']);
-
             \Illuminate\Support\Facades\DB::commit();
 
-            return redirect()->back()->with('success', 'Transaction cancelled and funds refunded (if applicable).');
+            return redirect()->back()->with('success', 'Transaksi berhasil dibatalkan dan stok dikembalikan.');
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
-            return redirect()->back()->with('error', 'Failed to cancel: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
         }
     }
 

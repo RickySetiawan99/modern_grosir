@@ -101,6 +101,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/transactions/{id}/receipt', [TransactionController::class, 'receipt'])->name('transactions.receipt')->middleware('role:admin|cashier');
     Route::post('/transactions/{id}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel')->middleware('role:admin');
 
+    // Purchase Orders (PO) & GRN
+    Route::get('/purchase-orders/data', [App\Http\Controllers\Admin\PurchaseOrderController::class, 'data'])->name('purchase-orders.data')->middleware('role:admin');
+    Route::post('/purchase-orders/{purchaseOrder}/receive', [App\Http\Controllers\Admin\PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive')->middleware('role:admin');
+    Route::resource('purchase-orders', App\Http\Controllers\Admin\PurchaseOrderController::class)->middleware('role:admin');
+
     // Reports & Analytics (Admin Only)
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('role:admin');
     Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.excel')->middleware('role:admin');

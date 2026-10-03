@@ -14,7 +14,6 @@ const folder = {
 
 export default defineConfig({
     build: {
-        manifest: true,
         rtl: true,
         outDir: folder.dist_assets,
         cssCodeSplit: true,

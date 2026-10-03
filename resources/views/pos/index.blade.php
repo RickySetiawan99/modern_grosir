@@ -45,7 +45,10 @@
                         <div class="col-md-7">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="ti ti-search fs-4"></i></span>
-                                <input type="text" id="search-input" class="form-control bg-light border-start-0 py-2 fs-3" placeholder="Scan barcode atau cari produk / SKU...">
+                                <input type="text" id="search-input" class="form-control bg-light border-start-0 border-end-0 py-2 fs-3" placeholder="Scan barcode atau cari produk / SKU...">
+                                <button class="btn btn-light border border-start-0 text-primary px-3" type="button" id="btn-scan-barcode" style="display: none;" title="Scan Barcode Kamera">
+                                    <i class="ti ti-barcode"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="col-md-5">
@@ -215,9 +218,30 @@
         </div>
     </div>
 </div>
+
+<!-- Barcode Scanner Modal -->
+<div class="modal fade" id="scannerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-bottom p-4 bg-primary text-white">
+                <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+                    <i class="ti ti-camera fs-5"></i> Scan Barcode
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="reader" style="width: 100%; border: none;"></div>
+            </div>
+            <div class="modal-footer border-top p-3.5 bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
     window.csrfToken = '{{ csrf_token() }}';
     window.posRoutes = {

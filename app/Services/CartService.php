@@ -130,9 +130,26 @@ class CartService
                 throw new \Exception('Cart is empty');
             }
 
+            $warehouseId = $data['warehouse_id'] ?? null;
+            if (!$warehouseId) {
+                throw new \Exception('Warehouse ID is required for checkout');
+            }
+
+            // Validasi stok dengan lockForUpdate
+            foreach ($cart->items as $item) {
+                $stock = \App\Models\StockLevel::where('product_id', $item->product_id)
+                    ->where('warehouse_id', $warehouseId)
+                    ->lockForUpdate()
+                    ->first();
+                
+                if (!$stock || $stock->quantity < $item->quantity) {
+                    throw new \Exception('Stok tidak mencukupi untuk produk: ' . $item->product->name);
+                }
+            }
+
             $cart->status = 'processing';
             if (isset($data['notes'])) $cart->notes = $data['notes'];
-            if (isset($data['warehouse_id'])) $cart->warehouse_id = $data['warehouse_id'];
+            $cart->warehouse_id = $warehouseId;
             
             $cart->save();
 

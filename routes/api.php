@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [ApiLoginController::class, 'login']);
+Route::post('/webhook/notifications', [NotificationController::class, 'handleWebhook']);
+Route::post('/midtrans/webhook', [\App\Http\Controllers\Api\MidtransWebhookController::class, 'handle']);
 
 Route::middleware(['auth:sanctum', 'role:reseller'])->prefix('reseller')->group(function () {
     Route::post('/logout', [ApiLoginController::class, 'logout']);
@@ -47,6 +49,8 @@ Route::middleware(['auth:sanctum', 'role:reseller'])->prefix('reseller')->group(
     });
 
     Route::get('/wallet', [WalletController::class, 'index']);
+    Route::post('/wallet/topup', [WalletController::class, 'topup']);
+    Route::post('/wallet/redeem', [WalletController::class, 'redeemPoints']);
     Route::get('/transactions', [WalletController::class, 'transactions']);
     Route::get('/notifications', [NotificationController::class, 'index']);
 });

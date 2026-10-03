@@ -270,6 +270,39 @@ $(document).ready(function() {
             else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
         }
     });
+
+    // Barcode scanner integration
+    let html5QrcodeScanner = null;
+
+    if (typeof Html5QrcodeScanner !== "undefined") {
+        $('#btn-scan-barcode').show();
+
+        $('#btn-scan-barcode').click(function() {
+            $('#scannerModal').modal('show');
+        });
+
+        $('#scannerModal').on('shown.bs.modal', function () {
+            if (!html5QrcodeScanner) {
+                html5QrcodeScanner = new Html5QrcodeScanner(
+                    "reader", { fps: 10, qrbox: {width: 250, height: 250} }, /* verbose= */ false);
+                html5QrcodeScanner.render(function(decodedText, decodedResult) {
+                    $('#search-input').val(decodedText).trigger('input');
+                    $('#scannerModal').modal('hide');
+                    html5QrcodeScanner.clear();
+                    html5QrcodeScanner = null;
+                }, function(errorMessage) {
+                    // ignore
+                });
+            }
+        });
+
+        $('#scannerModal').on('hidden.bs.modal', function () {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear();
+                html5QrcodeScanner = null;
+            }
+        });
+    }
 });
 
 function addToCart(product) {

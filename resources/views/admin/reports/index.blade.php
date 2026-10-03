@@ -16,10 +16,10 @@
                     <p class="text-muted mb-0 fs-3">Evaluasi omzet pendapatan, HPP (COGS), serta perolehan laba kotor toko secara akurat.</p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
-                    <a href="{{ route('reports.excel', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="btn btn-success px-3 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm fs-2 fw-semibold">
+                    <a href="{{ route('reports.excel', ['start_date' => $startDate, 'end_date' => $endDate, 'warehouse_id' => $warehouseId, 'reseller_id' => $resellerId]) }}" class="btn btn-success px-3 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm fs-2 fw-semibold">
                         <i class="ti ti-file-spreadsheet fs-5"></i> Export Excel
                     </a>
-                    <a href="{{ route('reports.pdf', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="btn btn-danger px-3 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm fs-2 fw-semibold">
+                    <a href="{{ route('reports.pdf', ['start_date' => $startDate, 'end_date' => $endDate, 'warehouse_id' => $warehouseId, 'reseller_id' => $resellerId]) }}" class="btn btn-danger px-3 py-2 rounded-3 d-flex align-items-center gap-2 shadow-sm fs-2 fw-semibold">
                         <i class="ti ti-file-description fs-5"></i> Export PDF
                     </a>
                 </div>
@@ -31,10 +31,10 @@
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <div class="card-body p-4">
             <h5 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
-                <i class="ti ti-filter fs-5 text-primary"></i> Filter Rentang Tanggal Laporan
+                <i class="ti ti-filter fs-5 text-primary"></i> Filter Laporan
             </h5>
             <form action="{{ route('reports.index') }}" method="GET" class="row align-items-end g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-medium text-dark">Tanggal Mulai</label>
                     <div class="input-group">
                         <input type="text" name="start_date" class="form-control bg-white border-end-0 datepicker-input" value="{{ $startDate }}" placeholder="YYYY-MM-DD">
@@ -43,7 +43,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label fw-medium text-dark">Tanggal Selesai</label>
                     <div class="input-group">
                         <input type="text" name="end_date" class="form-control bg-white border-end-0 datepicker-input" value="{{ $endDate }}" placeholder="YYYY-MM-DD">
@@ -52,9 +52,27 @@
                         </span>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-dark">Gudang</label>
+                    <select name="warehouse_id" class="form-select bg-white">
+                        <option value="">Semua Gudang</option>
+                        @foreach($warehouses as $wh)
+                            <option value="{{ $wh->id }}" {{ $warehouseId == $wh->id ? 'selected' : '' }}>{{ $wh->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-medium text-dark">Reseller</label>
+                    <select name="reseller_id" class="form-select bg-white">
+                        <option value="">Semua Reseller</option>
+                        @foreach($resellers as $res)
+                            <option value="{{ $res->id }}" {{ $resellerId == $res->id ? 'selected' : '' }}>{{ $res->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 shadow-sm">
-                        <i class="ti ti-search me-1"></i> Filter Data Laporan
+                        <i class="ti ti-search me-1"></i> Filter Data
                     </button>
                 </div>
             </form>

@@ -51,4 +51,113 @@ class WalletController extends Controller
             return GeneralHelper::errorResponse('Failed to load transactions: '.$e->getMessage());
         }
     }
+
+    public function redeemPoints(Request $request)
+    {
+        try {
+            $request->validate([
+                'points' => 'required|integer|min:1'
+            ]);
+
+            $user = $request->user();
+            $reseller = $user->getResellerProfile();
+
+            if (!$reseller) {
+                return response()->json(['error' => 'Reseller profile not found'], 403);
+            }
+
+            if ($reseller->loyalty_points < $request->points) {
+                return response()->json(['error' => 'Insufficient points. Sisa poin: ' . $reseller->loyalty_points], 400);
+            }
+
+            // Convert points to balance: 1 point = Rp 100
+            $value = $request->points * 100;
+            
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $reseller->decrement('loyalty_points', $request->points);
+            $reseller->increment('balance', $value);
+
+            \App\Models\WalletTransaction::create([
+                'reseller_id' => $reseller->id,
+                'amount' => $value,
+                'type' => 'topup',
+                'status' => 'completed',
+                'notes' => 'Redeem ' . $request->points . ' loyalty points'
+            ]);
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return response()->json([
+                'message' => 'Points successfully redeemed',
+                'balance' => (float) $reseller->balance,
+                'points' => $reseller->loyalty_points
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return GeneralHelper::errorResponse('Failed to redeem points: '.$e->getMessage());
+        }
+    }
+
+    public function topup(Request $request)
+    {
+        try {
+            $request->validate([
+                'amount' => 'required|numeric|min:10000'
+            ]);
+
+            $user = $request->user();
+            $reseller = $user->getResellerProfile();
+
+            if (!$reseller) {
+                return response()->json(['error' => 'Reseller profile not found'], 403);
+            }
+
+            // Set your Merchant Server Key
+            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $walletTransaction = \App\Models\WalletTransaction::create([
+                'reseller_id' => $reseller->id,
+                'amount' => $request->amount,
+                'type' => 'topup',
+                'status' => 'pending',
+                'notes' => 'Top-up via Midtrans'
+            ]);
+
+            $orderId = 'TOPUP-' . $walletTransaction->id . '-' . time();
+            $walletTransaction->update(['notes' => $orderId]);
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $orderId,
+                    'gross_amount' => $request->amount,
+                ],
+                'customer_details' => [
+                    'first_name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $reseller->phone ?? '',
+                ]
+            ];
+
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return response()->json([
+                'snap_token' => $snapToken,
+                'order_id' => $orderId,
+                'transaction_id' => $walletTransaction->id
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return GeneralHelper::errorResponse('Failed to create topup request: '.$e->getMessage());
+        }
+    }
 }

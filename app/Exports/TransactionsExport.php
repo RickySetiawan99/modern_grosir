@@ -14,11 +14,15 @@ class TransactionsExport implements FromCollection, WithHeadings, WithMapping, S
 {
     protected $startDate;
     protected $endDate;
+    protected $warehouseId;
+    protected $resellerId;
 
-    public function __construct($startDate = null, $endDate = null)
+    public function __construct($startDate = null, $endDate = null, $warehouseId = null, $resellerId = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->warehouseId = $warehouseId;
+        $this->resellerId = $resellerId;
     }
 
     public function collection()
@@ -27,6 +31,15 @@ class TransactionsExport implements FromCollection, WithHeadings, WithMapping, S
 
         if ($this->startDate && $this->endDate) {
             $query->whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59']);
+        }
+        if ($this->warehouseId) {
+            $warehouseId = $this->warehouseId;
+            $query->whereHas('details.batch', function ($q) use ($warehouseId) {
+                $q->where('warehouse_id', $warehouseId);
+            });
+        }
+        if ($this->resellerId) {
+            $query->where('customer_id', $this->resellerId);
         }
 
         return $query->latest()->get();
