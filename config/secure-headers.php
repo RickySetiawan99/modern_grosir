@@ -229,7 +229,7 @@ return [
 
             '*' => false,
 
-            'self' => true,
+            'self' => false,
 
             'origins' => [],
         ],
@@ -238,7 +238,7 @@ return [
         'attribution-reporting' => [
             'none' => false,
 
-            '*' => true,
+            '*' => false,
 
             'self' => false,
 
@@ -271,7 +271,7 @@ return [
         'browsing-topics' => [
             'none' => false,
 
-            '*' => true,
+            '*' => false,
 
             'self' => false,
 
@@ -326,7 +326,7 @@ return [
         'document-domain' => [
             'none' => false,
 
-            '*' => true,
+            '*' => false,
 
             'self' => false,
 
@@ -471,7 +471,7 @@ return [
 
             '*' => false,
 
-            'self' => true,
+            'self' => false,
 
             'origins' => [],
         ],
@@ -548,7 +548,7 @@ return [
 
             '*' => false,
 
-            'self' => true,
+            'self' => false,
 
             'origins' => [],
         ],
