@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'ModernGrosir') }} — B2B Commerce Infrastructure</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logos/favicon.svg') }}" />
-    
+
     <!-- Google Fonts: Geist & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
 </head>
+
 <body>
 
     <!-- Header Navigation -->
@@ -25,7 +29,8 @@
             <div class="nav-wrapper">
                 <div class="logo">
                     <a href="{{ url('/') }}">
-                        <img src="{{ asset('images/logos/logo-dark.svg') }}" alt="{{ config('app.name', 'ModernGrosir') }}" height="32">
+                        <img src="{{ asset('images/logos/logo-dark.svg') }}"
+                            alt="{{ config('app.name', 'ModernGrosir') }}" height="32">
                     </a>
                 </div>
                 <nav class="nav-links">
@@ -57,9 +62,10 @@
                         <div class="hero-badge-wrap">
                             <span class="badge badge-soft">B2B Ecosystem v2.0</span>
                         </div>
-                        <h1 class="text-engineered">Infrastruktur Grosir & Distritusi Modern</h1>
-                        <p>Platform B2B all-in-one untuk manajemen gudang FEFO, tiering harga reseller otomatis, dan sistem POS terpadu.</p>
-                        
+                        <h1 class="text-engineered">Infrastruktur Grosir & Distribusi Modern</h1>
+                        <p>Platform B2B all-in-one untuk manajemen gudang FEFO, tiering harga reseller otomatis, dan
+                            sistem POS terpadu.</p>
+
                         <div class="hero-ctas">
                             @guest
                                 <a href="{{ route('login') }}" class="btn btn-primary">Mulai Sekarang</a>
@@ -81,7 +87,8 @@
                             <div class="card-header-dots">
                                 <span></span><span></span><span></span>
                             </div>
-                            <span class="card-header-title">Live System Status — {{ config('app.name', 'ModernGrosir') }}</span>
+                            <span class="card-header-title">Live System Status —
+                                {{ config('app.name', 'ModernGrosir') }}</span>
                         </div>
                         <div class="card-inner-body">
                             <div class="preview-stat-grid">
@@ -148,7 +155,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2>Intelligent Tiering Pricing</h2>
-                    <p>Sistem penetapan harga berjenjang secara otomatis sesuai akumulasi transaksi bulanan reseller Anda.</p>
+                    <p>Sistem penetapan harga berjenjang secara otomatis sesuai akumulasi transaksi bulanan reseller
+                        Anda.</p>
                 </div>
 
                 <div class="pricing-grid">
@@ -209,7 +217,8 @@
                                 <div class="pricing-discount">15%</div>
                                 <div class="pricing-min-order">Min. Order: Rp 15.000.000 / bln</div>
                             </div>
-                            <div class="pricing-margin-badge" style="background: var(--color-ink); color: #ffffff;">Est. Margin: 25% - 30%</div>
+                            <div class="pricing-margin-badge" style="background: var(--color-ink); color: #ffffff;">Est.
+                                Margin: 25% - 30%</div>
                             <ul class="pricing-features">
                                 <li><i class="ti ti-circle-check-filled"></i> Diskon langsung 15% grosir</li>
                                 <li><i class="ti ti-circle-check-filled"></i> Prioritas kirim & free ambil mandiri</li>
@@ -261,10 +270,12 @@
                         <div>
                             <span class="badge badge-soft" style="margin-bottom: 12px;">Warehouse Core</span>
                             <h3>Multi-Warehouse & FEFO Expiration Control</h3>
-                            <p>Pantau lokasi stok di banyak gudang secara realtime dengan jaminan urutan pengeluaran barang berbasis tanggal kadaluarsa terdekat (First Expired, First Out).</p>
+                            <p>Pantau lokasi stok di banyak gudang secara realtime dengan jaminan urutan pengeluaran
+                                barang berbasis tanggal kadaluarsa terdekat (First Expired, First Out).</p>
                         </div>
                         <div class="bento-inner-box">
-                            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 500;">
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 500;">
                                 <span>Batch Safety Stock</span>
                                 <span>100% FEFO Verified</span>
                             </div>
@@ -276,7 +287,8 @@
                         <div>
                             <span class="badge badge-soft" style="margin-bottom: 12px;">App Self-Order</span>
                             <h3>Draft Order Mandiri Reseller</h3>
-                            <p>Reseller dapat membuat draft pesanan mandiri dari mana saja, menghilangkan antrean fisik di toko atau gudang.</p>
+                            <p>Reseller dapat membuat draft pesanan mandiri dari mana saja, menghilangkan antrean fisik
+                                di toko atau gudang.</p>
                         </div>
                         <div class="bento-inner-box" style="font-size: 12px; font-weight: 500;">
                             ⚡ Instant Draft Queue Enabled
@@ -288,7 +300,8 @@
                         <div>
                             <span class="badge badge-soft" style="margin-bottom: 12px;">Checkout POS</span>
                             <h3>POS Kasir 1-Klik & Deposit Wallet</h3>
-                            <p>Kasir memanggil draft order reseller dan memproses pembayaran menggunakan saldo deposit wallet atau tunai secara instan.</p>
+                            <p>Kasir memanggil draft order reseller dan memproses pembayaran menggunakan saldo deposit
+                                wallet atau tunai secara instan.</p>
                         </div>
                         <div class="bento-inner-box" style="font-size: 12px; font-weight: 500;">
                             Avg Checkout Time: 12 Seconds
@@ -300,7 +313,8 @@
                         <div>
                             <span class="badge badge-soft" style="margin-bottom: 12px;">Analytics</span>
                             <h3>Laporan Laba/Rugi & Ekspor Data</h3>
-                            <p>Pantau margin bersih harian, tren produk grosir terlaris, serta cetak dokumen PDF & Excel secara otomatis.</p>
+                            <p>Pantau margin bersih harian, tren produk grosir terlaris, serta cetak dokumen PDF & Excel
+                                secara otomatis.</p>
                         </div>
                         <div class="bento-inner-box" style="font-size: 12px; font-weight: 500;">
                             Auto Export: PDF & XLSX Supported
@@ -352,56 +366,64 @@
                                 <i class="ti ti-packages"></i>
                                 <div>
                                     <strong>Manajemen Produk & Kategori</strong>
-                                    <span>Tambah, edit, dan atur produk beserta harga eceran serta harga tier khusus reseller.</span>
+                                    <span>Tambah, edit, dan atur produk beserta harga eceran serta harga tier khusus
+                                        reseller.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-building-warehouse"></i>
                                 <div>
                                     <strong>Inventori Multi-Gudang</strong>
-                                    <span>Pantau stok di berbagai gudang secara realtime, atur safety stock, dan transfer antar gudang.</span>
+                                    <span>Pantau stok di berbagai gudang secara realtime, atur safety stock, dan
+                                        transfer antar gudang.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-calendar-due"></i>
                                 <div>
                                     <strong>Batch & Kadaluarsa FEFO</strong>
-                                    <span>Kelola batch produk dengan sistem First Expired First Out dan laporan perkiraan kadaluarsa.</span>
+                                    <span>Kelola batch produk dengan sistem First Expired First Out dan laporan
+                                        perkiraan kadaluarsa.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-device-desktop"></i>
                                 <div>
                                     <strong>Point of Sale (POS)</strong>
-                                    <span>Proses transaksi kasir, muat draft order reseller, dan cetak struk langsung dari dashboard.</span>
+                                    <span>Proses transaksi kasir, muat draft order reseller, dan cetak struk langsung
+                                        dari dashboard.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-chart-bar"></i>
                                 <div>
                                     <strong>Laporan Laba/Rugi & Analitik</strong>
-                                    <span>Pantau omzet, margin bersih, dan ekspor laporan ke format Excel maupun PDF.</span>
+                                    <span>Pantau omzet, margin bersih, dan ekspor laporan ke format Excel maupun
+                                        PDF.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-users-group"></i>
                                 <div>
                                     <strong>Manajemen Reseller & Tier</strong>
-                                    <span>Atur reseller, tetapkan tier otomatis, dan kelola persetujuan wallet top-up.</span>
+                                    <span>Atur reseller, tetapkan tier otomatis, dan kelola persetujuan wallet
+                                        top-up.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-truck-delivery"></i>
                                 <div>
                                     <strong>Manajemen Supplier</strong>
-                                    <span>Kelola data supplier, kontak, dan riwayat pembelian untuk rantai pasok yang optimal.</span>
+                                    <span>Kelola data supplier, kontak, dan riwayat pembelian untuk rantai pasok yang
+                                        optimal.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-clipboard-list"></i>
                                 <div>
                                     <strong>Draft Orders & Approval</strong>
-                                    <span>Tinjau, setujui, dan proses pesanan draft dari seluruh reseller dalam satu panel.</span>
+                                    <span>Tinjau, setujui, dan proses pesanan draft dari seluruh reseller dalam satu
+                                        panel.</span>
                                 </div>
                             </div>
                         </div>
@@ -415,7 +437,8 @@
                             </div>
                             <div>
                                 <h3>Cashier — Efisiensi Transaksi Kasir</h3>
-                                <p>Fokus pada pemrosesan penjualan cepat dengan akses terbatas pada modul operasional.</p>
+                                <p>Fokus pada pemrosesan penjualan cepat dengan akses terbatas pada modul operasional.
+                                </p>
                             </div>
                         </div>
                         <div class="role-features-grid">
@@ -423,28 +446,32 @@
                                 <i class="ti ti-device-desktop"></i>
                                 <div>
                                     <strong>Point of Sale (POS)</strong>
-                                    <span>Proses checkout cepat, scan barcode, dan terima pembayaran tunai atau wallet reseller.</span>
+                                    <span>Proses checkout cepat, scan barcode, dan terima pembayaran tunai atau wallet
+                                        reseller.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-layout-dashboard"></i>
                                 <div>
                                     <strong>Dashboard Operasional</strong>
-                                    <span>Lihat ringkasan penjualan hari ini, jumlah transaksi, dan grafik performa kasir.</span>
+                                    <span>Lihat ringkasan penjualan hari ini, jumlah transaksi, dan grafik performa
+                                        kasir.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-package"></i>
                                 <div>
                                     <strong>Lihat Inventori</strong>
-                                    <span>Periksa ketersediaan stok dan status batch produk untuk melayani pertanyaan pelanggan.</span>
+                                    <span>Periksa ketersediaan stok dan status batch produk untuk melayani pertanyaan
+                                        pelanggan.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-file-invoice"></i>
                                 <div>
                                     <strong>Riwayat Transaksi</strong>
-                                    <span>Akses riwayat penjualan harian untuk verifikasi, cetak ulang struk, atau rekonsiliasi kas.</span>
+                                    <span>Akses riwayat penjualan harian untuk verifikasi, cetak ulang struk, atau
+                                        rekonsiliasi kas.</span>
                                 </div>
                             </div>
                         </div>
@@ -466,28 +493,32 @@
                                 <i class="ti ti-shopping-bag"></i>
                                 <div>
                                     <strong>Katalog Produk Khusus</strong>
-                                    <span>Jelajahi produk dengan harga tier otomatis, filter gudang, dan lihat stok tersedia.</span>
+                                    <span>Jelajahi produk dengan harga tier otomatis, filter gudang, dan lihat stok
+                                        tersedia.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-clipboard-check"></i>
                                 <div>
                                     <strong>Self-Order & Draft Pesanan</strong>
-                                    <span>Buat draft pesanan mandiri yang langsung masuk antrian kasir untuk diproses.</span>
+                                    <span>Buat draft pesanan mandiri yang langsung masuk antrian kasir untuk
+                                        diproses.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-wallet"></i>
                                 <div>
                                     <strong>Wallet & Top-Up Saldo</strong>
-                                    <span>Ajukan top-up saldo deposit dan bayar transaksi dengan wallet tanpa perlu uang tunai.</span>
+                                    <span>Ajukan top-up saldo deposit dan bayar transaksi dengan wallet tanpa perlu uang
+                                        tunai.</span>
                                 </div>
                             </div>
                             <div class="role-feature-item">
                                 <i class="ti ti-layout-dashboard"></i>
                                 <div>
                                     <strong>Dashboard Reseller</strong>
-                                    <span>Lihat ringkasan pesanan, status tier saat ini, dan riwayat transaksi pribadi.</span>
+                                    <span>Lihat ringkasan pesanan, status tier saat ini, dan riwayat transaksi
+                                        pribadi.</span>
                                 </div>
                             </div>
                         </div>
@@ -520,17 +551,21 @@
                         </div>
                     </div>
 
-                    <div class="card" id="workflow-visual-content" style="min-height: 280px; transition: opacity 0.15s ease;">
+                    <div class="card" id="workflow-visual-content"
+                        style="min-height: 280px; transition: opacity 0.15s ease;">
                         <span class="badge badge-soft" style="margin-bottom: 12px;">Order Input</span>
                         <h3 style="font-size: 18px; margin-bottom: 8px;">1. Self-Order App (Reseller)</h3>
-                        <p style="font-size: 14px; margin-bottom: 20px;">Reseller membuat draft pesanan mandiri melalui aplikasi web/mobile. Diskon otomatis diterapkan sesuai tingkat Tiering.</p>
-                        
+                        <p style="font-size: 14px; margin-bottom: 20px;">Reseller membuat draft pesanan mandiri melalui
+                            aplikasi web/mobile. Diskon otomatis diterapkan sesuai tingkat Tiering.</p>
+
                         <div class="card" style="padding: 16px; box-shadow: none;">
-                            <div style="display: flex; justify-content: space-between; font-weight: 500; margin-bottom: 8px;">
+                            <div
+                                style="display: flex; justify-content: space-between; font-weight: 500; margin-bottom: 8px;">
                                 <span>Draft #DRF-8921</span>
                                 <span class="badge badge-solid">Tier Gold (-15%)</span>
                             </div>
-                            <div style="font-size: 13px; color: var(--color-mid-gray);">Minyak Goreng Kita 2L (12 Ctn)</div>
+                            <div style="font-size: 13px; color: var(--color-mid-gray);">Minyak Goreng Kita 2L (12 Ctn)
+                            </div>
                             <div style="margin-top: 12px; font-weight: 600;">Subtotal: Rp 1.450.000</div>
                         </div>
                     </div>
@@ -543,7 +578,8 @@
             <div class="container">
                 <div class="cta-box">
                     <h2>Siap Mentransformasi Operasional Grosir Anda?</h2>
-                    <p>Bergabunglah dengan ratusan pemilik grosir dan distributor yang telah meningkatkan efisiensi hari ini.</p>
+                    <p>Bergabunglah dengan ratusan pemilik grosir dan distributor yang telah meningkatkan efisiensi hari
+                        ini.</p>
                     <div class="cta-actions">
                         @guest
                             <a href="{{ route('login') }}" class="btn btn-cta-primary">Daftar Reseller</a>
@@ -564,7 +600,8 @@
             <div class="footer-grid">
                 <div>
                     <h5 class="footer-brand-title">{{ config('app.name', 'ModernGrosir') }}</h5>
-                    <p style="font-size: 13px;">Infrastruktur B2B Commerce all-in-one untuk manajemen grosir, tiering reseller, dan gudang multi-lokasi.</p>
+                    <p style="font-size: 13px;">Infrastruktur B2B Commerce all-in-one untuk manajemen grosir, tiering
+                        reseller, dan gudang multi-lokasi.</p>
                 </div>
                 <div class="footer-col">
                     <h5>Produk</h5>
@@ -607,4 +644,5 @@
     <!-- JS -->
     <script src="{{ asset('js/landing.js') }}"></script>
 </body>
+
 </html>

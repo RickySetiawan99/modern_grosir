@@ -138,8 +138,10 @@ class InventoryBatch extends Model
     {
         return $query->where('status', 'active')
             ->whereNotNull('expiration_date')
-            ->whereRaw('DATEDIFF(expiration_date, CURDATE()) <= ?', [$days])
-            ->whereRaw('DATEDIFF(expiration_date, CURDATE()) >= 0');
+            ->whereBetween('expiration_date', [
+                now()->startOfDay(),
+                now()->addDays($days)->endOfDay()
+            ]);
     }
 
     public function scopeFefoOrder($query)

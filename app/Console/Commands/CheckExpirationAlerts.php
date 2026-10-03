@@ -42,12 +42,13 @@ class CheckExpirationAlerts extends Command
         $alertsCreated = 0;
 
         foreach ($thresholds as $level => $days) {
+            $minDays = $level === 'critical' ? 0 : ($level === 'warning' ? 7 : 14);
             $batches = InventoryBatch::where('status', 'active')
                 ->whereNotNull('expiration_date')
                 ->where('quantity', '>', 0)
-                ->whereRaw('DATEDIFF(expiration_date, CURDATE()) <= ?', [$days])
-                ->whereRaw('DATEDIFF(expiration_date, CURDATE()) > ?', [
-                    $level === 'critical' ? 0 : ($level === 'warning' ? 7 : 14)
+                ->whereBetween('expiration_date', [
+                    now()->addDays($minDays)->startOfDay(),
+                    now()->addDays($days)->endOfDay()
                 ])
                 ->get();
 

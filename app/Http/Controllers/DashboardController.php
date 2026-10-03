@@ -63,11 +63,15 @@ class DashboardController extends Controller
                     ->selectRaw('SUM(transaction_details.subtotal - (products.purchase_price * transaction_details.quantity)) as profit')
                     ->value('profit') ?? 0;
             }
+            $isPgsql = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql';
+            $monthExpr = $isPgsql ? 'EXTRACT(MONTH FROM created_at)::integer' : 'MONTH(created_at)';
+            $detailMonthExpr = $isPgsql ? 'EXTRACT(MONTH FROM transaction_details.created_at)::integer' : 'MONTH(transaction_details.created_at)';
+
             $monthlySales = (clone $transactionQuery)
-                ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
+                ->selectRaw("{$monthExpr} as month, SUM(total_amount) as total")
                 ->whereYear('created_at', date('Y'))
-                ->groupBy('month')
-                ->orderBy('month')
+                ->groupByRaw($monthExpr)
+                ->orderByRaw($monthExpr)
                 ->get()
                 ->pluck('total', 'month')
                 ->toArray();
@@ -75,10 +79,10 @@ class DashboardController extends Controller
             if ($user->hasRole('reseller')) {
                 $monthlySales = \App\Models\DraftOrder::where('reseller_id', $user->id)
                     ->where('status', 'completed')
-                    ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as total')
+                    ->selectRaw("{$monthExpr} as month, SUM(total_amount) as total")
                     ->whereYear('created_at', date('Y'))
-                    ->groupBy('month')
-                    ->orderBy('month')
+                    ->groupByRaw($monthExpr)
+                    ->orderByRaw($monthExpr)
                     ->get()
                     ->pluck('total', 'month')
                     ->toArray();
@@ -87,10 +91,10 @@ class DashboardController extends Controller
             if ($user->hasRole('admin')) {
                 $monthlyProfit = (clone $detailQuery)
                     ->join('products', 'transaction_details.product_id', '=', 'products.id')
-                    ->selectRaw('MONTH(transaction_details.created_at) as month, SUM(transaction_details.subtotal - (products.purchase_price * transaction_details.quantity)) as profit')
+                    ->selectRaw("{$detailMonthExpr} as month, SUM(transaction_details.subtotal - (products.purchase_price * transaction_details.quantity)) as profit")
                     ->whereYear('transaction_details.created_at', date('Y'))
-                    ->groupBy('month')
-                    ->orderBy('month')
+                    ->groupByRaw($detailMonthExpr)
+                    ->orderByRaw($detailMonthExpr)
                     ->get()
                     ->pluck('profit', 'month')
                     ->toArray();
@@ -181,6 +185,7 @@ class DashboardController extends Controller
                 'expiredCount'
             ));
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Dashboard Error: '.$e->getMessage(), ['exception' => $e]);
             return GeneralHelper::errorResponse('Failed to load dashboard: '.$e->getMessage());
         }
     }
