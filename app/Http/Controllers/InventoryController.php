@@ -59,14 +59,20 @@ class InventoryController extends Controller
                 return $level->product->category->name ?? '-';
             })
             ->addColumn('action', function ($level) {
-                return '
-                    <button type="button" class="btn btn-sm btn-light-primary text-primary fw-semibold btn-edit-stock" 
-                        data-id="'.$level->id.'" 
-                        data-product="'.htmlspecialchars($level->product->name).'"
-                        data-warehouse="'.htmlspecialchars($level->warehouse->name).'"
-                        data-qty="'.$level->quantity.'">
-                        <i class="ti ti-edit fs-4 me-1"></i> Edit
-                    </button>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'color' => 'primary',
+                        'class' => 'btn-edit-stock',
+                        'attrs' => [
+                            'data-id' => $level->id,
+                            'data-product' => $level->product->name,
+                            'data-warehouse' => $level->warehouse->name,
+                            'data-qty' => $level->quantity,
+                        ],
+                    ],
+                ]);
             })
             ->filterColumn('product.name', function ($query, $keyword) {
                 $query->whereHas('product', function ($q) use ($keyword) {

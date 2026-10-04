@@ -169,13 +169,13 @@
                             </div>
                             <div class="pricing-discount-wrapper">
                                 <div class="pricing-discount">5%</div>
-                                <div class="pricing-min-order">Min. Order: Rp 1.000.000 / bln</div>
+                                <div class="pricing-min-order">Min. Belanja: Rp 0 / bln (Entry Level)</div>
                             </div>
                             <div class="pricing-margin-badge">Est. Margin: 12% - 15%</div>
                             <ul class="pricing-features">
                                 <li><i class="ti ti-circle-check-filled"></i> Diskon 5% otomatis dari eceran</li>
                                 <li><i class="ti ti-circle-check-filled"></i> Akses Self-Order App & Katalog</li>
-                                <li><i class="ti ti-circle-check-filled"></i> Min. transaksi Rp 1 Juta/bulan</li>
+                                <li><i class="ti ti-circle-check-filled"></i> Tanpa batas minimum pembelanjaan</li>
                                 <li><i class="ti ti-circle-check-filled"></i> Support standar via CS</li>
                             </ul>
                         </div>
@@ -250,7 +250,7 @@
                                 <li><i class="ti ti-circle-check-filled"></i> Prioritas Rute Gudang Internal</li>
                             </ul>
                         </div>
-                        <a href="{{ route('login') }}" class="btn btn-outline w-100">Hubungi Platinum</a>
+                        <a href="{{ route('contact') }}" class="btn btn-outline w-100">Hubungi Tim Sales</a>
                     </div>
                 </div>
             </div>

@@ -42,11 +42,12 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-medium text-dark fs-2">Pemasok / Supplier</label>
-                        <select class="form-select bg-white border select2" name="supplier_id" id="edit_supplier_id">
-                            <option value="">Pilih Supplier (Opsional)</option>
-                            @foreach($suppliers ?? [] as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                            @endforeach
+                        <select class="form-select bg-white border global-select2" name="supplier_id" id="edit_supplier_id"
+                            placeholder="Pilih Supplier (Opsional)"
+                            link="globalfetch"
+                            t="{{ encrypt('suppliers') }}"
+                            s="{{ encrypt('id,name') }}">
+                            <option value=""></option>
                         </select>
                     </div>
 

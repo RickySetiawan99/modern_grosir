@@ -1,62 +1,7 @@
 $(document).ready(function() {
-    // Initialize Select2 specifically within createBatchModal
-    $('#createBatchModal .select2').select2({
-        dropdownParent: $('#createBatchModal')
-    });
-
-    // Initialize Product Select2 with AJAX
-    $('#createBatchModal .select2-products').select2({
-        dropdownParent: $('#createBatchModal'),
-        ajax: {
-            url: '/admin/master/products/data',
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return {
-                    keyword: params.term, // search term
-                };
-            },
-            processResults: function(data) {
-                return {
-                    results: $.map(data.data, function(item) {
-                        return {
-                            text: item.name + ' (' + item.sku + ')',
-                            id: item.id
-                        }
-                    })
-                };
-            },
-            cache: true
-        },
-        minimumInputLength: 1
-    });
-
-    // Initialize Supplier Select2 with AJAX
-    $('#createBatchModal .select2-suppliers').select2({
-        dropdownParent: $('#createBatchModal'),
-        ajax: {
-            url: '/admin/master/suppliers/data',
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-                return {
-                    keyword: params.term,
-                };
-            },
-            processResults: function(data) {
-                return {
-                    results: $.map(data.data, function(item) {
-                        return {
-                            text: item.name,
-                            id: item.id
-                        }
-                    })
-                };
-            },
-            cache: true
-        }
-    });
-
+    // Select2 dropdowns in #createBatchModal are now auto-initialised via the
+    // global-select2 class + FetchController (see batch-form-modal.blade.php).
+    // No manual getDataFromSelect2 calls needed here.
     // Handle Create Batch Form Submission
     $('#createBatchForm').on('submit', function(e) {
         e.preventDefault();

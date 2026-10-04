@@ -18,6 +18,12 @@ select.select2-hidden-accessible {
     vertical-align: middle;
     flex: 1 1 auto;
     max-width: 100%;
+    width: 100% !important;
+}
+
+.input-group .select2-container {
+    width: 1% !important;
+    flex: 1 1 auto !important;
 }
 
 .select2-container--default .select2-selection--single {
@@ -25,10 +31,63 @@ select.select2-hidden-accessible {
     border: 1px solid var(--bs-border-color, #dfe5ef) !important;
     border-radius: 7px !important;
     background-color: var(--bs-body-bg, #ffffff) !important;
-    background-image: none !important; /* CRITICAL: Remove Bootstrap form-select arrow background image */
-    position: relative !important; /* CRITICAL: Ensure arrow positions inside select box */
+    background-image: none !important;
+    position: relative !important;
     display: block !important;
     box-shadow: none !important;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--open .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: var(--bs-primary, #5d87ff) !important;
+    box-shadow: 0 0 0 0.25rem rgba(93, 135, 255, 0.1) !important;
+    outline: none !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+    min-height: 38px !important;
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: 7px !important;
+    background-color: var(--bs-body-bg, #ffffff) !important;
+    padding: 2px 6px !important;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--bs-primary-subtle, #ecf2ff) !important;
+    border: 1px solid var(--bs-primary-border-subtle, #d2e0ff) !important;
+    color: var(--bs-primary, #5d87ff) !important;
+    border-radius: 5px !important;
+    font-size: 0.775rem !important;
+    padding: 2px 8px !important;
+    margin-top: 4px !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: var(--bs-primary, #5d87ff) !important;
+    margin-right: 5px !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.form-select-sm + .select2-container .select2-selection--single,
+.select2-container--sm .select2-selection--single {
+    height: 31px !important;
+    border-radius: 6px !important;
+}
+
+.form-select-sm + .select2-container .select2-selection--single .select2-selection__rendered,
+.select2-container--sm .select2-selection--single .select2-selection__rendered {
+    line-height: 29px !important;
+    font-size: 0.775rem !important;
+}
+
+.form-select-sm + .select2-container .select2-selection--single .select2-selection__arrow,
+.select2-container--sm .select2-selection--single .select2-selection__arrow {
+    height: 29px !important;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {

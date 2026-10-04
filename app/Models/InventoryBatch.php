@@ -140,7 +140,7 @@ class InventoryBatch extends Model
             ->whereNotNull('expiration_date')
             ->whereBetween('expiration_date', [
                 now()->startOfDay(),
-                now()->addDays($days)->endOfDay()
+                now()->addDays((int) $days)->endOfDay()
             ]);
     }
 

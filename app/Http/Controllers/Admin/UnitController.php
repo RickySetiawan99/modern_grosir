@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -26,30 +27,25 @@ class UnitController extends Controller
                         </div>';
             })
             ->addColumn('action', function ($unit) {
-                $editUrl = route('master.units.edit', $unit->id);
-                $deleteUrl = route('master.units.destroy', $unit->id);
-
-                return '
-                    <div class="dropdown dropstart">
-                        <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-6"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
-                                </a>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="'.$unit->id.'" 
-                                    data-name="'.$unit->name.'"
-                                    data-action="'.$deleteUrl.'">
-                                    <i class="fs-3 ti ti-trash"></i>Delete
-                                </button>
-                            </li>
-                        </ul>
-                    </div>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'url' => route('master.units.edit', $unit->id),
+                        'color' => 'primary',
+                    ],
+                    [
+                        'label' => 'Delete',
+                        'icon' => 'ti ti-trash',
+                        'color' => 'danger',
+                        'class' => 'btn-delete',
+                        'attrs' => [
+                            'data-id' => $unit->id,
+                            'data-name' => $unit->name,
+                            'data-action' => route('master.units.destroy', $unit->id),
+                        ],
+                    ],
+                ]);
             })
             ->rawColumns(['checkbox', 'action'])
             ->make(true);

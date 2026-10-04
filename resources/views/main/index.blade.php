@@ -164,7 +164,82 @@
     </div>
     @endif
 
-    <!--  Owl carousel -->
+    @role('reseller')
+    @if(!empty($tierProgress))
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+                <div class="card-body p-4 text-white">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7 mb-3 mb-lg-0">
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <span class="badge px-3 py-1.5 rounded-pill fs-2 fw-semibold text-uppercase" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);">
+                                    <i class="ti ti-crown text-warning me-1"></i> Level: {{ $tierProgress['current_tier']->name ?? 'Standard' }}
+                                </span>
+                                <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill fs-2 fw-medium">
+                                    Diskon {{ (float) ($tierProgress['current_tier']->discount_percentage ?? 0) }}%
+                                </span>
+                                @if($tierProgress['is_locked'])
+                                    <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill fs-2 fw-semibold">
+                                        <i class="ti ti-lock me-1"></i> Tier Protected
+                                    </span>
+                                @endif
+                            </div>
+                            <h4 class="fw-bold text-white mb-1">
+                                @if($tierProgress['is_max_tier'])
+                                    Selamat! Anda Berada di Tingkatan Tertinggi ({{ $tierProgress['current_tier']->name }})
+                                @else
+                                    Menuju Tingkat {{ $tierProgress['next_tier']->name }} (Diskon {{ (float) ($tierProgress['next_tier']->discount_percentage ?? 0) }}%)
+                                @endif
+                            </h4>
+                            <p class="text-white-50 mb-3 fs-3">
+                                @if($tierProgress['is_max_tier'])
+                                    Pertahankan total transaksi Anda bulan ini untuk menikmati benefit diskon maksimal.
+                                @else
+                                    Belanja senilai <strong class="text-white">Rp {{ number_format($tierProgress['remaining_spend'], 0, ',', '.') }}</strong> lagi sebelum tanggal evaluasi untuk otomatis naik level.
+                                @endif
+                            </p>
+
+                            <div class="d-flex align-items-center justify-content-between mb-1 text-white-50 fs-2 fw-medium">
+                                <span>Belanja Bulan Ini: <strong class="text-white">Rp {{ number_format($tierProgress['current_spent'], 0, ',', '.') }}</strong></span>
+                                @if(!$tierProgress['is_max_tier'])
+                                    <span>Target: <strong class="text-white">Rp {{ number_format($tierProgress['target_spend'], 0, ',', '.') }}</strong></span>
+                                @endif
+                            </div>
+                            <div class="progress" style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 999px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" 
+                                    style="width: {{ $tierProgress['progress_percentage'] }}%; border-radius: 999px;" 
+                                    aria-valuenow="{{ $tierProgress['progress_percentage'] }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="mt-2 text-end text-white-50 fs-2">
+                                <span>Progress: <strong class="text-white">{{ $tierProgress['progress_percentage'] }}%</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5 text-lg-end">
+                            <div class="p-3 rounded-4 d-inline-block text-start" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); min-width: 260px;">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="rounded-circle p-2 bg-primary-subtle text-primary">
+                                        <i class="ti ti-calendar-time fs-6"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white-50 fs-2">Sisa Waktu Evaluasi</div>
+                                        <div class="fw-bold text-white fs-4">{{ $tierProgress['days_remaining'] }} Hari Lagi</div>
+                                    </div>
+                                </div>
+                                <div class="text-white-50 fs-2 border-top border-white-10 pt-2 mt-2">
+                                    Tanggal Evaluasi: <strong class="text-white">{{ $tierProgress['evaluation_date'] }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    @endrole
+
     <div class="owl-carousel counter-carousel owl-theme">
         @role('admin')
         <div class="item">

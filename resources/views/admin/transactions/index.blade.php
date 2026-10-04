@@ -22,17 +22,11 @@
     <!-- Main Table Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                    <i class="ti ti-receipt-tax fs-5 text-primary"></i> Daftar Seluruh Transaksi
-                </h5>
-            </div>
-
             <div class="table-responsive">
                 <table id="transactions-table" class="table table-hover align-middle text-nowrap mb-0">
                     <thead>
                         <tr class="text-uppercase fs-2 text-muted tracking-wider border-bottom">
-                            <th scope="col" class="ps-3 py-3" style="width: 50px;">No</th>
+                            <th scope="col" class="ps-3 py-3 col-no text-center" style="width: 50px;">No</th>
                             <th scope="col" class="py-3">Waktu & Tanggal</th>
                             <th scope="col" class="py-3">Kode Transaksi</th>
                             <th scope="col" class="py-3">Kasir / User</th>
@@ -40,7 +34,7 @@
                             <th scope="col" class="py-3">Gudang</th>
                             <th scope="col" class="py-3">Total Transaksi</th>
                             <th scope="col" class="py-3">Status</th>
-                            <th scope="col" class="pe-3 py-3 text-end">Aksi</th>
+                            <th scope="col" class="px-3 py-3 text-center" style="width: 120px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
@@ -67,7 +61,7 @@
         { data: 'warehouse.name', name: 'warehouse.name' },
         { data: 'total_amount', name: 'total_amount' },
         { data: 'status', name: 'status' },
-        { data: 'action', name: 'action', orderable: false, searchable: false },
+        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
       ],
       order: [[1, 'desc']] // Sort by Date Descending
     });

@@ -18,85 +18,23 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-4">
         <div class="table-responsive">
-            <table class="table align-middle text-nowrap">
+            <table id="main-table" class="table table-hover align-middle text-nowrap mb-0">
                 <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Reseller</th>
-                        <th>Amount</th>
-                        <th>Proof</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                    <tr class="text-uppercase fs-2 text-muted tracking-wider border-bottom">
+                        <th scope="col" class="ps-3 py-3">Date</th>
+                        <th scope="col" class="py-3">Reseller</th>
+                        <th scope="col" class="py-3">Amount</th>
+                        <th scope="col" class="py-3">Proof</th>
+                        <th scope="col" class="py-3">Status</th>
+                        <th scope="col" class="px-3 py-3 text-center" style="width: 120px;">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @forelse($topups as $topup)
-                    <tr>
-                        <td>
-                            <h6 class="fw-semibold mb-1">{{ $topup->created_at->format('d M Y') }}</h6>
-                            <span class="text-muted" style="font-size: 0.75rem;">{{ $topup->created_at->format('H:i') }}</span>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="ms-0">
-                                    <h6 class="fw-semibold mb-0 fs-2">{{ $topup->reseller->user->name }}</h6>
-                                    <span class="text-muted" style="font-size: 0.7rem;">{{ $topup->reseller->store_name ?? 'No Store Name' }}</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <h6 class="fw-semibold mb-0">Rp {{ number_format($topup->amount, 0, ',', '.') }}</h6>
-                        </td>
-                        <td>
-                            @if($topup->proof_image)
-                            <a href="{{ Storage::url($topup->proof_image) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="ti ti-photo"></i> View Proof
-                            </a>
-                            @else
-                            <span class="text-muted">No Proof</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($topup->status == 'pending')
-                                <span class="badge bg-warning rounded-3 fw-semibold">Pending</span>
-                            @elseif($topup->status == 'completed')
-                                <span class="badge bg-success rounded-3 fw-semibold">Success</span>
-                            @elseif($topup->status == 'failed')
-                                <span class="badge bg-danger rounded-3 fw-semibold">Rejected</span>
-                            @else
-                                <span class="badge bg-secondary rounded-3 fw-semibold">Cancelled</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($topup->status == 'pending')
-                            <button type="button" class="btn btn-sm btn-primary btn-review" 
-                                data-id="{{ $topup->id }}"
-                                data-reseller="{{ $topup->reseller->user->name }}"
-                                data-store="{{ $topup->reseller->store_name ?? 'N/A' }}"
-                                data-amount="Rp {{ number_format($topup->amount, 0, ',', '.') }}"
-                                data-proof="{{ Storage::url($topup->proof_image) }}"
-                                data-notes="{{ $topup->notes ?? '-' }}"
-                                data-date="{{ $topup->created_at->format('d M Y H:i') }}">
-                                <i class="ti ti-eye"></i> Review
-                            </button>
-                            @else
-                            <span class="text-muted">-</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-4">No top-up requests found.</td>
-                    </tr>
-                    @endforelse
+                <tbody class="border-top-0">
                 </tbody>
             </table>
-        </div>
-        <div class="mt-4">
-            {{ $topups->links() }}
         </div>
     </div>
 </div>
@@ -164,5 +102,10 @@
 @endsection
 
 @section('scripts')
+<script>
+    window.topupRoutes = {
+        data: '{{ route("master.topups.data") }}'
+    };
+</script>
 <script src="{{ asset('js/admin/topups.js') }}"></script>
 @endsection

@@ -24,17 +24,17 @@
     </div>
 </div>
 
-<div class="card">
-  <div class="card-body">
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+  <div class="card-body p-4">
     <div class="table-responsive">
       <table id="main-table" class="table text-nowrap align-middle mb-0">
         <thead>
           <tr class="text-muted fw-semibold">
-            <th scope="col" style="width: 50px;">No</th>
+            <th scope="col" class="col-no text-center" style="width: 50px;">No</th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Roles</th>
-            <th scope="col" class="text-end">Action</th>
+            <th scope="col" class="text-center" style="width: 140px;">Action</th>
           </tr>
         </thead>
         <tbody class="border-top">
@@ -56,7 +56,7 @@
         { data: 'name', name: 'name' },
         { data: 'email', name: 'email' },
         { data: 'roles', name: 'roles', orderable: false },
-        { data: 'action', name: 'action', orderable: false, searchable: false }
+        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
       ]
     });
   });

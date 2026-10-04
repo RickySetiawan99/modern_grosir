@@ -15,14 +15,19 @@ class DashboardController extends Controller
                 $q->where('status', 'completed');
             });
             $walletBalance = 0;
+            $tierProgress = null;
             if ($user->hasRole('reseller')) {
                 $transactionQuery->where('customer_id', $user->id);
                 $detailQuery->whereHas('transaction', function ($q) use ($user) {
                     $q->where('customer_id', $user->id);
                 });
                 
-                $reseller = \App\Models\Reseller::where('user_id', $user->id)->first();
+                $reseller = \App\Models\Reseller::where('user_id', $user->id)->with('tier')->first();
                 $walletBalance = $reseller ? $reseller->balance : 0;
+                if ($reseller) {
+                    $tierEvaluationService = app(\App\Services\TierEvaluationService::class);
+                    $tierProgress = $tierEvaluationService->getResellerMonthlyProgress($reseller);
+                }
             }
             $lowStockProducts = [];
             $lowStockCount = 0;
@@ -63,9 +68,17 @@ class DashboardController extends Controller
                     ->selectRaw('SUM(transaction_details.subtotal - (products.purchase_price * transaction_details.quantity)) as profit')
                     ->value('profit') ?? 0;
             }
-            $isPgsql = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql';
-            $monthExpr = $isPgsql ? 'EXTRACT(MONTH FROM created_at)::integer' : 'MONTH(created_at)';
-            $detailMonthExpr = $isPgsql ? 'EXTRACT(MONTH FROM transaction_details.created_at)::integer' : 'MONTH(transaction_details.created_at)';
+            $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+            if ($driver === 'pgsql') {
+                $monthExpr = 'EXTRACT(MONTH FROM created_at)::integer';
+                $detailMonthExpr = 'EXTRACT(MONTH FROM transaction_details.created_at)::integer';
+            } elseif ($driver === 'sqlite') {
+                $monthExpr = "CAST(strftime('%m', created_at) AS INTEGER)";
+                $detailMonthExpr = "CAST(strftime('%m', transaction_details.created_at) AS INTEGER)";
+            } else {
+                $monthExpr = 'MONTH(created_at)';
+                $detailMonthExpr = 'MONTH(transaction_details.created_at)';
+            }
 
             $monthlySales = (clone $transactionQuery)
                 ->selectRaw("{$monthExpr} as month, SUM(total_amount) as total")
@@ -180,6 +193,7 @@ class DashboardController extends Controller
                 'totalProfit',
                 'profitChartData',
                 'walletBalance',
+                'tierProgress',
                 'expiringBatches',
                 'expiringCount',
                 'expiredCount'

@@ -11,17 +11,22 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Warehouse</label>
-                            <select class="form-select select2" name="warehouse_id" required>
-                                <option value="">Select Warehouse</option>
-                                @foreach($warehouses as $warehouse)
-                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                                @endforeach
+                            <select class="form-select global-select2" name="warehouse_id" required
+                                placeholder="Pilih Gudang"
+                                link="globalfetch"
+                                t="{{ encrypt('warehouses') }}"
+                                s="{{ encrypt('id,name') }}">
+                                <option value=""></option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Product</label>
-                            <select class="form-select select2-products" name="product_id" required>
-                                <option value="">Select Product</option>
+                            <select class="form-select global-select2" name="product_id" required
+                                placeholder="Pilih Produk"
+                                link="globalfetch"
+                                t="{{ encrypt('products') }}"
+                                s="{{ encrypt('id,name') }}">
+                                <option value=""></option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -48,8 +53,12 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Supplier</label>
-                            <select class="form-select select2-suppliers" name="supplier_id">
-                                <option value="">Select Supplier</option>
+                            <select class="form-select global-select2" name="supplier_id"
+                                placeholder="Pilih Supplier (Opsional)"
+                                link="globalfetch"
+                                t="{{ encrypt('suppliers') }}"
+                                s="{{ encrypt('id,name') }}">
+                                <option value=""></option>
                             </select>
                         </div>
                         <div class="col-12 mb-3">

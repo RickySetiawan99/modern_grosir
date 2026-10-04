@@ -55,9 +55,18 @@ class PriceController extends Controller
                 return $html;
             })
             ->addColumn('action', function ($product) {
-                return '<button class="btn btn-sm btn-light border text-dark fw-semibold px-3 py-1.5 rounded-2 btn-edit-prices" data-id="'.$product->id.'" data-name="'.e($product->name).'">
-                            <i class="ti ti-adjustments-horizontal me-1 text-primary"></i> Manage
-                        </button>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Manage',
+                        'icon' => 'ti ti-adjustments-horizontal',
+                        'color' => 'primary',
+                        'class' => 'btn-edit-prices',
+                        'attrs' => [
+                            'data-id' => $product->id,
+                            'data-name' => $product->name,
+                        ],
+                    ],
+                ]);
             })
             ->rawColumns(['name', 'tier_prices', 'action'])
             ->make(true);

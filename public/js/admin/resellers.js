@@ -11,7 +11,7 @@ $(document).ready(function() {
             { data: 'tier.name', name: 'tier.name' },
             { data: 'credit_limit', name: 'credit_limit' },
             { data: 'balance', name: 'balance' },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
         ],
         order: [[2, 'asc']], 
         bulkDeleteUrl: window.resellerRoutes.bulkDelete,

@@ -24,16 +24,16 @@
     </div>
 </div>
 
-<div class="card">
-  <div class="card-body">
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+  <div class="card-body p-4">
     <div class="table-responsive">
       <table id="main-table" class="table text-nowrap align-middle mb-0">
         <thead>
           <tr class="text-muted fw-semibold">
-            <th scope="col" style="width: 50px;">No</th>
+            <th scope="col" class="col-no text-center" style="width: 50px;">No</th>
             <th scope="col">Role Name</th>
             <th scope="col">Permissions Count</th>
-            <th scope="col" class="text-end">Action</th>
+            <th scope="col" class="text-center" style="width: 140px;">Action</th>
           </tr>
         </thead>
         <tbody class="border-top">
@@ -54,7 +54,7 @@
         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
         { data: 'name', name: 'name' },
         { data: 'permissions_count', name: 'permissions_count', searchable: false },
-        { data: 'action', name: 'action', orderable: false, searchable: false }
+        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
       ]
     });
   });

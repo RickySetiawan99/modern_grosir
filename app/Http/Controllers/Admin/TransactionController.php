@@ -43,9 +43,14 @@ class TransactionController extends Controller
                 return '<span class="badge bg-'.$color.'-subtle text-'.$color.'">'.ucfirst($row->status).'</span>';
             })
             ->addColumn('action', function ($row) {
-                return '<a href="'.route('transactions.show', $row->id).'" class="btn btn-sm btn-primary">
-                            <i class="ti ti-eye"></i> Detail
-                        </a>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Detail',
+                        'icon' => 'ti ti-eye',
+                        'url' => route('transactions.show', $row->id),
+                        'color' => 'primary',
+                    ],
+                ]);
             })
             ->rawColumns(['status', 'action'])
             ->make(true);

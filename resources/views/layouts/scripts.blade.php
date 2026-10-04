@@ -18,13 +18,15 @@
 <script src="{{ URL::asset('build/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/datatable/custom_datatable.js') }}"></script>
 <script src="{{ URL::asset('build/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
-<script src="{{ URL::asset('build/libs/select2/dist/js/select2.full.min.js') }}"></script>
+<script src="{{ URL::asset('build/libs/select2/dist/js/select2.full.min.js') }}">
+</script>
+<script src="{{ URL::asset('js/custom-select2.js') }}"></script>
 
 <script>
     // Global Initializers (Datepicker & Select2)
     $(document).ready(function() {
         if ($.fn.datepicker) {
-            $('.datepicker-input').datepicker({
+            $('.datepicker-input, .datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 todayHighlight: true,
@@ -32,34 +34,63 @@
             });
         }
 
-        if ($.fn.select2) {
-            // Initialize non-modal select2 elements on page load
-            $('select.select2').not('.modal select').each(function() {
-                var $this = $(this);
-                if ($this.hasClass('select2-hidden-accessible')) return;
-                $this.select2({ width: '100%' });
-            });
-
-            // Initialize modal select2 elements ONLY when the modal is shown (fully visible)
-            $(document).on('shown.bs.modal', '.modal', function() {
-                var $modal = $(this);
-                $modal.find('select.select2').each(function() {
-                    var $this = $(this);
-                    if ($this.hasClass('select2-hidden-accessible')) {
-                        // Re-trigger layout calculation if already initialized
-                        $this.select2({
-                            width: '100%',
-                            dropdownParent: $modal
-                        });
-                    } else {
-                        $this.select2({
-                            width: '100%',
-                            dropdownParent: $modal
-                        });
-                    }
-                });
-            });
+        if (window.ModernGrosir && typeof window.ModernGrosir.initGlobalSelect2 === 'function') {
+            window.ModernGrosir.initGlobalSelect2(document);
         }
+        // global-select2 elements (FetchController-backed) are auto-initialised
+        // inside custom-select2.js via its own $(document).ready handler.
+
+        // Global Flash Session Toast Handler (Pojok Kanan Atas)
+        @if(session('success'))
+            if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                ModernGrosir.showToast(@json(session('success')), 'success');
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    icon: 'success',
+                    title: @json(session('success'))
+                });
+            }
+        @endif
+
+        @if(session('error'))
+            if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                ModernGrosir.showToast(@json(session('error')), 'error');
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    icon: 'error',
+                    title: @json(session('error'))
+                });
+            }
+        @endif
+
+        @if(session('warning'))
+            if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                ModernGrosir.showToast(@json(session('warning')), 'warning');
+            }
+        @endif
+
+        @if(session('info'))
+            if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                ModernGrosir.showToast(@json(session('info')), 'info');
+            }
+        @endif
+
+        // Auto-dismiss any remaining inline alert messages after 4 seconds
+        setTimeout(function() {
+            $('.alert.alert-dismissible').fadeTo(400, 0).slideUp(400, function() {
+                $(this).remove();
+            });
+        }, 4000);
     });
 </script>
 

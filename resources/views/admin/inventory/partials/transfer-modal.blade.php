@@ -25,11 +25,12 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-medium text-dark fs-2">Gudang Tujuan <span class="text-danger">*</span></label>
-                        <select class="form-select bg-white border select2" name="to_warehouse_id" required>
-                            <option value="">Pilih Gudang Tujuan</option>
-                            @foreach($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                            @endforeach
+                        <select class="form-select bg-white border global-select2" name="to_warehouse_id" required
+                            placeholder="Pilih Gudang Tujuan"
+                            link="globalfetch"
+                            t="{{ encrypt('warehouses') }}"
+                            s="{{ encrypt('id,name') }}">
+                            <option value=""></option>
                         </select>
                     </div>
 

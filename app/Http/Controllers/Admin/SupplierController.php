@@ -33,30 +33,25 @@ class SupplierController extends Controller
                 return $supplier->email ?? '-';
             })
             ->addColumn('action', function ($supplier) {
-                $editUrl = route('master.suppliers.edit', $supplier->id);
-                $deleteUrl = route('master.suppliers.destroy', $supplier->id);
-
-                return '
-                    <div class="dropdown dropstart">
-                        <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-6"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
-                                </a>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="'.$supplier->id.'" 
-                                    data-name="'.$supplier->name.'"
-                                    data-action="'.$deleteUrl.'">
-                                    <i class="fs-3 ti ti-trash"></i>Delete
-                                </button>
-                            </li>
-                        </ul>
-                    </div>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'url' => route('master.suppliers.edit', $supplier->id),
+                        'color' => 'primary',
+                    ],
+                    [
+                        'label' => 'Delete',
+                        'icon' => 'ti ti-trash',
+                        'color' => 'danger',
+                        'class' => 'btn-delete',
+                        'attrs' => [
+                            'data-id' => $supplier->id,
+                            'data-name' => $supplier->name,
+                            'data-action' => route('master.suppliers.destroy', $supplier->id),
+                        ],
+                    ],
+                ]);
             })
             ->rawColumns(['checkbox', 'action'])
             ->make(true);

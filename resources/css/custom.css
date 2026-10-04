@@ -38,13 +38,154 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Pricing Management */
+/* Input Group Styling */
 .input-group-text {
+    border-color: #dfe5ef;
+}
+
+.input-group > .input-group-text:first-child.border-end-0,
+.input-group > .input-group-text:first-child:has(+ .border-start-0) {
     border-right: none;
 }
 
-.form-control:focus+.input-group-text {
+.input-group > .form-control:focus + .input-group-text {
     border-color: #5d87ff;
+}
+
+/* Date Input Component */
+.date-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-input-wrapper .form-control {
+    padding-right: 2.5rem;
+}
+
+.date-input-wrapper .date-icon {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5a6a85;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    z-index: 4;
+    transition: color 0.15s ease-in-out;
+}
+
+.date-input-wrapper .form-control:focus ~ .date-icon {
+    color: #5d87ff;
+}
+
+[data-bs-theme="dark"] .date-input-wrapper .date-icon {
+    color: #7c8fac;
+}
+
+/* Subtle Action Buttons for DataTable */
+.btn-subtle-primary {
+    background-color: rgba(93, 135, 255, 0.1);
+    color: #5d87ff;
+    border: 1px solid rgba(93, 135, 255, 0.15);
+    font-weight: 500;
+}
+.btn-subtle-primary:hover {
+    background-color: #5d87ff;
+    color: #fff;
+    border-color: #5d87ff;
+}
+
+.btn-subtle-danger {
+    background-color: rgba(250, 137, 107, 0.1);
+    color: #fa896b;
+    border: 1px solid rgba(250, 137, 107, 0.15);
+    font-weight: 500;
+}
+.btn-subtle-danger:hover {
+    background-color: #fa896b;
+    color: #fff;
+    border-color: #fa896b;
+}
+
+.btn-subtle-success {
+    background-color: rgba(19, 222, 185, 0.1);
+    color: #13deb9;
+    border: 1px solid rgba(19, 222, 185, 0.15);
+    font-weight: 500;
+}
+.btn-subtle-success:hover {
+    background-color: #13deb9;
+    color: #fff;
+    border-color: #13deb9;
+}
+
+.btn-subtle-info {
+    background-color: rgba(73, 190, 255, 0.1);
+    color: #49beff;
+    border: 1px solid rgba(73, 190, 255, 0.15);
+    font-weight: 500;
+}
+.btn-subtle-info:hover {
+    background-color: #49beff;
+    color: #fff;
+    border-color: #49beff;
+}
+
+.btn-subtle-warning {
+    background-color: rgba(255, 174, 31, 0.1);
+    color: #ffae1f;
+    border: 1px solid rgba(255, 174, 31, 0.15);
+    font-weight: 500;
+}
+.btn-subtle-warning:hover {
+    background-color: #ffae1f;
+    color: #fff;
+    border-color: #ffae1f;
+}
+
+.btn-subtle-secondary {
+    background-color: rgba(90, 106, 133, 0.1);
+    color: #5a6a85;
+    border: 1px solid rgba(90, 106, 133, 0.15);
+    font-weight: 500;
+}
+.btn-subtle-secondary:hover {
+    background-color: #5a6a85;
+    color: #fff;
+    border-color: #5a6a85;
+}
+
+[data-bs-theme="dark"] .btn-subtle-primary {
+    background-color: rgba(93, 135, 255, 0.2);
+}
+[data-bs-theme="dark"] .btn-subtle-danger {
+    background-color: rgba(250, 137, 107, 0.2);
+}
+[data-bs-theme="dark"] .btn-subtle-success {
+    background-color: rgba(19, 222, 185, 0.2);
+}
+[data-bs-theme="dark"] .btn-subtle-info {
+    background-color: rgba(73, 190, 255, 0.2);
+}
+[data-bs-theme="dark"] .btn-subtle-warning {
+    background-color: rgba(255, 174, 31, 0.2);
+}
+[data-bs-theme="dark"] .btn-subtle-secondary {
+    background-color: rgba(90, 106, 133, 0.2);
+}
+
+/* DataTable Action Column Alignment */
+.table th.text-center {
+    text-align: center !important;
+}
+.table td.text-center {
+    text-align: center !important;
+}
+.table td.text-center > .d-inline-flex {
+    justify-content: center !important;
 }
 
 /* Reseller Catalog */

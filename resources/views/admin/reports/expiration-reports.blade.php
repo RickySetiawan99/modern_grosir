@@ -19,13 +19,34 @@
                     <h3 class="fw-bold mb-1 text-dark">Laporan Kadaluarsa & Disposisi Barang</h3>
                     <p class="text-muted mb-0 fs-3">Evaluasi tren pembuangan barang expired, kepatuhan rotasi FEFO, dan estimasi kerugian di gudang.</p>
                 </div>
-                <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                    <div class="input-group" style="min-width: 220px;">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="ti ti-calendar"></i></span>
-                        <input type="text" class="form-control bg-white border-start-0" id="report-daterange">
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="ti ti-filter fs-5 text-primary"></i> Filter Periode Laporan
+                </h5>
+                <button type="button" id="btn-reset-filter" class="btn btn-sm btn-outline-secondary rounded-3 px-3 d-flex align-items-center gap-1">
+                    <i class="ti ti-rotate"></i> Reset Filter
+                </button>
+            </div>
+            <div class="row align-items-end g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-medium text-dark">Rentang Tanggal Disposisi</label>
+                    <div class="date-input-wrapper">
+                        <input type="text" class="form-control bg-white" id="report-daterange" placeholder="YYYY-MM-DD - YYYY-MM-DD" autocomplete="off">
+                        <span class="date-icon">
+                            <i class="ti ti-calendar"></i>
+                        </span>
                     </div>
-                    <button class="btn btn-primary" id="btn-refresh" title="Segarkan Data">
-                        <i class="ti ti-refresh"></i>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary w-100 rounded-3 py-2 shadow-sm" id="btn-refresh">
+                        <i class="ti ti-search me-1"></i> Filter Data
                     </button>
                 </div>
             </div>
@@ -154,7 +175,7 @@
         const end = moment().endOf('month');
 
         function cb(start, end) {
-            $('#report-daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            $('#report-daterange').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
             loadData(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
         }
 
@@ -172,11 +193,24 @@
         }, cb);
 
         // Initial Load
-        loadData(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+        cb(start, end);
 
         $('#btn-refresh').click(function() {
             const drp = $('#report-daterange').data('daterangepicker');
-            loadData(drp.startDate.format('YYYY-MM-DD'), drp.endDate.format('YYYY-MM-DD'));
+            if (drp) {
+                loadData(drp.startDate.format('YYYY-MM-DD'), drp.endDate.format('YYYY-MM-DD'));
+            }
+        });
+
+        $('#btn-reset-filter').click(function() {
+            const defaultStart = moment().startOf('month');
+            const defaultEnd = moment().endOf('month');
+            const drp = $('#report-daterange').data('daterangepicker');
+            if (drp) {
+                drp.setStartDate(defaultStart);
+                drp.setEndDate(defaultEnd);
+            }
+            cb(defaultStart, defaultEnd);
         });
 
         // Charts

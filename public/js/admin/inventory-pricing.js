@@ -9,7 +9,7 @@ $(document).ready(function() {
             { data: 'name', name: 'name' },
             { data: 'retail_price', name: 'retail_price' },
             { data: 'tier_prices', name: 'tier_prices', orderable: false },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
         ],
         order: [[1, 'asc']]
     });

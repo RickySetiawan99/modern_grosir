@@ -49,7 +49,7 @@ class BatchController extends Controller
 
         // Filter by expiration range
         if ($request->has('expiring_within') && $request->expiring_within) {
-            $query->expiringWithin($request->expiring_within);
+            $query->expiringWithin((int) $request->expiring_within);
         }
 
         // Search by batch number or product name

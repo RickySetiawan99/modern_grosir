@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\GeneralHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -31,30 +32,25 @@ class WarehouseController extends Controller
                 return '<span class="badge '.$badgeClass.' fw-semibold">'.ucfirst($warehouse->type).'</span>';
             })
             ->addColumn('action', function ($warehouse) {
-                $editUrl = route('master.warehouses.edit', $warehouse->id);
-                $deleteUrl = route('master.warehouses.destroy', $warehouse->id);
-
-                return '
-                    <div class="dropdown dropstart">
-                        <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-6"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
-                                </a>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="'.$warehouse->id.'" 
-                                    data-name="'.$warehouse->name.'"
-                                    data-action="'.$deleteUrl.'">
-                                    <i class="fs-3 ti ti-trash"></i>Delete
-                                </button>
-                            </li>
-                        </ul>
-                    </div>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'url' => route('master.warehouses.edit', $warehouse->id),
+                        'color' => 'primary',
+                    ],
+                    [
+                        'label' => 'Delete',
+                        'icon' => 'ti ti-trash',
+                        'color' => 'danger',
+                        'class' => 'btn-delete',
+                        'attrs' => [
+                            'data-id' => $warehouse->id,
+                            'data-name' => $warehouse->name,
+                            'data-action' => route('master.warehouses.destroy', $warehouse->id),
+                        ],
+                    ],
+                ]);
             })
             ->rawColumns(['checkbox', 'type', 'action'])
             ->make(true);

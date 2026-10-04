@@ -37,7 +37,7 @@
                             <th>Items</th>
                             <th>Total</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center" style="width: 140px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +65,7 @@
                                     <span class="badge bg-danger-subtle text-danger">Cancelled</span>
                                 @endif
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="{{ route('reseller.orders.show', $order->id) }}" class="btn btn-sm btn-primary">
                                     <i class="ti ti-eye"></i> View
                                 </a>

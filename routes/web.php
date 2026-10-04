@@ -1,188 +1,299 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\SocialiteController;
+
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FetchController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResellerController;
+
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\SocialiteController;
+
+use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DraftOrderController;
 use App\Http\Controllers\Admin\PriceController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PurchaseOrderController;
+use App\Http\Controllers\Admin\Reports\BatchReportController;
 use App\Http\Controllers\Admin\ResellerController as AdminResellerController;
 use App\Http\Controllers\Admin\ResellerTierController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\TopupController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UnitController;
-use App\Http\Controllers\Admin\TopupController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
+
 use App\Http\Controllers\Reseller\CatalogController;
 use App\Http\Controllers\Reseller\OrderController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Reseller\WalletController;
 
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
-// Public Pages (Privacy, Terms, Contact)
-Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
-Route::get('/terms', [PageController::class, 'terms'])->name('terms');
-Route::get('/contact', [PageController::class, 'contact'])->name('contact');
-Route::post('/contact', [PageController::class, 'submitContact'])->name('contact.submit');
+// Public Pages
+Route::controller(PageController::class)->group(function () {
+    Route::get('/privacy', 'privacy')->name('privacy');
+    Route::get('/terms', 'terms')->name('terms');
+    Route::get('/contact', 'contact')->name('contact');
+    Route::post('/contact', 'submitContact')->name('contact.submit');
+});
 
-// Authentication Routes
+// Authentication Routes (Guest)
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');
+    Route::controller(LoginController::class)->group(function () {
+        Route::get('/login', 'showLogin')->name('login');
+        Route::post('/login', 'login')->middleware('throttle:5,1');
+    });
 
-    // Password Reset Routes
-    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+    Route::controller(ForgotPasswordController::class)->group(function () {
+        Route::get('/forgot-password', 'showLinkRequestForm')->name('password.request');
+        Route::post('/forgot-password', 'sendResetLinkEmail')->name('password.email');
+    });
 
-    // Socialite Routes
-    Route::get('/auth/{provider}', [SocialiteController::class, 'redirectToProvider'])->name('auth.social');
-    Route::get('/auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback']);
+    Route::controller(ResetPasswordController::class)->group(function () {
+        Route::get('/reset-password/{token}', 'showResetForm')->name('password.reset');
+        Route::post('/reset-password', 'reset')->name('password.update');
+    });
+
+    Route::controller(SocialiteController::class)->group(function () {
+        Route::get('/auth/{provider}', 'redirectToProvider')->name('auth.social');
+        Route::get('/auth/{provider}/callback', 'handleProviderCallback');
+    });
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
-// ModernGrosir Core Routes
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    // Global Fetch (Select2 & Master Dropdowns)
+    Route::post('/fetch/globalfetch', [FetchController::class, 'globalfetch'])->name('globalfetch');
 
-    // Account Settings
-    Route::get('/account-settings', [ProfileController::class, 'settings'])->name('profile.settings');
-    Route::post('/account-settings', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/account-settings/reset-avatar', [ProfileController::class, 'resetAvatar'])->name('profile.reset-avatar');
-    Route::post('/account-settings/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    // Admin & Authenticated Operations
+    Route::prefix('admin')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index')->middleware('role:admin|cashier');
-    Route::get('/inventory/data', [InventoryController::class, 'data'])->name('inventory.data')->middleware('role:admin|cashier');
-    Route::post('/inventory/{id}', [InventoryController::class, 'update'])->name('inventory.update')->middleware('role:admin|cashier')->where('id', '[0-9]+');
-    
-    // Batch Management
-    Route::get('/inventory/batches/create', [App\Http\Controllers\Admin\BatchController::class, 'create'])->name('inventory.batches.create')->middleware('role:admin|cashier');
-    Route::get('/inventory/batches', [App\Http\Controllers\Admin\BatchController::class, 'index'])->name('inventory.batches.index')->middleware('role:admin|cashier');
-    Route::post('/inventory/batches', [App\Http\Controllers\Admin\BatchController::class, 'store'])->name('inventory.batches.store')->middleware('role:admin|cashier');
-    Route::get('/inventory/batches/{id}', [App\Http\Controllers\Admin\BatchController::class, 'show'])->name('inventory.batches.show')->middleware('role:admin|cashier');
-    Route::put('/inventory/batches/{id}', [App\Http\Controllers\Admin\BatchController::class, 'update'])->name('inventory.batches.update')->middleware('role:admin|cashier');
-    Route::post('/inventory/batches/{id}/dispose', [App\Http\Controllers\Admin\BatchController::class, 'dispose'])->name('inventory.batches.dispose')->middleware('role:admin|cashier');
-    Route::post('/inventory/batches/{id}/transfer', [App\Http\Controllers\Admin\BatchController::class, 'transfer'])->name('inventory.batches.transfer')->middleware('role:admin|cashier');
-    Route::get('/inventory/batches/{id}/history', [App\Http\Controllers\Admin\BatchController::class, 'history'])->name('inventory.batches.history')->middleware('role:admin|cashier');
+        // Account Settings
+        Route::prefix('account-settings')->name('profile.')->controller(ProfileController::class)->group(function () {
+            Route::get('/', 'settings')->name('settings');
+            Route::post('/', 'update')->name('update');
+            Route::post('reset-avatar', 'resetAvatar')->name('reset-avatar');
+            Route::post('password', 'updatePassword')->name('password');
+        });
 
-    // Expiration Reports
-    Route::prefix('reports/expiration')->name('reports.expiration.')->middleware('role:admin')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'index'])->name('index');
-        Route::get('/forecast', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'expirationForecast'])->name('forecast');
-        Route::get('/disposal', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'disposalReport'])->name('disposal');
-        Route::get('/fefo', [App\Http\Controllers\Admin\Reports\BatchReportController::class, 'fefoCompliance'])->name('fefo');
-    });
+        // Operations (Admin & Cashier)
+        Route::middleware(['role:admin|cashier'])->group(function () {
+            // Inventory Management
+            Route::prefix('inventory')->name('inventory.')->group(function () {
+                Route::controller(InventoryController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('data', 'data')->name('data');
+                    Route::post('{id}', 'update')->name('update')->where('id', '[0-9]+');
+                });
 
-    
-    Route::get('/pricing', [PriceController::class, 'index'])->name('pricing.index')->middleware('role:admin');
-    Route::get('/pricing/data', [PriceController::class, 'data'])->name('pricing.data')->middleware('role:admin');
-    Route::get('/pricing/{product}', [PriceController::class, 'getProductPrices'])->name('pricing.product')->middleware('role:admin');
-    Route::post('/pricing/{product}', [PriceController::class, 'update'])->name('pricing.update')->middleware('role:admin');
+                // Batches
+                Route::prefix('batches')->name('batches.')->controller(BatchController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('create', 'create')->name('create');
+                    Route::post('/', 'store')->name('store');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::put('{id}', 'update')->name('update');
+                    Route::post('{id}/dispose', 'dispose')->name('dispose');
+                    Route::post('{id}/transfer', 'transfer')->name('transfer');
+                    Route::get('{id}/history', 'history')->name('history');
+                });
+            });
 
-    // Transactions
-    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index')->middleware('role:admin|cashier');
-    Route::get('/transactions/data', [TransactionController::class, 'data'])->name('transactions.data')->middleware('role:admin|cashier');
-    Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show')->middleware('role:admin|cashier');
-    Route::get('/transactions/{id}/receipt', [TransactionController::class, 'receipt'])->name('transactions.receipt')->middleware('role:admin|cashier');
-    Route::post('/transactions/{id}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel')->middleware('role:admin');
+            // Transactions
+            Route::prefix('transactions')->name('transactions.')->controller(TransactionController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('data', 'data')->name('data');
+                Route::get('{id}', 'show')->name('show');
+                Route::get('{id}/receipt', 'receipt')->name('receipt');
+                Route::post('{id}/cancel', 'cancel')->name('cancel')->middleware('role:admin');
+            });
 
-    // Purchase Orders (PO) & GRN
-    Route::get('/purchase-orders/data', [App\Http\Controllers\Admin\PurchaseOrderController::class, 'data'])->name('purchase-orders.data')->middleware('role:admin');
-    Route::post('/purchase-orders/{purchaseOrder}/receive', [App\Http\Controllers\Admin\PurchaseOrderController::class, 'receive'])->name('purchase-orders.receive')->middleware('role:admin');
-    Route::resource('purchase-orders', App\Http\Controllers\Admin\PurchaseOrderController::class)->middleware('role:admin');
+            // Point of Sale (POS)
+            Route::prefix('pos')->name('pos.')->controller(POSController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('products', 'products')->name('products');
+                Route::post('checkout', 'checkout')->name('checkout');
+            });
 
-    // Reports & Analytics (Admin Only)
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index')->middleware('role:admin');
-    Route::get('/reports/export-excel', [ReportController::class, 'exportExcel'])->name('reports.excel')->middleware('role:admin');
-    Route::get('/reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.pdf')->middleware('role:admin');
+            // Draft Orders (POS Support)
+            Route::prefix('admin/draft-orders')->name('admin.draft-orders.')->controller(DraftOrderController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('{id}', 'show')->name('show');
+                Route::post('{id}/load', 'loadToPOS')->name('load');
+                Route::post('{id}/complete', 'complete')->name('complete');
+            });
+        });
 
-    Route::get('/pos', [POSController::class, 'index'])->name('pos.index')->middleware('role:admin|cashier');
-    Route::get('/pos/products', [POSController::class, 'products'])->name('pos.products')->middleware('role:admin|cashier');
-    Route::post('/pos/checkout', [POSController::class, 'checkout'])->name('pos.checkout')->middleware('role:admin|cashier');
-    Route::get('/resellers', [ResellerController::class, 'index'])->name('resellers.index')->middleware('role:admin');
+        // Administration & Management (Admin Only)
+        Route::middleware(['role:admin'])->group(function () {
+            // Pricing Management
+            Route::prefix('pricing')->name('pricing.')->controller(PriceController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('data', 'data')->name('data');
+                Route::get('{product}', 'getProductPrices')->name('product');
+                Route::post('{product}', 'update')->name('update');
+            });
 
-    // Master Data Group (Admin Restricted)
-    Route::prefix('master')->name('master.')->middleware('role:admin')->group(function () {
-        Route::get('products/data', [ProductController::class, 'data'])->name('products.data');
-        Route::post('products/bulk-delete', [ProductController::class, 'bulkDelete'])->name('products.bulk-delete');
-        Route::resource('products', ProductController::class);
-        
-        Route::get('categories/data', [CategoryController::class, 'data'])->name('categories.data');
-        Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])->name('categories.bulk-delete');
-        Route::resource('categories', CategoryController::class);
-        
-        Route::get('units/data', [UnitController::class, 'data'])->name('units.data');
-        Route::post('units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulk-delete');
-        Route::resource('units', UnitController::class);
-        
-        Route::get('suppliers/data', [SupplierController::class, 'data'])->name('suppliers.data');
-        Route::post('suppliers/bulk-delete', [SupplierController::class, 'bulkDelete'])->name('suppliers.bulk-delete');
-        Route::resource('suppliers', SupplierController::class);
+            // Purchase Orders (PO) & GRN
+            Route::prefix('purchase-orders')->name('purchase-orders.')->group(function () {
+                Route::controller(PurchaseOrderController::class)->group(function () {
+                    Route::get('data', 'data')->name('data');
+                    Route::post('{purchaseOrder}/receive', 'receive')->name('receive');
+                });
+                Route::resource('/', PurchaseOrderController::class)->parameters(['' => 'purchase_order']);
+            });
 
-        Route::get('warehouses/data', [WarehouseController::class, 'data'])->name('warehouses.data');
-        Route::post('warehouses/bulk-delete', [WarehouseController::class, 'bulkDelete'])->name('warehouses.bulk-delete');
-        Route::resource('warehouses', WarehouseController::class);
+            // Reports & Analytics
+            Route::prefix('reports')->name('reports.')->group(function () {
+                Route::controller(ReportController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('export-excel', 'exportExcel')->name('excel');
+                    Route::get('export-pdf', 'exportPdf')->name('pdf');
+                });
 
-        // Top-up Management
-        Route::get('topups', [TopupController::class, 'index'])->name('topups.index');
-        Route::post('topups/{transaction}/approve', [TopupController::class, 'approve'])->name('topups.approve');
-        Route::post('topups/{transaction}/reject', [TopupController::class, 'reject'])->name('topups.reject');
+                // Expiration Reports
+                Route::prefix('expiration')->name('expiration.')->controller(BatchReportController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('forecast', 'expirationForecast')->name('forecast');
+                    Route::get('disposal', 'disposalReport')->name('disposal');
+                    Route::get('fefo', 'fefoCompliance')->name('fefo');
+                });
+            });
 
-        Route::get('reseller-tiers/data', [ResellerTierController::class, 'data'])->name('reseller-tiers.data');
-        Route::post('reseller-tiers/bulk-delete', [ResellerTierController::class, 'bulkDelete'])->name('reseller-tiers.bulk-delete');
-        Route::resource('reseller-tiers', ResellerTierController::class);
+            // Resellers List
+            Route::get('/resellers', [ResellerController::class, 'index'])->name('resellers.index');
 
-        Route::get('resellers/data', [AdminResellerController::class, 'data'])->name('resellers.data');
-        Route::post('resellers/bulk-delete', [AdminResellerController::class, 'bulkDelete'])->name('resellers.bulk-delete');
-        Route::post('resellers/{reseller}/balance', [AdminResellerController::class, 'updateBalance'])->name('resellers.balance');
-        Route::resource('resellers', AdminResellerController::class);
+            // Master Data Management
+            Route::prefix('master')->name('master.')->group(function () {
+                // Products
+                Route::prefix('products')->name('products.')->group(function () {
+                    Route::controller(ProductController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                    });
+                    Route::resource('/', ProductController::class)->parameters(['' => 'product']);
+                });
 
-        Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');
-        Route::resource('roles', RoleController::class);
+                // Categories
+                Route::prefix('categories')->name('categories.')->group(function () {
+                    Route::controller(CategoryController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                    });
+                    Route::resource('/', CategoryController::class)->parameters(['' => 'category']);
+                });
 
-        Route::get('users/data', [UserController::class, 'data'])->name('users.data');
-        Route::resource('users', UserController::class);
-    });
+                // Units
+                Route::prefix('units')->name('units.')->group(function () {
+                    Route::controller(UnitController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                    });
+                    Route::resource('/', UnitController::class)->parameters(['' => 'unit']);
+                });
 
-    // Reseller Routes
-    Route::middleware(['role:reseller'])->prefix('reseller')->group(function () {
-        Route::get('/catalog', [CatalogController::class, 'index'])->name('reseller.catalog.index');
-        Route::get('/catalog/products', [CatalogController::class, 'products'])->name('reseller.catalog.products');
-        
-        // Wallet & Top-up
-        Route::get('/wallet', [\App\Http\Controllers\Reseller\WalletController::class, 'index'])->name('reseller.wallet.index');
-        Route::post('/wallet/topup', [\App\Http\Controllers\Reseller\WalletController::class, 'store'])->name('reseller.wallet.topup');
+                // Suppliers
+                Route::prefix('suppliers')->name('suppliers.')->group(function () {
+                    Route::controller(SupplierController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                    });
+                    Route::resource('/', SupplierController::class)->parameters(['' => 'supplier']);
+                });
 
-        // Order Management
-        Route::get('/orders', [OrderController::class, 'index'])->name('reseller.orders.index');
-        Route::post('/orders', [OrderController::class, 'store'])->name('reseller.orders.store');
-        Route::get('/orders/{id}', [OrderController::class, 'show'])->name('reseller.orders.show');
-        Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('reseller.orders.cancel');
-    });
+                // Warehouses
+                Route::prefix('warehouses')->name('warehouses.')->group(function () {
+                    Route::controller(WarehouseController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                    });
+                    Route::resource('/', WarehouseController::class)->parameters(['' => 'warehouse']);
+                });
 
-    // Draft Orders (Admin/Cashier)
-    Route::middleware(['role:admin|cashier'])->prefix('admin')->group(function () {
-        Route::get('/draft-orders', [DraftOrderController::class, 'index'])->name('admin.draft-orders.index');
-        Route::get('/draft-orders/{id}', [DraftOrderController::class, 'show'])->name('admin.draft-orders.show');
-        Route::post('/draft-orders/{id}/load', [DraftOrderController::class, 'loadToPOS'])->name('admin.draft-orders.load');
-        Route::post('/draft-orders/{id}/complete', [DraftOrderController::class, 'complete'])->name('admin.draft-orders.complete');
+                // Top-up Management
+                Route::prefix('topups')->name('topups.')->controller(TopupController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('data', 'data')->name('data');
+                    Route::post('{transaction}/approve', 'approve')->name('approve');
+                    Route::post('{transaction}/reject', 'reject')->name('reject');
+                });
+
+                // Reseller Tiers
+                Route::prefix('reseller-tiers')->name('reseller-tiers.')->group(function () {
+                    Route::controller(ResellerTierController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                        Route::post('evaluate', 'evaluate')->name('evaluate');
+                    });
+                    Route::resource('/', ResellerTierController::class)->parameters(['' => 'reseller_tier']);
+                });
+
+                // Resellers
+                Route::prefix('resellers')->name('resellers.')->group(function () {
+                    Route::controller(AdminResellerController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                        Route::post('bulk-delete', 'bulkDelete')->name('bulk-delete');
+                        Route::post('{reseller}/balance', 'updateBalance')->name('balance');
+                    });
+                    Route::resource('/', AdminResellerController::class)->parameters(['' => 'reseller']);
+                });
+
+                // Roles
+                Route::prefix('roles')->name('roles.')->group(function () {
+                    Route::controller(RoleController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                    });
+                    Route::resource('/', RoleController::class)->parameters(['' => 'role']);
+                });
+
+                // Users
+                Route::prefix('users')->name('users.')->group(function () {
+                    Route::controller(UserController::class)->group(function () {
+                        Route::get('data', 'data')->name('data');
+                    });
+                    Route::resource('/', UserController::class)->parameters(['' => 'user']);
+                });
+            });
+        });
+
+        // Reseller Portal (Role: Reseller Only)
+        Route::prefix('reseller')->name('reseller.')->middleware(['role:reseller'])->group(function () {
+            // Catalog
+            Route::prefix('catalog')->name('catalog.')->controller(CatalogController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('products', 'products')->name('products');
+            });
+
+            // Wallet & Top-up
+            Route::prefix('wallet')->name('wallet.')->controller(WalletController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('topup', 'store')->name('topup');
+            });
+
+            // Order Management
+            Route::prefix('orders')->name('orders.')->controller(OrderController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::get('{id}', 'show')->name('show');
+                Route::post('{id}/cancel', 'cancel')->name('cancel');
+            });
+        });
     });
 });
 
-// Standard Template Route (Catch-all) - Moved to bottom and protected
+// Standard Template Route (Catch-all)
 Route::get('/{main}/{view}', [PageController::class, 'show'])->middleware(['auth', 'role:admin']);

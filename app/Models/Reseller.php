@@ -2,11 +2,30 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Reseller extends Model
 {
-    protected $fillable = ['user_id', 'reseller_tier_id', 'credit_limit', 'store_name', 'address', 'phone', 'balance', 'loyalty_points'];
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'reseller_tier_id',
+        'is_tier_locked',
+        'credit_limit',
+        'store_name',
+        'address',
+        'phone',
+        'balance',
+        'loyalty_points',
+    ];
+
+    protected $casts = [
+        'is_tier_locked' => 'boolean',
+        'credit_limit' => 'decimal:2',
+        'balance' => 'decimal:2',
+    ];
 
     public function user()
     {
@@ -16,6 +35,11 @@ class Reseller extends Model
     public function tier()
     {
         return $this->belongsTo(ResellerTier::class, 'reseller_tier_id');
+    }
+
+    public function tierHistories()
+    {
+        return $this->hasMany(ResellerTierHistory::class);
     }
 
     public function orders()

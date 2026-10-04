@@ -83,9 +83,9 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium text-dark">Tanggal Penerimaan <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control datepicker" name="received_date" value="{{ old('received_date', date('Y-m-d')) }}" required autocomplete="off">
-                                    <span class="input-group-text">
+                                <div class="date-input-wrapper">
+                                    <input type="text" class="form-control bg-white datepicker" name="received_date" value="{{ old('received_date', date('Y-m-d')) }}" required autocomplete="off" placeholder="YYYY-MM-DD">
+                                    <span class="date-icon">
                                         <i class="ti ti-calendar"></i>
                                     </span>
                                 </div>
@@ -93,9 +93,9 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium text-dark">Tanggal Kadaluarsa (Expired)</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control datepicker" name="expiration_date" value="{{ old('expiration_date') }}" autocomplete="off" placeholder="YYYY-MM-DD">
-                                    <span class="input-group-text">
+                                <div class="date-input-wrapper">
+                                    <input type="text" class="form-control bg-white datepicker" name="expiration_date" value="{{ old('expiration_date') }}" autocomplete="off" placeholder="YYYY-MM-DD">
+                                    <span class="date-icon">
                                         <i class="ti ti-calendar"></i>
                                     </span>
                                 </div>

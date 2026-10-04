@@ -43,6 +43,17 @@
             </div>
             <div class="form-text">Percentage discount applied to retail price for this tier.</div>
           </div>
+          <div class="mb-3">
+            <label for="min_monthly_spend" class="form-label">Minimum Belanja Bulanan (IDR)</label>
+            <div class="input-group">
+              <span class="input-group-text">Rp</span>
+              <input type="number" step="1000" class="form-control @error('min_monthly_spend') is-invalid @enderror" id="min_monthly_spend" name="min_monthly_spend" value="{{ old('min_monthly_spend', 0) }}" placeholder="0">
+              @error('min_monthly_spend')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+            <div class="form-text">Target belanja bulanan minimum agar reseller memenuhi syarat tier ini.</div>
+          </div>
           <a href="{{ route('master.reseller-tiers.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
           <button type="submit" class="btn btn-primary">Save Tier</button>
         </form>

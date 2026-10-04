@@ -10,3 +10,7 @@ Artisan::command('inspire', function () {
 
 // Check expiration alerts daily at 8:00 AM
 Schedule::command('expiration:check-alerts')->dailyAt('08:00');
+
+// Evaluate reseller tiers monthly on the 1st at 00:05
+Schedule::command('reseller:evaluate-tiers')->monthlyOn(1, '00:05')->withoutOverlapping();
+

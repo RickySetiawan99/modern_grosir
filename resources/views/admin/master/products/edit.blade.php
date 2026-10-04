@@ -43,11 +43,16 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="category_id" class="form-label">Category</label>
-              <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror">
-                <option value="">Select Category</option>
-                @foreach ($categories as $category)
-                  <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                @endforeach
+              <select name="category_id" id="category_id"
+                class="form-select global-select2 @error('category_id') is-invalid @enderror"
+                placeholder="Pilih Kategori"
+                link="globalfetch"
+                t="{{ encrypt('categories') }}"
+                s="{{ encrypt('id,name') }}">
+                <option value="">Pilih Kategori</option>
+                @if($product->category_id && $product->category)
+                  <option value="{{ $product->category_id }}" selected>{{ $product->category->name }}</option>
+                @endif
               </select>
               @error('category_id')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -90,11 +95,16 @@
           <h5 class="card-title fw-semibold mb-4">Pricing & Unit</h5>
           <div class="mb-3">
             <label for="unit_id" class="form-label">Base Unit (Satuan)</label>
-            <select name="unit_id" id="unit_id" class="form-select @error('unit_id') is-invalid @enderror">
-              <option value="">Select Unit</option>
-              @foreach ($units as $unit)
-                <option value="{{ $unit->id }}" {{ old('unit_id', $product->unit_id) == $unit->id ? 'selected' : '' }}>{{ $unit->name }} ({{ $unit->short_name }})</option>
-              @endforeach
+            <select name="unit_id" id="unit_id"
+              class="form-select global-select2 @error('unit_id') is-invalid @enderror"
+              placeholder="Pilih Satuan"
+              link="globalfetch"
+              t="{{ encrypt('units') }}"
+              s="{{ encrypt('id,name') }}">
+              <option value="">Pilih Satuan</option>
+              @if($product->unit_id && $product->unit)
+                <option value="{{ $product->unit_id }}" selected>{{ $product->unit->name }}</option>
+              @endif
             </select>
             @error('unit_id')
               <div class="invalid-feedback">{{ $message }}</div>

@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class BatchManagementTest extends TestCase
 {
-    // use RefreshDatabase; // Commented out to avoid wiping local DB if not configured for testing
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -23,8 +23,7 @@ class BatchManagementTest extends TestCase
         // or just write the test for the user to run exclusively.
     }
 
-    /** @test */
-    public function it_allocates_stock_based_on_fefo()
+    public function test_it_allocates_stock_based_on_fefo()
     {
         // Mocking the scenario
         // 1. Product with 2 batches
@@ -71,5 +70,21 @@ class BatchManagementTest extends TestCase
         
         $this->assertEquals($batchB->id, $allocations[1]['batch_id']);
         $this->assertEquals(10, $allocations[1]['quantity']);
+    }
+
+    public function test_scope_expiring_within_handles_string_days_without_type_error(): void
+    {
+        $query = InventoryBatch::query()->expiringWithin('30');
+        $this->assertNotNull($query);
+    }
+
+    public function test_batch_index_filters_expiring_within_string_param(): void
+    {
+        \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $response = $this->actingAs($admin)->get(route('inventory.batches.index', ['expiring_within' => '30']));
+        $response->assertStatus(200);
     }
 }

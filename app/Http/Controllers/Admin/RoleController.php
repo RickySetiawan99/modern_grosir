@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\GeneralHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,31 +27,30 @@ class RoleController extends Controller
                 return $role->permissions->count();
             })
             ->addColumn('action', function ($role) {
-                $editUrl = route('master.roles.edit', $role->id);
-                $deleteUrl = route('master.roles.destroy', $role->id);
+                $actions = [
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'url' => route('master.roles.edit', $role->id),
+                        'color' => 'primary',
+                    ],
+                ];
 
-                return '
-                    <div class="dropdown dropstart">
-                        <a href="javascript:void(0)" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-6"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
-                                </a>
-                            </li>
-                            '.($role->name !== 'admin' ? '
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="'.$role->id.'" 
-                                    data-name="'.$role->name.'" 
-                                    data-action="'.$deleteUrl.'">
-                                    <i class="fs-3 ti ti-trash"></i>Delete
-                                </button>
-                            </li>' : '').'
-                        </ul>
-                    </div>';
+                if ($role->name !== 'admin') {
+                    $actions[] = [
+                        'label' => 'Delete',
+                        'icon' => 'ti ti-trash',
+                        'color' => 'danger',
+                        'class' => 'btn-delete',
+                        'attrs' => [
+                            'data-id' => $role->id,
+                            'data-name' => $role->name,
+                            'data-action' => route('master.roles.destroy', $role->id),
+                        ],
+                    ];
+                }
+
+                return GeneralHelper::renderDataTableActions($actions);
             })
             ->rawColumns(['action'])
             ->make(true);

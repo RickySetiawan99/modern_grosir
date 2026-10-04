@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolePermissionSeeder::class,
             MasterDataSeeder::class,
+            ResellerTierSeeder::class,
             MassDataSeeder::class,     // Suppliers + Indo Products
             InventorySeeder::class,    // Warehouses + Stock Seeding
         ]);

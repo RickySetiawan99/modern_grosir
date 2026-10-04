@@ -52,11 +52,13 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="reseller_tier_id" class="form-label">Reseller Tier</label>
-              <select class="form-select @error('reseller_tier_id') is-invalid @enderror" id="reseller_tier_id" name="reseller_tier_id">
-                <option value="">Select Tier</option>
-                @foreach($tiers as $tier)
-                  <option value="{{ $tier->id }}" {{ old('reseller_tier_id') == $tier->id ? 'selected' : '' }}>{{ $tier->name }} ({{ $tier->discount_percentage }}% Discount)</option>
-                @endforeach
+              <select class="form-select global-select2 @error('reseller_tier_id') is-invalid @enderror"
+                id="reseller_tier_id" name="reseller_tier_id"
+                placeholder="Pilih Tier"
+                link="globalfetch"
+                t="{{ encrypt('reseller_tiers') }}"
+                s="{{ encrypt('id,name') }}">
+                <option value=""></option>
               </select>
               @error('reseller_tier_id')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -73,6 +75,14 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
+          </div>
+
+          <div class="mb-3 form-check form-switch p-3 bg-light rounded-3 border">
+            <input class="form-check-input ms-0 me-2" type="checkbox" id="is_tier_locked" name="is_tier_locked" value="1" {{ old('is_tier_locked') ? 'checked' : '' }}>
+            <label class="form-check-label fw-semibold text-dark" for="is_tier_locked">
+              <i class="ti ti-lock me-1 text-warning"></i> Kunci Tier Reseller (Tier Lock Override)
+            </label>
+            <div class="form-text text-muted ps-0 mt-1">Jika diaktifkan, tier reseller ini akan dilindungi dan tidak dapat diturunkan otomatis saat evaluasi bulanan berjalan.</div>
           </div>
 
           <hr class="my-4">

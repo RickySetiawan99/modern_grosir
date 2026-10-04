@@ -40,7 +40,11 @@ class ResellerController extends Controller
                     </div>';
             })
             ->editColumn('tier.name', function ($reseller) {
-                return '<span class="badge bg-primary-subtle text-primary fw-semibold">'.e($reseller->tier->name ?? '-').'</span>';
+                $badge = '<span class="badge bg-primary-subtle text-primary fw-semibold">'.e($reseller->tier->name ?? '-').'</span>';
+                if ($reseller->is_tier_locked) {
+                    $badge .= ' <span class="badge bg-warning-subtle text-warning fw-semibold ms-1" title="Tier Terkunci"><i class="ti ti-lock"></i> Locked</span>';
+                }
+                return $badge;
             })
             ->editColumn('credit_limit', function ($reseller) {
                 return GeneralHelper::formatCurrency($reseller->credit_limit);
@@ -53,35 +57,36 @@ class ResellerController extends Controller
                 $deleteUrl = route('master.resellers.destroy', $reseller->id);
                 $formattedBalance = GeneralHelper::formatCurrency($reseller->balance);
 
-                return '
-                    <div class="dropdown dropstart">
-                        <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-6"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <a href="#" class="dropdown-item d-flex align-items-center gap-3 fs-3 btn-balance"
-                                    data-id="'.$reseller->id.'"
-                                    data-name="'.e($reseller->user->name ?? 'Reseller').'"
-                                    data-balance="'.$formattedBalance.'">
-                                    <i class="fs-3 ti ti-wallet"></i>Manage Balance
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
-                                </a>
-                            </li>
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="'.$reseller->id.'" 
-                                    data-name="'.e($reseller->user->name ?? 'Reseller').'"
-                                    data-action="'.$deleteUrl.'">
-                                    <i class="fs-3 ti ti-trash"></i>Delete
-                                </button>
-                            </li>
-                        </ul>
-                    </div>';
+                return GeneralHelper::renderDataTableActions([
+                    [
+                        'label' => 'Manage Balance',
+                        'icon' => 'ti ti-wallet',
+                        'color' => 'success',
+                        'class' => 'btn-balance',
+                        'attrs' => [
+                            'data-id' => $reseller->id,
+                            'data-name' => $reseller->user->name ?? 'Reseller',
+                            'data-balance' => $formattedBalance,
+                        ],
+                    ],
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'color' => 'primary',
+                        'url' => $editUrl,
+                    ],
+                    [
+                        'label' => 'Delete',
+                        'icon' => 'ti ti-trash',
+                        'color' => 'danger',
+                        'class' => 'btn-delete',
+                        'attrs' => [
+                            'data-id' => $reseller->id,
+                            'data-name' => $reseller->user->name ?? 'Reseller',
+                            'data-action' => $deleteUrl,
+                        ],
+                    ],
+                ]);
             })
             ->rawColumns(['checkbox', 'user.name', 'tier.name', 'action'])
             ->make(true);
@@ -102,6 +107,7 @@ class ResellerController extends Controller
             'password' => 'required|string|min:8',
             'reseller_tier_id' => 'required|exists:reseller_tiers,id',
             'credit_limit' => 'required|numeric|min:0',
+            'is_tier_locked' => 'nullable|boolean',
             'store_name' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
@@ -121,6 +127,7 @@ class ResellerController extends Controller
                     'user_id' => $user->id,
                     'reseller_tier_id' => $request->reseller_tier_id,
                     'credit_limit' => $request->credit_limit,
+                    'is_tier_locked' => $request->boolean('is_tier_locked'),
                     'store_name' => $request->store_name,
                     'phone' => $request->phone,
                     'address' => $request->address,
@@ -147,6 +154,7 @@ class ResellerController extends Controller
             'email' => 'required|email|unique:users,email,'.$reseller->user_id,
             'reseller_tier_id' => 'required|exists:reseller_tiers,id',
             'credit_limit' => 'required|numeric|min:0',
+            'is_tier_locked' => 'nullable|boolean',
             'password' => 'nullable|string|min:8',
             'store_name' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -169,6 +177,7 @@ class ResellerController extends Controller
                 $reseller->update([
                     'reseller_tier_id' => $request->reseller_tier_id,
                     'credit_limit' => $request->credit_limit,
+                    'is_tier_locked' => $request->boolean('is_tier_locked'),
                     'store_name' => $request->store_name,
                     'phone' => $request->phone,
                     'address' => $request->address,

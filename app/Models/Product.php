@@ -84,6 +84,6 @@ class Product extends Model
         }
 
         $baseDate = $receivedDate ? \Carbon\Carbon::parse($receivedDate) : now();
-        return $baseDate->addDays($this->default_shelf_life_days)->format('Y-m-d');
+        return $baseDate->addDays((int) $this->default_shelf_life_days)->format('Y-m-d');
     }
 }

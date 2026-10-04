@@ -24,34 +24,28 @@
     </div>
 </div>
 
-<div class="card">
-  <div class="card-body">
-        <div class="d-flex align-items-center justify-content-end mb-3">
-      <button id="bulk-delete" class="btn btn-sm btn-danger d-none" onclick="executeBulkDelete()">
-        <i class="ti ti-trash fs-3 me-2"></i> Delete Selected <span class="selected-count"></span>
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+  <div class="card-body p-4">
+    <div class="bulk-delete-wrapper d-none mb-3 text-end">
+      <button id="bulk-delete" class="btn btn-sm btn-danger rounded-3 px-3 shadow-sm" onclick="executeBulkDelete()">
+        <i class="ti ti-trash fs-3 me-1"></i> Delete Selected <span class="selected-count"></span>
       </button>
     </div>
     
-    @if (session('success'))
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    @endif
 
     <div class="table-responsive">
       <table id="main-table" class="table text-nowrap align-middle mb-0">
         <thead>
           <tr class="text-muted fw-semibold">
-            <th scope="col">
+            <th scope="col" class="col-checkbox" style="width: 40px;">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="select-all">
               </div>
             </th>
-            <th scope="col">No</th>
+            <th scope="col" class="col-no text-center" style="width: 50px;">No</th>
             <th scope="col">Name</th>
             <th scope="col">Slug</th>
-            <th scope="col" class="text-end">Action</th>
+            <th scope="col" class="text-center" style="width: 140px;">Action</th>
           </tr>
         </thead>
         <tbody class="border-top">
@@ -73,7 +67,7 @@
         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
         { data: 'name', name: 'name' },
         { data: 'slug', name: 'slug' },
-        { data: 'action', name: 'action', orderable: false, searchable: false }
+        { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
       ],
       order: [[2, 'asc']], // Order by Name (third column)
       bulkDeleteUrl: '{{ route("master.categories.bulk-delete") }}',

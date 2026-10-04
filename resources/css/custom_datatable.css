@@ -129,3 +129,26 @@
 .table .btn:active {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
 }
+
+/* Fixed Width for No and Checkbox Columns Across All DataTables */
+.table th.col-no,
+.table td.col-no,
+.table th[style*="width: 50px"],
+.table th[style*="width:50px"],
+.table td.dt-center:first-child,
+.table td.text-center:first-child {
+    width: 50px !important;
+    max-width: 50px !important;
+    min-width: 50px !important;
+    text-align: center !important;
+}
+
+.table th.col-checkbox,
+.table td.col-checkbox,
+.table th[style*="width: 40px"],
+.table th[style*="width:40px"] {
+    width: 40px !important;
+    max-width: 40px !important;
+    min-width: 40px !important;
+    text-align: center !important;
+}

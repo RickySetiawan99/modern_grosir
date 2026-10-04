@@ -15,13 +15,17 @@ $(document).ready(function() {
             { data: 'category', name: 'product.category.name' },
             { data: 'warehouse.name', name: 'warehouse.name' },
             { data: 'quantity', name: 'quantity', className: 'text-end' },
-            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' }
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
         ],
         order: [[1, 'asc']]
     });
 
     $('#warehouse-filter').on('change', function() {
         table.ajax.reload();
+    });
+
+    $('#btn-reset-filter').on('click', function() {
+        $('#warehouse-filter').val('').trigger('change');
     });
 
     // Edit Stock Handler

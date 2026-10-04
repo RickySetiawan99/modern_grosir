@@ -30,44 +30,59 @@
     <!-- Filter Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
         <div class="card-body p-4">
-            <h5 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
-                <i class="ti ti-filter fs-5 text-primary"></i> Filter Laporan
-            </h5>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="ti ti-filter fs-5 text-primary"></i> Filter Laporan
+                </h5>
+                @if(request()->hasAny(['start_date', 'end_date', 'warehouse_id', 'reseller_id']))
+                    <a href="{{ route('reports.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 d-flex align-items-center gap-1">
+                        <i class="ti ti-rotate"></i> Reset Filter
+                    </a>
+                @endif
+            </div>
             <form action="{{ route('reports.index') }}" method="GET" class="row align-items-end g-3">
                 <div class="col-md-3">
                     <label class="form-label fw-medium text-dark">Tanggal Mulai</label>
-                    <div class="input-group">
-                        <input type="text" name="start_date" class="form-control bg-white border-end-0 datepicker-input" value="{{ $startDate }}" placeholder="YYYY-MM-DD">
-                        <span class="input-group-text bg-white border-start-0 text-muted">
+                    <div class="date-input-wrapper">
+                        <input type="text" name="start_date" class="form-control bg-white datepicker-input" value="{{ $startDate }}" placeholder="YYYY-MM-DD" autocomplete="off">
+                        <span class="date-icon">
                             <i class="ti ti-calendar"></i>
                         </span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label fw-medium text-dark">Tanggal Selesai</label>
-                    <div class="input-group">
-                        <input type="text" name="end_date" class="form-control bg-white border-end-0 datepicker-input" value="{{ $endDate }}" placeholder="YYYY-MM-DD">
-                        <span class="input-group-text bg-white border-start-0 text-muted">
+                    <div class="date-input-wrapper">
+                        <input type="text" name="end_date" class="form-control bg-white datepicker-input" value="{{ $endDate }}" placeholder="YYYY-MM-DD" autocomplete="off">
+                        <span class="date-icon">
                             <i class="ti ti-calendar"></i>
                         </span>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label fw-medium text-dark">Gudang</label>
-                    <select name="warehouse_id" class="form-select bg-white">
+                    <select name="warehouse_id" class="form-select bg-white global-select2"
+                        placeholder="Semua Gudang"
+                        link="globalfetch"
+                        t="{{ encrypt('warehouses') }}"
+                        s="{{ encrypt('id,name') }}">
                         <option value="">Semua Gudang</option>
-                        @foreach($warehouses as $wh)
-                            <option value="{{ $wh->id }}" {{ $warehouseId == $wh->id ? 'selected' : '' }}>{{ $wh->name }}</option>
-                        @endforeach
+                        @if($warehouseId)
+                            <option value="{{ $warehouseId }}" selected>{{ optional($warehouses->firstWhere('id', $warehouseId))->name }}</option>
+                        @endif
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label fw-medium text-dark">Reseller</label>
-                    <select name="reseller_id" class="form-select bg-white">
+                    <select name="reseller_id" class="form-select bg-white global-select2"
+                        placeholder="Semua Reseller"
+                        link="globalfetch"
+                        t="{{ encrypt('resellers') }}"
+                        s="{{ encrypt('id,store_name') }}">
                         <option value="">Semua Reseller</option>
-                        @foreach($resellers as $res)
-                            <option value="{{ $res->id }}" {{ $resellerId == $res->id ? 'selected' : '' }}>{{ $res->name }}</option>
-                        @endforeach
+                        @if($resellerId)
+                            <option value="{{ $resellerId }}" selected>{{ optional($resellers->firstWhere('id', $resellerId))->name }}</option>
+                        @endif
                     </select>
                 </div>
                 <div class="col-md-2">

@@ -15,6 +15,11 @@
                     <h3 class="fw-bold mb-1 text-dark">Manajemen Harga Tiering</h3>
                     <p class="text-muted mb-0 fs-3">Atur potongan harga bertingkat untuk Silver, Gold, Platinum, dan Kategori Reseller Khusus.</p>
                 </div>
+                <div class="flex-shrink-0">
+                    <span class="badge bg-white text-primary border border-primary-subtle fs-2 px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1.5 shadow-sm">
+                        <i class="ti ti-star-filled text-warning fs-3"></i> Tanda bintang (*) mengindikasikan override harga manual
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -22,24 +27,15 @@
     <!-- Main Table Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-body p-4">
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
-                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                    <i class="ti ti-tags fs-5 text-primary"></i> Daftar Harga Produk & Tiering
-                </h5>
-                <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-2 px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1.5">
-                    <i class="ti ti-star-filled text-warning fs-3"></i> Tanda bintang mengindikasikan override harga manual
-                </span>
-            </div>
-
             <div class="table-responsive">
                 <table id="main-table" class="table table-hover align-middle text-nowrap mb-0">
                     <thead>
                         <tr class="text-uppercase fs-2 text-muted tracking-wider border-bottom">
-                            <th scope="col" class="px-4 py-3" style="width: 60px;">No</th>
+                            <th scope="col" class="px-3 py-3 col-no text-center" style="width: 50px;">No</th>
                             <th scope="col" class="px-3 py-3">Nama Produk & SKU</th>
                             <th scope="col" class="px-3 py-3">Harga Eceran (Retail)</th>
                             <th scope="col" class="px-3 py-3">Harga Tiering (Kalkulasi / Custom Override)</th>
-                            <th scope="col" class="px-4 py-3 text-end">Aksi</th>
+                            <th scope="col" class="px-3 py-3 text-center" style="width: 120px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">

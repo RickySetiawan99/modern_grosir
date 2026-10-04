@@ -108,58 +108,65 @@
         </div>
     </div>
 
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="ti ti-filter fs-5 text-primary"></i> Filter Batch & FEFO
+                </h5>
+                @if(request()->hasAny(['status', 'expiring_within', 'warehouse_id', 'search']))
+                    <a href="{{ route('inventory.batches.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 d-flex align-items-center gap-1">
+                        <i class="ti ti-rotate"></i> Reset Filter
+                    </a>
+                @endif
+            </div>
+            <form action="{{ route('inventory.batches.index') }}" method="GET" class="row align-items-end g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-medium text-dark">Status Batch</label>
+                    <select name="status" class="form-select bg-white border">
+                        <option value="">Semua Status</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="depleted" {{ request('status') === 'depleted' ? 'selected' : '' }}>Habis (Depleted)</option>
+                        <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Kadaluarsa (Expired)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium text-dark">Kedaluwarsa (Expiring)</label>
+                    <select name="expiring_within" class="form-select bg-white border">
+                        <option value="">Semua Waktu</option>
+                        <option value="7" {{ request('expiring_within') == 7 ? 'selected' : '' }}>Kritis (&le; 7 Hari)</option>
+                        <option value="14" {{ request('expiring_within') == 14 ? 'selected' : '' }}>Peringatan (&le; 14 Hari)</option>
+                        <option value="30" {{ request('expiring_within') == 30 ? 'selected' : '' }}>Mendekati (&le; 30 Hari)</option>
+                        <option value="60" {{ request('expiring_within') == 60 ? 'selected' : '' }}>Waspada (&le; 60 Hari)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium text-dark">Gudang Penyimpanan</label>
+                    <select name="warehouse_id" class="form-select bg-white border global-select2"
+                        placeholder="Semua Gudang"
+                        link="globalfetch"
+                        t="{{ encrypt('warehouses') }}"
+                        s="{{ encrypt('id,name') }}">
+                        <option value="">Semua Gudang</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium text-dark">Pencarian Batch / Produk</label>
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control bg-white" placeholder="No. Batch / Nama SKU..." value="{{ request('search') }}">
+                        <button type="submit" class="btn btn-primary px-3 shadow-sm">
+                            <i class="ti ti-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Main List Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-body p-4">
-            <!-- Filter Toolbar -->
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-                <!-- Status Quick Pills -->
-                <div class="nav nav-pills gap-1 p-1 bg-light rounded-3 d-inline-flex flex-wrap">
-                    <a href="{{ route('inventory.batches.index') }}" class="nav-link px-3 py-1.5 fs-2 rounded-2 {{ !request('status') && !request('expiring_within') ? 'active bg-white text-dark shadow-sm fw-semibold' : 'text-muted' }}">
-                        Semua Batch
-                    </a>
-                    <a href="{{ route('inventory.batches.index', ['status' => 'active']) }}" class="nav-link px-3 py-1.5 fs-2 rounded-2 {{ request('status') === 'active' ? 'active bg-white text-dark shadow-sm fw-semibold' : 'text-muted' }}">
-                        Aktif
-                    </a>
-                    <a href="{{ route('inventory.batches.index', ['expiring_within' => 30]) }}" class="nav-link px-3 py-1.5 fs-2 rounded-2 {{ request('expiring_within') == 30 ? 'active bg-white text-dark shadow-sm fw-semibold' : 'text-muted' }}">
-                        Hampir Expired (< 30 Hari)
-                    </a>
-                    <a href="{{ route('inventory.batches.index', ['status' => 'expired']) }}" class="nav-link px-3 py-1.5 fs-2 rounded-2 {{ request('status') === 'expired' ? 'active bg-white text-dark shadow-sm fw-semibold' : 'text-muted' }}">
-                        Kadaluarsa
-                    </a>
-                </div>
-
-                <!-- Search & Warehouse Filter -->
-                <form action="{{ route('inventory.batches.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
-                    @if(request('status')) <input type="hidden" name="status" value="{{ request('status') }}"> @endif
-                    @if(request('expiring_within')) <input type="hidden" name="expiring_within" value="{{ request('expiring_within') }}"> @endif
-
-                    <select name="warehouse_id" class="form-select bg-white border select2" style="min-width: 160px;" onchange="this.form.submit()">
-                        <option value="">Semua Gudang</option>
-                        @foreach($warehouses as $warehouse)
-                            <option value="{{ $warehouse->id }}" {{ request('warehouse_id') == $warehouse->id ? 'selected' : '' }}>
-                                {{ $warehouse->name }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <div class="input-group" style="min-width: 220px;">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="ti ti-search"></i></span>
-                        <input type="text" name="search" class="form-control bg-white border-start-0" placeholder="Cari No. Batch / Produk..." value="{{ request('search') }}">
-                    </div>
-                </form>
-            </div>
-
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="ti ti-circle-check fs-5"></i>
-                        <div>{{ session('success') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
             <!-- Batches Table -->
             <div class="table-responsive" style="min-height: 300px;">
                 <table class="table table-hover align-middle text-nowrap mb-0">
@@ -172,7 +179,7 @@
                             <th class="py-3">Tgl Penerimaan</th>
                             <th class="py-3">Status FEFO / Expiration</th>
                             <th class="py-3">Status Batch</th>
-                            <th class="pe-3 py-3 text-end">Aksi</th>
+                            <th class="px-3 py-3 text-center" style="width: 80px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">
@@ -243,7 +250,7 @@
                                         <span class="badge bg-secondary text-white px-2.5 py-1 rounded-pill fs-2 fw-medium">Disposed</span>
                                     @endif
                                 </td>
-                                <td class="pe-3 text-end">
+                                <td class="px-3 text-center">
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-icon btn-light rounded-circle shadow-none" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false">
                                             <i class="ti ti-dots-vertical fs-4"></i>

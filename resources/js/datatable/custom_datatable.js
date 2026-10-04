@@ -4,6 +4,26 @@
  */
 
 function initModernDatatable(tableSelector, options = {}) {
+    if (options.columns) {
+        options.columns = options.columns.map(function (col) {
+            if (col.data === 'DT_RowIndex' || col.name === 'DT_RowIndex') {
+                return {
+                    ...col,
+                    width: '50px',
+                    className: (col.className ? col.className + ' ' : '') + 'text-center col-no'
+                };
+            }
+            if (col.data === 'checkbox' || col.name === 'checkbox') {
+                return {
+                    ...col,
+                    width: '40px',
+                    className: (col.className ? col.className + ' ' : '') + 'text-center col-checkbox'
+                };
+            }
+            return col;
+        });
+    }
+
     const defaultOptions = {
         processing: true,
         serverSide: true,
@@ -45,13 +65,16 @@ function toggleBulkDeleteBtn(tableSelector, bulkDeleteUrl, itemName = 'Item') {
 
     const selectedCount = $(`${tableSelector} .item-checkbox:checked, ${tableSelector} .row-checkbox:checked`).length;
     const $btn = $('#bulk-delete');
+    const $wrapper = $btn.closest('.bulk-delete-wrapper');
 
     if (selectedCount > 0) {
         $btn.removeClass('d-none');
+        if ($wrapper.length) $wrapper.removeClass('d-none');
         $btn.find('.selected-count').text(`(${selectedCount})`);
         $btn.data('table-selector', tableSelector).data('bulk-url', bulkDeleteUrl).data('item-name', itemName);
     } else {
         $btn.addClass('d-none');
+        if ($wrapper.length) $wrapper.addClass('d-none');
     }
 }
 
@@ -88,10 +111,13 @@ function executeBulkDelete() {
             },
             success: function (response) {
                 if (response.success) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire('Berhasil!', response.message || `${ids.length} ${itemName} berhasil dihapus.`, 'success');
+                    const msg = response.message || `${ids.length} ${itemName} berhasil dihapus.`;
+                    if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                        ModernGrosir.showToast(msg, 'success');
+                    } else if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: 'Berhasil!', text: msg, timer: 3000, timerProgressBar: true, showConfirmButton: false });
                     } else {
-                        alert(response.message || `${ids.length} ${itemName} berhasil dihapus.`);
+                        alert(msg);
                     }
                     $(`${tableSelector} #select-all`).prop('checked', false);
                     if ($.fn.DataTable.isDataTable(tableSelector)) {
@@ -100,11 +126,17 @@ function executeBulkDelete() {
                         location.reload();
                     }
                     $btn.addClass('d-none');
+                    if ($btn.closest('.bulk-delete-wrapper').length) {
+                        $btn.closest('.bulk-delete-wrapper').addClass('d-none');
+                    }
                 } else {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire('Error!', response.message || 'Gagal menghapus item.', 'error');
+                    const msg = response.message || 'Gagal menghapus item.';
+                    if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                        ModernGrosir.showToast(msg, 'error');
+                    } else if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: msg, timer: 3000, timerProgressBar: true, showConfirmButton: false });
                     } else {
-                        alert(response.message || 'Gagal menghapus item.');
+                        alert(msg);
                     }
                 }
             },
@@ -193,10 +225,13 @@ function performDelete($btn, id, actionUrl, table) {
         },
         success: function (response) {
             if (response.success) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Deleted!', response.message, 'success');
+                const msg = response.message || `${itemName} berhasil dihapus.`;
+                if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                    ModernGrosir.showToast(msg, 'success');
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'success', title: 'Deleted!', text: msg, timer: 3000, timerProgressBar: true, showConfirmButton: false });
                 } else {
-                    alert(response.message);
+                    alert(msg);
                 }
 
                 if (table) {
@@ -205,10 +240,13 @@ function performDelete($btn, id, actionUrl, table) {
                     location.reload();
                 }
             } else {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Error!', response.message, 'error');
+                const msg = response.message || 'Gagal menghapus item.';
+                if (window.ModernGrosir && typeof window.ModernGrosir.showToast === 'function') {
+                    ModernGrosir.showToast(msg, 'error');
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', title: 'Error!', text: msg, timer: 3000, timerProgressBar: true, showConfirmButton: false });
                 } else {
-                    alert(response.message);
+                    alert(msg);
                 }
             }
         },

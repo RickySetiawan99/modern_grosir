@@ -19,38 +19,46 @@
         </div>
     </div>
 
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="ti ti-filter fs-5 text-primary"></i> Filter Inventaris
+                </h5>
+                <button type="button" id="btn-reset-filter" class="btn btn-sm btn-outline-secondary rounded-3 px-3 d-flex align-items-center gap-1">
+                    <i class="ti ti-rotate"></i> Reset Filter
+                </button>
+            </div>
+            <div class="row align-items-end g-3">
+                <div class="col-md-4">
+                    <label for="warehouse-filter" class="form-label fw-medium text-dark">Gudang Penyimpanan</label>
+                    <select id="warehouse-filter" class="form-select bg-white border global-select2"
+                        placeholder="Semua Gudang"
+                        link="globalfetch"
+                        t="{{ encrypt('warehouses') }}"
+                        s="{{ encrypt('id,name') }}">
+                        <option value="">Semua Gudang</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-body p-4">
-            <!-- Filter Toolbar -->
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="p-2.5 rounded-3 bg-primary-subtle text-primary d-flex align-items-center justify-content-center">
-                        <i class="ti ti-building-warehouse fs-5"></i>
-                    </div>
-                    <div>
-                        <label for="warehouse-filter" class="form-label fs-2 fw-medium text-muted mb-0">Pilih Gudang Penyimpanan</label>
-                        <select id="warehouse-filter" class="form-select bg-white border fs-2 fw-semibold text-dark select2" style="min-width: 220px;">
-                            <option value="">Semua Gudang</option>
-                            @foreach($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }} ({{ ucfirst($warehouse->type) }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <!-- Table -->
             <div class="table-responsive">
                 <table id="main-table" class="table table-hover align-middle text-nowrap mb-0">
                     <thead>
                         <tr class="text-uppercase fs-2 text-muted tracking-wider border-bottom">
-                            <th scope="col" class="ps-3 py-3" style="width: 50px;">No</th>
+                            <th scope="col" class="ps-3 py-3 col-no text-center" style="width: 50px;">No</th>
                             <th scope="col" class="py-3">Produk & SKU</th>
                             <th scope="col" class="py-3">Kategori</th>
                             <th scope="col" class="py-3">Gudang</th>
                             <th scope="col" class="py-3">Jumlah Stok Saat Ini</th>
-                            <th scope="col" class="pe-3 py-3 text-end">Aksi</th>
+                            <th scope="col" class="px-3 py-3 text-center" style="width: 120px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="border-top-0">

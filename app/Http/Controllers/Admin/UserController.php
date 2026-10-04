@@ -44,34 +44,33 @@ class UserController extends Controller
                 })->implode(' ');
             })
             ->addColumn('action', function ($user) {
-                $editUrl = route('master.users.edit', $user->id);
-                $deleteUrl = route('master.users.destroy', $user->id);
-
                 $isSystemAdmin = $user->email === 'admin@moderngrosir.com';
                 $isSelf = $user->id === auth()->id();
 
-                return '
-                    <div class="dropdown dropstart">
-                        <a href="javascript:void(0)" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-6"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-3 fs-3" href="'.$editUrl.'">
-                                    <i class="fs-3 ti ti-edit"></i>Edit
-                                </a>
-                            </li>
-                            '.(! $isSystemAdmin && ! $isSelf ? '
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-3 text-danger btn-delete fs-3" 
-                                    data-id="'.$user->id.'" 
-                                    data-name="'.$user->name.'" 
-                                    data-action="'.$deleteUrl.'">
-                                    <i class="fs-3 ti ti-trash"></i>Delete
-                                </button>
-                            </li>' : '').'
-                        </ul>
-                    </div>';
+                $actions = [
+                    [
+                        'label' => 'Edit',
+                        'icon' => 'ti ti-edit',
+                        'url' => route('master.users.edit', $user->id),
+                        'color' => 'primary',
+                    ],
+                ];
+
+                if (! $isSystemAdmin && ! $isSelf) {
+                    $actions[] = [
+                        'label' => 'Delete',
+                        'icon' => 'ti ti-trash',
+                        'color' => 'danger',
+                        'class' => 'btn-delete',
+                        'attrs' => [
+                            'data-id' => $user->id,
+                            'data-name' => $user->name,
+                            'data-action' => route('master.users.destroy', $user->id),
+                        ],
+                    ];
+                }
+
+                return GeneralHelper::renderDataTableActions($actions);
             })
             ->rawColumns(['name', 'roles', 'action'])
             ->make(true);
