@@ -20,6 +20,7 @@ $(document).ready(function() {
                     $select.select2('destroy');
                 }
                 $select.select2({
+                    theme: 'bootstrap-5',
                     dropdownParent: $('#pos-wrapper'),
                     width: '100%'
                 });

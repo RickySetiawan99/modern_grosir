@@ -1,4 +1,10 @@
-/* Select2 Modernize Design System Styling */
+/* ==========================================================================
+   ModernGrosir — Universal Select2 Premium Design System
+   Matches Bootstrap 5 + Modernize Admin (Light & Dark Theme)
+   Supports: .select2-container--default, .select2-container--bootstrap-5, .select2-container--bootstrap4
+   ========================================================================== */
+
+/* ── Reset & Container ── */
 select.select2-hidden-accessible {
     border: 0 !important;
     clip: rect(0 0 0 0) !important;
@@ -8,17 +14,19 @@ select.select2-hidden-accessible {
     padding: 0 !important;
     position: absolute !important;
     width: 1px !important;
+    white-space: nowrap !important;
 }
 
 .select2-container {
     box-sizing: border-box;
-    display: inline-block;
+    display: block;
     margin: 0;
     position: relative;
     vertical-align: middle;
     flex: 1 1 auto;
     max-width: 100%;
     width: 100% !important;
+    font-family: inherit;
 }
 
 .input-group .select2-container {
@@ -26,76 +34,38 @@ select.select2-hidden-accessible {
     flex: 1 1 auto !important;
 }
 
-.select2-container--default .select2-selection--single {
-    height: 38px !important;
+/* ── Single Selection Box ── */
+.select2-container--default .select2-selection--single,
+.select2-container--bootstrap-5 .select2-selection--single,
+.select2-container--bootstrap4 .select2-selection--single,
+.select2-container--classic .select2-selection--single,
+.select2-container .select2-selection--single {
+    height: 40px !important;
+    min-height: 40px !important;
     border: 1px solid var(--bs-border-color, #dfe5ef) !important;
-    border-radius: 7px !important;
+    border-radius: var(--bs-border-radius, 7px) !important;
     background-color: var(--bs-body-bg, #ffffff) !important;
     background-image: none !important;
     position: relative !important;
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
     box-shadow: none !important;
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
-}
-
-.select2-container--default.select2-container--focus .select2-selection--single,
-.select2-container--default.select2-container--focus .select2-selection--multiple,
-.select2-container--default.select2-container--open .select2-selection--single,
-.select2-container--default.select2-container--open .select2-selection--multiple {
-    border-color: var(--bs-primary, #5d87ff) !important;
-    box-shadow: 0 0 0 0.25rem rgba(93, 135, 255, 0.1) !important;
     outline: none !important;
+    cursor: pointer !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out !important;
 }
 
-.select2-container--default .select2-selection--multiple {
-    min-height: 38px !important;
-    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
-    border-radius: 7px !important;
-    background-color: var(--bs-body-bg, #ffffff) !important;
-    padding: 2px 6px !important;
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
-}
-
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: var(--bs-primary-subtle, #ecf2ff) !important;
-    border: 1px solid var(--bs-primary-border-subtle, #d2e0ff) !important;
-    color: var(--bs-primary, #5d87ff) !important;
-    border-radius: 5px !important;
-    font-size: 0.775rem !important;
-    padding: 2px 8px !important;
-    margin-top: 4px !important;
-}
-
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-    color: var(--bs-primary, #5d87ff) !important;
-    margin-right: 5px !important;
-    border: none !important;
-    background: transparent !important;
-}
-
-.form-select-sm + .select2-container .select2-selection--single,
-.select2-container--sm .select2-selection--single {
-    height: 31px !important;
-    border-radius: 6px !important;
-}
-
-.form-select-sm + .select2-container .select2-selection--single .select2-selection__rendered,
-.select2-container--sm .select2-selection--single .select2-selection__rendered {
-    line-height: 29px !important;
-    font-size: 0.775rem !important;
-}
-
-.form-select-sm + .select2-container .select2-selection--single .select2-selection__arrow,
-.select2-container--sm .select2-selection--single .select2-selection__arrow {
-    height: 29px !important;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+/* ── Rendered Value & Placeholder ── */
+.select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered,
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered,
+.select2-container .select2-selection--single .select2-selection__rendered {
     color: var(--bs-body-color, #2a3547) !important;
-    padding-left: 12px !important;
-    padding-right: 30px !important;
+    padding-left: 14px !important;
+    padding-right: 58px !important;
     font-size: 0.875rem !important;
-    line-height: 36px !important;
+    font-weight: 400 !important;
+    line-height: 38px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -103,86 +73,475 @@ select.select2-hidden-accessible {
     width: 100% !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px !important;
+.select2-container--default .select2-selection--single .select2-selection__placeholder,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__placeholder,
+.select2-container .select2-selection--single .select2-selection__placeholder {
+    color: var(--bs-secondary-color, #94a3b8) !important;
+    font-weight: 400 !important;
+}
+
+/* ── Modern Animated SVG Chevron Arrow ── */
+.select2-container--default .select2-selection--single .select2-selection__arrow,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow,
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow,
+.select2-container .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
     position: absolute !important;
-    top: 1px !important;
-    right: 8px !important;
+    top: 0 !important;
+    right: 12px !important;
     width: 20px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    border: none !important;
+    background: transparent !important;
+    pointer-events: none !important;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
-    border-color: #5a6a85 transparent transparent transparent !important;
-    border-style: solid !important;
-    border-width: 5px 4px 0 4px !important;
-    height: 0 !important;
-    width: 0 !important;
+.select2-container--default .select2-selection--single .select2-selection__arrow b,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow b,
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__arrow b,
+.select2-container .select2-selection--single .select2-selection__arrow b {
+    border: none !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    position: static !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 14px 14px !important;
+    display: inline-block !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-    border-color: transparent transparent #5a6a85 transparent !important;
-    border-width: 0 4px 5px 4px !important;
+/* Arrow Flip on Open */
+.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    transform: rotate(180deg) !important;
 }
 
-.select2-container--default .select2-dropdown {
-    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
-    border-radius: 7px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-    background-color: var(--bs-body-bg, #ffffff) !important;
-    z-index: 1065 !important;
+/* ── Clear Button (allowClear) - Pixel-Perfect Vertically Centered ── */
+.select2-container--default .select2-selection--single .select2-selection__clear,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear,
+.select2-container--bootstrap4 .select2-selection--single .select2-selection__clear,
+.select2-container .select2-selection--single .select2-selection__clear,
+.select2-container--default .select2-selection--multiple .select2-selection__clear,
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__clear,
+.select2-container .select2-selection--multiple .select2-selection__clear {
+    position: absolute !important;
+    right: 34px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background-color: transparent !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 12px 12px !important;
+    cursor: pointer !important;
+    border-radius: 50% !important;
+    transition: background-color 0.15s ease-in-out, background-image 0.15s ease-in-out !important;
+    z-index: 2 !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    float: none !important;
 }
 
-.select2-container--default .select2-search--dropdown {
-    padding: 8px !important;
+/* Hide standard unicode &times; character to eliminate font vertical metric shifts */
+.select2-container .select2-selection__clear span {
+    display: none !important;
 }
 
-.select2-container--default .select2-search--dropdown .select2-search__field {
-    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
-    border-radius: 5px !important;
-    padding: 6px 10px !important;
+.select2-container--default .select2-selection--single .select2-selection__clear:hover,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear:hover,
+.select2-container .select2-selection--single .select2-selection__clear:hover,
+.select2-container--default .select2-selection--multiple .select2-selection__clear:hover,
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__clear:hover,
+.select2-container .select2-selection--multiple .select2-selection__clear:hover {
+    background-color: rgba(239, 68, 68, 0.12) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E") !important;
+}
+
+/* ── Focus & Open States ── */
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--open .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--multiple,
+.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.select2-container--bootstrap-5.select2-container--open .select2-selection,
+.select2-container--bootstrap4.select2-container--focus .select2-selection,
+.select2-container--bootstrap4.select2-container--open .select2-selection {
+    border-color: var(--bs-primary, #5d87ff) !important;
+    box-shadow: 0 0 0 0.25rem rgba(93, 135, 255, 0.15) !important;
     outline: none !important;
 }
 
-.select2-container--default .select2-results__option {
-    padding: 8px 12px !important;
-    font-size: 0.875rem !important;
+/* ── Multiple Selection Box ── */
+.select2-container--default .select2-selection--multiple,
+.select2-container--bootstrap-5 .select2-selection--multiple,
+.select2-container--bootstrap4 .select2-selection--multiple,
+.select2-container .select2-selection--multiple {
+    min-height: 40px !important;
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: var(--bs-border-radius, 7px) !important;
+    background-color: var(--bs-body-bg, #ffffff) !important;
+    padding: 3px 6px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out !important;
 }
 
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
+.select2-container--default .select2-selection--multiple .select2-selection__rendered,
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered,
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    list-style: none !important;
+}
+
+/* Choice Badges (Tags) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice,
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice,
+.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice,
+.select2-container .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--bs-primary-bg-subtle, #ecf2ff) !important;
+    border: 1px solid rgba(93, 135, 255, 0.25) !important;
+    color: var(--bs-primary, #5d87ff) !important;
+    border-radius: 6px !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    padding: 3px 8px !important;
+    margin: 2px 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1.3 !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove,
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice__remove,
+.select2-container .select2-selection--multiple .select2-selection__choice__remove {
+    color: var(--bs-primary, #5d87ff) !important;
+    margin-right: 6px !important;
+    border: none !important;
+    background: transparent !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    transition: opacity 0.15s ease, color 0.15s ease !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover,
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice__remove:hover,
+.select2-container .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #ef4444 !important;
+    opacity: 1 !important;
+}
+
+.select2-container .select2-search--inline .select2-search__field {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.875rem !important;
+    color: var(--bs-body-color, #2a3547) !important;
+    margin: 2px 0 !important;
+    padding: 0 4px !important;
+    background: transparent !important;
+}
+
+/* ── Dropdown Panel ── */
+.select2-dropdown {
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+    background-color: var(--bs-body-bg, #ffffff) !important;
+    padding: 6px !important;
+    overflow: hidden !important;
+    z-index: 1065 !important;
+    animation: select2DropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes select2DropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Search Box inside Dropdown ── */
+.select2-search--dropdown {
+    padding: 4px 4px 8px 4px !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    width: 100% !important;
+    height: 36px !important;
+    border: 1px solid var(--bs-border-color, #dfe5ef) !important;
+    border-radius: 6px !important;
+    padding: 6px 12px 6px 34px !important;
+    font-size: 0.875rem !important;
+    color: var(--bs-body-color, #2a3547) !important;
+    background-color: var(--bs-tertiary-bg, #f8fafc) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: 10px center !important;
+    background-size: 14px 14px !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out !important;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--bs-primary, #5d87ff) !important;
+    background-color: var(--bs-body-bg, #ffffff) !important;
+    box-shadow: 0 0 0 0.2rem rgba(93, 135, 255, 0.12) !important;
+}
+
+/* ── Options List ── */
+.select2-results__options {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+    padding: 2px !important;
+    list-style: none !important;
+    margin: 0 !important;
+}
+
+/* Custom Scrollbar for Options */
+.select2-results__options::-webkit-scrollbar {
+    width: 5px;
+}
+.select2-results__options::-webkit-scrollbar-track {
+    background: transparent;
+}
+.select2-results__options::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 4px;
+}
+.select2-results__options::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.7);
+}
+
+.select2-results__option {
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    font-size: 0.875rem !important;
+    color: var(--bs-body-color, #334155) !important;
+    margin: 1px 0 !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    transition: background-color 0.1s ease, color 0.1s ease !important;
+}
+
+/* Highlighted (hover / keyboard navigation) */
+.select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
     background-color: var(--bs-primary, #5d87ff) !important;
     color: #ffffff !important;
 }
 
-[data-bs-theme="dark"] .select2-container--default .select2-selection--single {
+.select2-results__option--highlighted[aria-selected] .text-muted,
+.select2-results__option--highlighted[aria-selected] .select2-result__desc {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Already Selected State */
+.select2-results__option[aria-selected="true"],
+.select2-container--default .select2-results__option--selected {
+    background-color: var(--bs-primary-bg-subtle, #ecf2ff) !important;
+    color: var(--bs-primary, #5d87ff) !important;
+    font-weight: 600 !important;
+}
+
+/* Messages (Searching... / No results found) */
+.select2-results__message {
+    padding: 14px 12px !important;
+    text-align: center !important;
+    color: var(--bs-secondary-color, #94a3b8) !important;
+    font-size: 0.875rem !important;
+}
+
+/* Optgroup Header */
+.select2-results__group {
+    padding: 8px 12px 4px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--bs-secondary-color, #64748b) !important;
+}
+
+/* ── Sizes (sm & lg) ── */
+.form-select-sm + .select2-container .select2-selection--single,
+.select2-container--sm .select2-selection--single,
+.select2-sm + .select2-container .select2-selection--single {
+    height: 32px !important;
+    min-height: 32px !important;
+    border-radius: 6px !important;
+}
+
+.form-select-sm + .select2-container .select2-selection--single .select2-selection__rendered,
+.select2-container--sm .select2-selection--single .select2-selection__rendered,
+.select2-sm + .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 30px !important;
+    font-size: 0.8125rem !important;
+    padding-left: 10px !important;
+    padding-right: 48px !important;
+}
+
+.form-select-sm + .select2-container .select2-selection__clear,
+.select2-container--sm .select2-selection__clear,
+.select2-sm + .select2-container .select2-selection__clear {
+    right: 28px !important;
+    width: 16px !important;
+    height: 16px !important;
+    background-size: 10px 10px !important;
+}
+
+.form-select-lg + .select2-container .select2-selection--single,
+.select2-container--lg .select2-selection--single,
+.select2-lg + .select2-container .select2-selection--single {
+    height: 48px !important;
+    min-height: 48px !important;
+    border-radius: 8px !important;
+}
+
+.form-select-lg + .select2-container .select2-selection--single .select2-selection__rendered,
+.select2-container--lg .select2-selection--single .select2-selection__rendered,
+.select2-lg + .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 46px !important;
+    font-size: 1rem !important;
+    padding-left: 16px !important;
+    padding-right: 68px !important;
+}
+
+.form-select-lg + .select2-container .select2-selection__clear,
+.select2-container--lg .select2-selection__clear,
+.select2-lg + .select2-container .select2-selection__clear {
+    right: 38px !important;
+    width: 22px !important;
+    height: 22px !important;
+    background-size: 14px 14px !important;
+}
+
+/* ── Form Validation States ── */
+.is-invalid + .select2-container .select2-selection--single,
+.is-invalid + .select2-container .select2-selection--multiple,
+.was-validated select:invalid + .select2-container .select2-selection--single,
+.was-validated select:invalid + .select2-container .select2-selection--multiple {
+    border-color: #dc3545 !important;
+}
+
+.is-invalid + .select2-container.select2-container--focus .select2-selection,
+.is-invalid + .select2-container.select2-container--open .select2-selection,
+.was-validated select:invalid + .select2-container.select2-container--focus .select2-selection,
+.was-validated select:invalid + .select2-container.select2-container--open .select2-selection {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15) !important;
+}
+
+.is-valid + .select2-container .select2-selection--single,
+.is-valid + .select2-container .select2-selection--multiple {
+    border-color: #198754 !important;
+}
+
+/* ── Disabled State ── */
+.select2-container--default.select2-container--disabled .select2-selection--single,
+.select2-container--default.select2-container--disabled .select2-selection--multiple,
+.select2-container--bootstrap-5.select2-container--disabled .select2-selection,
+.select2-container.select2-container--disabled .select2-selection {
+    background-color: var(--bs-tertiary-bg, #f1f5f9) !important;
+    border-color: var(--bs-border-color, #e2e8f0) !important;
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
+}
+
+/* ── Dark Mode ([data-bs-theme="dark"]) ── */
+[data-bs-theme="dark"] .select2-container .select2-selection--single,
+[data-bs-theme="dark"] .select2-container .select2-selection--multiple {
     background-color: #2a3447 !important;
     border-color: #334155 !important;
-    background-image: none !important;
 }
 
-[data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+[data-bs-theme="dark"] .select2-container .select2-selection--single .select2-selection__rendered,
+[data-bs-theme="dark"] .select2-container .select2-selection--multiple .select2-selection__rendered {
     color: #e2e8f0 !important;
 }
 
-[data-bs-theme="dark"] .select2-container--default .select2-dropdown {
+[data-bs-theme="dark"] .select2-container .select2-selection--single .select2-selection__placeholder {
+    color: #64748b !important;
+}
+
+[data-bs-theme="dark"] .select2-container .select2-selection--single .select2-selection__arrow b {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+}
+
+[data-bs-theme="dark"] .select2-container .select2-selection--single .select2-selection__clear,
+[data-bs-theme="dark"] .select2-container .select2-selection--multiple .select2-selection__clear {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E") !important;
+}
+
+[data-bs-theme="dark"] .select2-container .select2-selection--single .select2-selection__clear:hover,
+[data-bs-theme="dark"] .select2-container .select2-selection--multiple .select2-selection__clear:hover {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f87171' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E") !important;
+}
+
+[data-bs-theme="dark"] .select2-dropdown {
     background-color: #1e293b !important;
     border-color: #334155 !important;
-    color: #e2e8f0 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
 }
 
-[data-bs-theme="dark"] .select2-container--default .select2-search--dropdown .select2-search__field {
+[data-bs-theme="dark"] .select2-search--dropdown .select2-search__field {
     background-color: #0f172a !important;
     border-color: #334155 !important;
     color: #e2e8f0 !important;
 }
 
-[data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__arrow b {
-    border-color: #94a3b8 transparent transparent transparent !important;
+[data-bs-theme="dark"] .select2-results__option {
+    color: #cbd5e1 !important;
 }
 
-/* Fullscreen Mode Select2 Z-Index & Container Fixes */
+[data-bs-theme="dark"] .select2-results__option[aria-selected="true"],
+[data-bs-theme="dark"] .select2-container--default .select2-results__option--selected {
+    background-color: rgba(93, 135, 255, 0.2) !important;
+    color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .select2-selection--multiple .select2-selection__choice {
+    background-color: rgba(93, 135, 255, 0.2) !important;
+    border-color: rgba(93, 135, 255, 0.35) !important;
+    color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .select2-container--disabled .select2-selection--single,
+[data-bs-theme="dark"] .select2-container--disabled .select2-selection--multiple {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+/* ── Fullscreen & Modal Z-Index Overrides ── */
+.modal.show .select2-dropdown,
+.modal-open .select2-dropdown {
+    z-index: 1065 !important;
+}
+
 #pos-wrapper .select2-container--open,
 .pos-fullscreen-active .select2-container--open,
 :fullscreen .select2-container--open,
@@ -196,4 +555,3 @@ select.select2-hidden-accessible {
 :-webkit-full-screen .select2-dropdown {
     z-index: 2147483647 !important;
 }
-

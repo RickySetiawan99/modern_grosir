@@ -39,6 +39,7 @@ function globalSelect2(context) {
         if (!t || !s) {
             // No fetch params — init as plain select2
             $this.select2({
+                theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: $this.attr('placeholder') || 'Pilih...',
                 allowClear: !$this.prop('required'),
