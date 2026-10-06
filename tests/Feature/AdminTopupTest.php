@@ -115,4 +115,43 @@ class AdminTopupTest extends TestCase
 
         $this->assertEquals(100000, $this->reseller->fresh()->balance);
     }
+
+    public function test_admin_can_update_midtrans_settings(): void
+    {
+        $payload = [
+            'server_key' => 'SB-Mid-server-NEW123',
+            'client_key' => 'SB-Mid-client-NEW456',
+            'merchant_id' => 'M78910',
+            'is_production' => '1',
+        ];
+
+        $response = $this->actingAs($this->admin)->postJson(route('master.topups.settings.update'), $payload);
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Konfigurasi Midtrans berhasil disimpan.',
+        ]);
+
+        $this->assertDatabaseHas('settings', [
+            'key' => 'midtrans_server_key',
+            'value' => 'SB-Mid-server-NEW123',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'midtrans_client_key',
+            'value' => 'SB-Mid-client-NEW456',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'midtrans_merchant_id',
+            'value' => 'M78910',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'midtrans_is_production',
+            'value' => '1',
+        ]);
+
+        $this->assertEquals('SB-Mid-server-NEW123', \App\Services\MidtransService::getServerKey());
+        $this->assertEquals('SB-Mid-client-NEW456', \App\Services\MidtransService::getClientKey());
+        $this->assertEquals('M78910', \App\Services\MidtransService::getMerchantId());
+        $this->assertTrue(\App\Services\MidtransService::isProduction());
+    }
 }

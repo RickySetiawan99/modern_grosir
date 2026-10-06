@@ -228,6 +228,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::prefix('topups')->name('topups.')->controller(TopupController::class)->group(function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('data', 'data')->name('data');
+                    Route::post('settings', 'updateSettings')->name('settings.update');
                     Route::post('{transaction}/approve', 'approve')->name('approve');
                     Route::post('{transaction}/reject', 'reject')->name('reject');
                 });
@@ -282,6 +283,8 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('wallet')->name('wallet.')->controller(WalletController::class)->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::post('topup', 'store')->name('topup');
+                Route::post('midtrans-snap', 'midtransSnap')->name('midtrans.snap');
+                Route::get('status/{orderId}', 'checkStatus')->name('status');
             });
 
             // Order Management

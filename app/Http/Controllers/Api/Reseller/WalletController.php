@@ -103,11 +103,11 @@ class WalletController extends Controller
         }
     }
 
-    public function topup(Request $request)
+    public function topup(Request $request, \App\Services\MidtransService $midtransService)
     {
         try {
             $request->validate([
-                'amount' => 'required|numeric|min:10000'
+                'amount' => 'required|numeric|min:10000',
             ]);
 
             $user = $request->user();
@@ -117,49 +117,14 @@ class WalletController extends Controller
                 return response()->json(['error' => 'Reseller profile not found'], 403);
             }
 
-            // Set your Merchant Server Key
-            \Midtrans\Config::$serverKey = config('services.midtrans.server_key', env('MIDTRANS_SERVER_KEY'));
-            \Midtrans\Config::$isProduction = config('services.midtrans.is_production', false);
-            \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized', true);
-            \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds', true);
-
-            \Illuminate\Support\Facades\DB::beginTransaction();
-
-            $walletTransaction = \App\Models\WalletTransaction::create([
-                'reseller_id' => $reseller->id,
-                'amount' => $request->amount,
-                'type' => 'topup',
-                'status' => 'pending',
-                'notes' => 'Top-up via Midtrans'
-            ]);
-
-            $orderId = 'TOPUP-' . $walletTransaction->id . '-' . time();
-            $walletTransaction->update(['notes' => $orderId]);
-
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $orderId,
-                    'gross_amount' => $request->amount,
-                ],
-                'customer_details' => [
-                    'first_name' => $user->name,
-                    'email' => $user->email,
-                    'phone' => $reseller->phone ?? '',
-                ]
-            ];
-
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-
-            \Illuminate\Support\Facades\DB::commit();
+            $result = $midtransService->createTopupSnapToken($reseller, (float) $request->amount);
 
             return response()->json([
-                'snap_token' => $snapToken,
-                'order_id' => $orderId,
-                'transaction_id' => $walletTransaction->id
+                'snap_token' => $result['snap_token'],
+                'order_id' => $result['order_id'],
+                'transaction_id' => $result['transaction_id'],
             ]);
-
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::rollBack();
             return GeneralHelper::errorResponse('Failed to create topup request: '.$e->getMessage());
         }
     }

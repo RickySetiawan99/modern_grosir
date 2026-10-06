@@ -20,3 +20,14 @@
 .nav-tabs .nav-link {
     border-radius: $btn-border-radius;
 }
+
+.nav-pills {
+    --bs-nav-pills-link-active-color: #fff;
+    --bs-nav-pills-link-active-bg: var(--bs-primary);
+
+    .nav-link.active,
+    .show > .nav-link {
+        background-color: var(--bs-primary);
+        color: #fff;
+    }
+}
